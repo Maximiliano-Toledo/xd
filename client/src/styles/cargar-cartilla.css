@@ -1,0 +1,132 @@
+.title-dashboard{
+    color:#3e6907;
+    font-weight: 900;
+    font-style: oblique;
+  }
+
+  .subtitle-dashboard{
+    color:#3e6907;
+    font-weight: 900;
+  }
+  
+    
+  .texto-y-icono {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px; 
+  }
+  
+  .icono-verde {
+    color: #44700a; 
+    font-size: 30px; 
+    margin-left: 10px; 
+  }
+  
+  .linea-verde {
+    height: 5px;
+    background-color: #64A70B;
+    border-radius: 5px;
+    margin-top: 8px;
+  }
+
+.div-pautas-size{
+    width: 75%;
+}
+
+.drap-drop-style{
+ 
+   border: 2px dashed #44700a; 
+    border-radius: 5px;         
+    padding: 1rem;
+}
+
+.custom-height {
+    min-height: 110h; 
+    
+}
+
+.cloud-icon{
+    color: #64A70B;
+    font-size: 100px;
+    margin: 0 auto; /* Centra horizontalmente si el padre tiene text-align: center */
+    display: block;
+  
+}
+
+.font-p {
+  font-style: oblique;
+  color: rgb(148, 142, 142);
+}
+
+.p-style{
+  font-style: oblique;
+  color: rgb(65, 92, 161);
+  font-weight: 900;
+
+}
+
+.btn-subir {
+  background-color: var(--color-green);
+  max-width: 250px;
+  width: 100%;
+  height: 40px;
+  border-color: white;
+  box-shadow: 0 4px 4px rgba(115, 112, 112, 0.8);
+  font-size: small;
+  color: aliceblue;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.btn-volver{
+  background-color: var(--color-green);
+  max-width: 200px;
+  width: 80%;
+  height: 40px;
+  color: aliceblue;
+  border-color: aliceblue;
+  box-shadow: 0 4px 4px rgba(115, 112, 112, 0.8);
+}
+
+.btn-volver:hover,
+.btn-subir:hover {
+  background-color: #44700a;
+  color: aliceblue;
+}
+
+
+
+@media (max-width: 768px) {
+  .btn-subir {
+    max-width: 200px;
+    font-size: x-small;
+    padding: 0.5rem 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .btn-subir {
+    max-width: 180px;
+    padding: 0.5rem 0.75rem;
+  }
+}
+
+@media (max-width: 320px) {
+  .btn-subir {
+    max-width: 150px;
+    padding: 0.25rem 0.5rem;
+  }
+}
+
+.text-success-label{
+  color: #64A70B;
+}
+
+.arrow-style{
+  font-size: 1.5rem;
+}
+      
+  

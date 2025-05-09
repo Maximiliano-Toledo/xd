@@ -1,0 +1,57 @@
+/* Estilos para el efecto flip */
+.flip-container {
+    perspective: 1000px;
+    width: 100%;
+}
+
+.flip-container.flipped .flipper {
+    transform: rotateY(180deg);
+}
+
+.flipper {
+    transition: 0.6s;
+    transform-style: preserve-3d;
+    position: relative;
+}
+
+.front,
+.back {
+    backface-visibility: hidden;
+    width: 100%;
+}
+
+.front {
+    z-index: 2;
+    transform: rotateY(0deg);
+}
+
+.back {
+    transform: rotateY(180deg);
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+/* Estilos para la paginación */
+.pagination-container {
+    font-size: 0.9rem;
+}
+
+.pagination-info {
+    color: #666;
+}
+
+.pagination .page-link {
+    color: var(--color-green);
+    border-color: #dee2e6;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--color-green);
+    border-color: var(--color-green);
+    color: white;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #6c757d;
+}

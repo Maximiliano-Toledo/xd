@@ -1,0 +1,262 @@
+### Iniciar sesión como administrador
+POST http://localhost:3000/api/auth/login HTTP/1.1
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin123"
+}
+
+### ============== PLANES ============== ###
+
+# Obtener todos los planes
+GET http://localhost:3000/api/abm/planes HTTP/1.1
+Content-Type: application/json
+Cookie: accessToken="$2b$10$ZWL3MiCgDcwRGl3G2RUB8umz3y15rk0IKb49Alq9Ab2D4RvBRt7na"
+
+### Obtener un plan específico
+GET http://localhost:3000/api/abm/planes/1 HTTP/1.1
+Content-Type: application/json
+#Cookie: accessToken=
+
+### Crear un nuevo plan
+POST http://localhost:3000/api/abm/planes HTTP/1.1
+Content-Type: application/json
+#Cookie: accessToken=
+
+{
+  "nombre": "Plan Premium Plus 2"
+}
+
+### Actualizar un plan existente
+PUT http://localhost:3000/api/abm/planes/7 HTTP/1.1
+Content-Type: application/json
+#Cookie: accessToken=
+
+{
+  "nombre": "Plan Premium Plus 2 editado"
+}
+
+### Eliminar un plan
+DELETE http://localhost:3000/api/abm/planes/7 HTTP/1.1
+Content-Type: application/json
+#Cookie: accessToken=
+
+
+### ============== CATEGORÍAS ============== ###
+
+# Obtener todas las categorías
+GET http://localhost:3000/api/abm/categorias HTTP/1.1
+Content-Type: application/json
+#Cookie: accessToken=
+
+### Obtener una categoría específica
+GET http://localhost:3000/api/abm/categorias/2 HTTP/1.1
+Content-Type: application/json
+#Cookie: accessToken=
+
+### Crear una nueva categoría
+POST http://localhost:3000/api/abm/categorias HTTP/1.1
+Content-Type: application/json
+#Cookie: accessToken=
+
+{
+  "nombre": "Especialista Avanzado"
+}
+
+### Actualizar una categoría existente
+PUT http://localhost:3000/api/abm/categorias/2 HTTP/1.1
+Content-Type: application/json
+#Cookie: accessToken=
+
+{
+  "nombre": "Especialista Actualizado"
+}
+
+### Eliminar una categoría
+DELETE http://localhost:3000/api/abm/categorias/5 HTTP/1.1
+Content-Type: application/json
+#Cookie: accessToken=
+
+
+### ============== ESPECIALIDADES ============== ###
+
+# Obtener todas las especialidades
+GET http://localhost:3000/api/abm/especialidades HTTP/1.1
+Content-Type: application/json
+#Cookie: accessToken=
+
+### Obtener una especialidad específica
+GET http://localhost:3000/api/abm/especialidades/3 HTTP/1.1
+Content-Type: application/json
+#Cookie: accessToken=
+
+### Crear una nueva especialidad
+POST http://localhost:3000/api/abm/especialidades HTTP/1.1
+Content-Type: application/json
+#Cookie: accessToken=
+
+{
+  "nombre": "Neurología Pediátrica"
+}
+
+### Actualizar una especialidad existente
+PUT http://localhost:3000/api/abm/especialidades/3 HTTP/1.1
+Content-Type: application/json
+#Cookie: accessToken=
+
+{
+  "nombre": "Cardiología Actualizada"
+}
+
+### Eliminar una especialidad
+DELETE http://localhost:3000/api/abm/especialidades/10 HTTP/1.1
+Content-Type: application/json
+#Cookie: accessToken=
+
+
+### ============== PROVINCIAS ============== ###
+
+# Obtener todas las provincias
+GET http://localhost:3000/api/abm/provincias HTTP/1.1
+Content-Type: application/json
+#Cookie: accessToken=
+
+### Obtener una provincia específica
+GET http://localhost:3000/api/abm/provincias/4 HTTP/1.1
+Content-Type: application/json
+#Cookie: accessToken=
+
+### Crear una nueva provincia
+POST http://localhost:3000/api/abm/provincias HTTP/1.1
+Content-Type: application/json
+#Cookie: accessToken=
+
+{
+  "nombre": "Santa Cruz"
+}
+
+### Actualizar una provincia existente
+PUT http://localhost:3000/api/abm/provincias/4 HTTP/1.1
+Content-Type: application/json
+#Cookie: accessToken=
+
+{
+  "nombre": "Córdoba Actualizada"
+}
+
+### Eliminar una provincia
+DELETE http://localhost:3000/api/abm/provincias/25 HTTP/1.1
+Content-Type: application/json
+#Cookie: accessToken=
+
+
+### ============== LOCALIDADES ============== ###
+
+# Obtener todas las localidades
+GET http://localhost:3000/api/abm/localidades HTTP/1.1
+Content-Type: application/json
+#Cookie: accessToken=
+
+### Obtener una localidad específica
+GET http://localhost:3000/api/abm/localidades/486 HTTP/1.1
+Content-Type: application/json
+#Cookie: accessToken=
+
+### Crear una nueva localidad
+POST http://localhost:3000/api/abm/localidades HTTP/1.1
+Content-Type: application/json
+#Cookie: accessToken=
+
+{
+  "nombre": "Villa Nueva",
+  "id_provincia": 4
+}
+
+### Actualizar una localidad existente
+PUT http://localhost:3000/api/abm/localidades/486 HTTP/1.1
+Content-Type: application/json
+#Cookie: accessToken=
+
+{
+  "nombre": "Villa María Actualizada",
+  "id_provincia": 4
+}
+
+### Eliminar una localidad
+DELETE http://localhost:3000/api/abm/localidades/500 HTTP/1.1
+Content-Type: application/json
+#Cookie: accessToken=
+
+
+### ============== PRUEBAS DE VALIDACIÓN ============== ###
+
+### Intentar crear un plan con nombre duplicado
+POST http://localhost:3000/api/abm/planes HTTP/1.1
+Content-Type: application/json
+#Cookie: accessToken=
+
+{
+  "nombre": "Plan Básico"
+}
+
+### Intentar crear sin nombre (campo requerido)
+POST http://localhost:3000/api/abm/categorias HTTP/1.1
+Content-Type: application/json
+#Cookie: accessToken=
+
+{
+  "descripcion": "Esta categoría no tiene nombre"
+}
+
+### Intentar crear una localidad sin provincia
+POST http://localhost:3000/api/abm/localidades HTTP/1.1
+Content-Type: application/json
+#Cookie: accessToken=
+
+{
+  "nombre": "Localidad Sin Provincia"
+}
+
+### Intentar eliminar una provincia con localidades asociadas
+DELETE http://localhost:3000/api/abm/provincias/1 HTTP/1.1
+Content-Type: application/json
+#Cookie: accessToken=
+
+### Intentar actualizar con ID inválido
+PUT http://localhost:3000/api/abm/especialidades/abc HTTP/1.1
+Content-Type: application/json
+#Cookie: accessToken=
+
+{
+  "nombre": "Especialidad con ID inválido"
+}
+
+### ============== PRUEBAS DE SEGURIDAD ============== ###
+
+### Intentar acceder sin token de autenticación
+GET http://localhost:3000/api/abm/planes HTTP/1.1
+Content-Type: application/json
+
+### Intentar inyección SQL en ID
+GET http://localhost:3000/api/abm/planes/1%20OR%201=1 HTTP/1.1
+Content-Type: application/json
+#Cookie: accessToken=
+
+### Intentar inyección SQL en parámetros
+POST http://localhost:3000/api/abm/planes HTTP/1.1
+Content-Type: application/json
+#Cookie: accessToken=
+
+{
+  "nombre": "Plan'); DROP TABLE planes; --"
+}
+
+### Prueba de XSS
+POST http://localhost:3000/api/abm/especialidades HTTP/1.1
+Content-Type: application/json
+#Cookie: accessToken=
+
+{
+  "nombre": "<script>alert('XSS')</script>Especialidad Maliciosa"
+}

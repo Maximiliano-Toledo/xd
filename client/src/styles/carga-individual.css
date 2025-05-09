@@ -1,0 +1,30 @@
+.h1-titulo{
+    color: rgb(148, 142, 142);
+}
+
+.p-container{
+    background: #59821f;
+    background: linear-gradient(0deg,rgba(89, 130, 31, 1) 7%, rgba(159, 217, 85, 1) 100%);
+}
+
+.btn-cargar{
+  background-color: var(--color-green);
+  max-width: 250px;
+  width: 100%;
+  border-color: white;
+  box-shadow: 0 4px 4px rgba(115, 112, 112, 0.8);
+  color: aliceblue;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-cargar:hover{
+    background-color: #44700a;
+    color: aliceblue;
+}
+
+.check-style{
+    color: var(--color-green);
+    font-size: 2rem;
+}

@@ -1,0 +1,25 @@
+.user-style{
+    font-size: 5rem;
+    color: var(--color-green);
+    border-radius: 40px;
+    padding: 5px;
+}
+
+.title-style{
+    color: rgb(92, 89, 128);
+    font-weight: bolder;
+}
+
+.subtitle-style{
+    color: rgb(92, 89, 128);
+    font-weight: bolder;
+}
+
+.h6-color{
+    color: rgb(92, 89, 128);
+}
+
+/*HISTORIAL*/
+.dato-style{
+    color: rgb(92, 89, 128);
+}

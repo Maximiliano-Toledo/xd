@@ -1,0 +1,135 @@
+:root {
+  margin: 0;
+  padding: 0;
+  font-family: "Work Sans", sans-serif;
+  --color-green: #64A70B; 
+  --color-green-2: #3e6907;
+  --color-green-3: #44700a; 
+  background-color: white;
+  color:black;
+}
+
+h1 {
+  font-size: 3rem;
+}
+
+
+.text-green{
+  color: var(--color-green);
+}
+
+
+/*Header*/
+.fondo-radial {
+  background: radial-gradient(ellipse 100% 75%, white, var(--color-green));
+  height: 250px;
+}
+
+/* Estilos para las tarjetas */
+.card {
+  transition: transform 0.2s, box-shadow 0.2s;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Estilo para los iconos en las tarjetas */
+.card-body .fa,
+.card-body .fas,
+.card-body .far {
+  color: var(--color-green);
+}
+
+/* Estilo para los enlaces de email */
+.card-body a {
+  color: #0275d8;
+  text-decoration: none;
+}
+
+.card-body a:hover {
+  text-decoration: underline;
+}
+
+/* Estilo para el botón de turno */
+.btn-turno {
+  background-color: var(--color-green);
+  color: white;
+  border: none;
+  border-radius: 15px;
+  padding: 2px 15px;
+  font-size: 0.9rem;
+}
+
+.btn-turno:hover {
+  background-color: #7cb342;
+}
+
+/* Estilo para el botón de volver */
+.btn-volver {
+  background-color: var(--color-green);
+  color: white;
+  border: none;
+  border-radius: 15px;
+  padding: 5px 20px;
+  font-size: 1rem;
+}
+
+.btn-volver:hover {
+  background-color: #7cb342;
+}
+
+/* Estilos para el efecto flip */
+.flip-container {
+  perspective: 1000px;
+  width: 100%;
+}
+
+.flip-container.flipped .flipper {
+  transform: rotateY(180deg);
+}
+
+.flipper {
+  transition: 0.8s;
+  transform-style: preserve-3d;
+  position: relative;
+  width: 100%;
+}
+
+.front,
+.back {
+  backface-visibility: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+.front {
+  z-index: 2;
+  transform: rotateY(0deg);
+}
+
+.back {
+  transform: rotateY(180deg);
+}
+
+/* Ajustes para que el contenido sea visible después de la animación */
+.flip-container.flipped .front {
+  display: none;
+}
+
+.flip-container:not(.flipped) .back {
+  display: none;
+}
+
+/* Ajustes para que el contenedor tenga la altura adecuada */
+.flip-container,
+.flipper,
+.front,
+.back {
+  min-height: 400px;
+}

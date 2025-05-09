@@ -1,0 +1,77 @@
+/*Dashboard planes*/
+
+.bg-color-icon{
+    background-color: rgb(190, 228, 125);
+}
+
+/*Color de la pelotita del icono*/
+.rounded-color{
+    background-color: var(--color-green);
+    border-radius: 60%;
+}
+
+.icon-size{
+    font-size: 3.5rem;
+}
+
+.p-color{
+   color: rgba(58, 102, 19);
+}
+
+/*Dashboard principal*/
+
+.backound-color{
+    background: #3a6613;
+    background: linear-gradient(2deg,rgba(58, 102, 19, 1) 0%, rgba(122, 179, 23, 1) 62%, rgba(90, 156, 18, 1) 100%);
+}
+
+
+.link-card {
+    padding: 0.2rem 2rem;
+    color: var(--color-green-2);
+    background-color: rgba(255, 255, 255, 0.679);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 2rem; /* opcional si querés ese estilo pill */
+    text-align: center;
+    font-size: medium;
+}
+
+/*Estilo para el link de dashboard plan*/
+.link-card-2 {
+    padding: 0.2rem 2rem;
+    color: white;
+    background-color: var(--color-green-2);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 2rem; /* opcional si querés ese estilo pill */
+    text-align: center;
+    font-size: medium;
+}
+
+.link-card-2:hover{
+    background-color: grey;
+    color: black;
+    
+}
+
+.link-card:hover{
+    background-color: var(--color-green-2);
+    color: aliceblue;
+    
+}
+
+
+.div-background{
+    background: #7AB317;
+    background: linear-gradient(2deg,rgba(122, 179, 23, 1) 45%, rgba(58, 102, 19, 1) 96%);
+}
+
+
+/*
+#8CC740
+*/

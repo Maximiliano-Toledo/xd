@@ -1,0 +1,131 @@
+/* Sidebar */
+.sidebar {
+  background: linear-gradient(to bottom, #7ab317, #4a8c0f);
+  min-height: 100vh;
+  width: 64px !important;
+  max-width: 64px !important;
+  min-width: 64px !important;
+  border-right: none; /* Eliminar el borde derecho que quedaba raro */
+  border-radius: 0;
+}
+
+.ant-menu {
+  border-right: none !important;
+  background: transparent !important;
+}
+
+.menu-bar {
+  background-color: transparent;
+  height: 90vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  padding-top: 20px;
+  padding-bottom: 20px; /* Reducido para evitar espacio extra al final */
+}
+
+.menu-bar .ant-menu-item {
+  margin: 10px 0 !important; /* Reducido el margen para acercar los iconos */
+  padding: 0 !important;
+  display: flex;
+  justify-content: center;
+  width: 40px !important;
+  height: 40px !important;
+  line-height: 40px !important;
+  border-radius: 0 !important;
+}
+
+.icon-menu {
+  color: white !important;
+  font-size: 25px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Ocultar el texto de los items del menú */
+.ant-menu-title-content {
+  display: none !important;
+}
+
+/* Ajustar el ancho del Sider */
+.ant-layout-sider-children {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.logo {
+  margin: 16px 0 16px; /* Reducido el margen inferior */
+  display: flex;
+  justify-content: center;
+}
+
+.logo-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 0;
+  color: white;
+  font-weight: bold;
+}
+
+/* Eliminar el borde de selección */
+.ant-menu-item::after {
+  display: none !important;
+}
+
+/* Estilo para el item activo */
+.ant-menu-item-selected {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Eliminar separación especial para el quinto elemento */
+.ant-menu-item:nth-child(5) {
+  margin-top: 5px !important; /* Mismo margen que los demás */
+}
+
+/* Ajustar posicionamiento de los elementos al final */
+.ant-menu-item:nth-last-child(1),
+.ant-menu-item:nth-last-child(2) {
+  position: static; /* Cambiar de absolute a static */
+  bottom: auto; /* Eliminar posicionamiento absoluto */
+  margin: 5px 0 !important; /* Mismo margen que los demás */
+}
+
+/* Añadir margen superior para separar visualmente los últimos dos elementos */
+.ant-menu-item:nth-last-child(2) {
+  margin-top: 20px !important;
+}
+
+.toggle {
+  display: none !important;
+}
+
+.main-content {
+  padding: 24px;
+  background: white;
+  min-height: calc(100vh - 32px);
+}
+
+/* Estilos para los submenús */
+.submenu-dropdown {
+  background-color: #5a9c12 !important;
+}
+
+.submenu-dropdown .ant-dropdown-menu {
+  background-color: #5a9c12 !important;
+  border-radius: 0;
+}
+
+.submenu-dropdown .ant-dropdown-menu-item {
+  color: white !important;
+}
+
+.submenu-dropdown .ant-dropdown-menu-item:hover {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+}

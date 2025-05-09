@@ -1,0 +1,32 @@
+.dark-theme {
+    background-color: #18230F;
+    color: white;  
+  }
+  
+  .light-theme {
+    background-color: white;
+    color: black;
+  }
+  
+  .dark-theme .main-content {
+    background-color: #18230F;
+    color: white;  
+  }
+  
+  .light-theme .main-content {
+    background-color: white;
+    color: black;  
+  }
+
+  .green-button {
+    background-color: var(--color-green-1)!important;
+    border-color: #64A70B !important;
+    color: #fff !important;
+  }
+  
+  .green-button:hover {
+    background-color: var(--color-green-2) !important;
+    border-color: #578f0a !important;
+  }
+  
+  

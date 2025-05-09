@@ -1,0 +1,92 @@
+### auth_api.http - Ejemplos para probar las rutas de autenticación
+
+### 1. Login - Iniciar sesión como administrador
+POST http://localhost:3000/api/auth/login HTTP/1.1
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin123"
+}
+
+### 2. Validar sesión - Verifica que el token de acceso sea válido
+POST http://localhost:3000/api/auth/validate-session HTTP/1.1
+Content-Type: application/json
+# No necesita cuerpo, usa la cookie accessToken
+
+### 3. Verificar rol - Verifica si el usuario tiene un rol específico
+POST http://localhost:3000/api/auth/verify-role HTTP/1.1
+Content-Type: application/json
+
+{
+  "roles": ["admin"]
+}
+
+### 4. Registrar nuevo usuario (requiere ser admin)
+POST http://localhost:3000/api/auth/register HTTP/1.1
+Content-Type: application/json
+
+{
+  "username": "nuevo_usuario",
+  "email": "nuevo@ejemplo.com",
+  "password": "contraseña123"
+}
+
+### 5. Crear token de recuperación
+POST http://localhost:3000/api/auth/create-token HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "admin@example.com"
+}
+
+### 6. Refrescar token - Obtener un nuevo access token usando el refresh token
+POST http://localhost:3000/api/auth/refresh-token HTTP/1.1
+Content-Type: application/json
+
+### 7. Cerrar sesión - Elimina las cookies de tokens
+POST http://localhost:3000/api/auth/logout HTTP/1.1
+Content-Type: application/json
+
+### 8. Intentar acceder sin autenticación (debería fallar)
+POST http://localhost:3000/api/auth/validate-session HTTP/1.1
+Content-Type: application/json
+# Sin cookie accessToken
+
+### 9. Intentar registro sin permisos de admin (debería fallar)
+# Primero cerrar sesión y luego iniciar con un usuario no admin
+POST http://localhost:3000/api/auth/register HTTP/1.1
+Content-Type: application/json
+
+{
+  "username": "intento_no_autorizado",
+  "email": "no_autorizado@ejemplo.com",
+  "password": "contraseña123"
+}
+
+### 10. Intentar múltiples logins rápidos para probar el rate limiting
+# Ejecutar esta solicitud varias veces en sucesión rápida
+POST http://localhost:3000/api/auth/login HTTP/1.1
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "contraseña_incorrecta"
+}
+
+### 11. Login con credenciales incorrectas (debería fallar)
+POST http://localhost:3000/api/auth/login HTTP/1.1
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "contraseña_incorrecta"
+}
+
+### 12. Verificar rol incorrecto (debería fallar)
+POST http://localhost:3000/api/auth/verify-role HTTP/1.1
+Content-Type: application/json
+
+{
+  "roles": ["super_admin"]
+}

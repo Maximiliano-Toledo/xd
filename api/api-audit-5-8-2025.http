@@ -1,0 +1,295 @@
+### Variables globales
+@baseUrl = http://localhost:3000/api
+@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6ImFkbWluIiwidXNlcm5hbWUiOiJhZG1pbiIsImlhdCI6MTY1MTIzNDU2NywiZXhwIjoxNjUxMjM4MTY3fQ.example-token
+@contentType = application/json
+
+### ============================================================
+### AUTENTICACIÓN
+### ============================================================
+
+### Login como administrador
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "username": "admin",
+  "password": "admin123"
+}
+
+### Extraer token de la respuesta (para uso en otras peticiones)
+@accessToken = {{login.response.headers.set-cookie}}
+
+### Verificar sesión actual
+GET {{baseUrl}}/auth/validate-session
+Cookie: {{accessToken}}
+
+### Verificar rol
+POST {{baseUrl}}/auth/verify-role
+Content-Type: {{contentType}}
+Cookie: {{accessToken}}
+
+{
+  "roles": ["admin"]
+}
+
+### Refrescar token
+POST {{baseUrl}}/auth/refresh-token
+Cookie: {{accessToken}}
+
+### Registrar nuevo usuario (solo admin)
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+Cookie: {{accessToken}}
+
+{
+  "username": "testuser",
+  "email": "testuser@example.com",
+  "password": "password123"
+}
+
+### Cerrar sesión
+POST {{baseUrl}}/auth/logout
+Cookie: {{accessToken}}
+
+### ============================================================
+### PLANES
+### ============================================================
+
+### Obtener todos los planes
+GET {{baseUrl}}/cartilla/planes
+
+### Obtener provincias por plan
+GET {{baseUrl}}/cartilla/provincias/plan/1
+
+### Obtener localidades por plan y provincia
+GET {{baseUrl}}/cartilla/localidades/plan/1/provincia/1
+
+### Obtener categorías por plan y localidad
+GET {{baseUrl}}/cartilla/categorias/plan/1/localidad/1
+
+### Obtener especialidades por varios criterios
+GET {{baseUrl}}/cartilla/especialidades/localidad/1/provincia/1/categoria/1/plan/1
+
+### Obtener especialidades por nombre de prestador
+GET {{baseUrl}}/cartilla/especialidadesPrestador/plan/1/provincia/1/localidad/1/categoria/1/nombre/Dr.%20Martinez
+
+### ============================================================
+### PRESTADORES CON PAGINACIÓN
+### ============================================================
+
+### Obtener prestadores (página 1, 10 por página)
+GET {{baseUrl}}/cartilla/prestadores/especialidad/1/localidad/1/provincia/1/categoria/1/plan/1?page=1&limit=10
+
+### Obtener prestadores (página 2, 5 por página)
+GET {{baseUrl}}/cartilla/prestadores/especialidad/1/localidad/1/provincia/1/categoria/1/plan/1?page=2&limit=5
+
+### Obtener nombres de prestadores
+GET {{baseUrl}}/cartilla/nombrePrestadores/plan/1/provincia/1/localidad/1/categoria/1
+
+### ============================================================
+### OPERACIONES CRUD DE PRESTADORES (REQUIEREN AUTENTICACIÓN)
+### ============================================================
+
+### Crear nuevo prestador
+POST {{baseUrl}}/cartilla/crear-prestador
+Content-Type: {{contentType}}
+Cookie: {{accessToken}}
+
+{
+  "nombre": "Dr. Test Prestador",
+  "direccion": "Calle Test 123",
+  "telefonos": "123-456-7890",
+  "email": "test@prestador.com",
+  "informacion_adicional": "Información de prueba",
+  "id_localidad": 1,
+  "categorias": [1],
+  "especialidades": [1, 2],
+  "planes": [1]
+}
+
+### Actualizar prestador
+POST {{baseUrl}}/cartilla/actualizar-prestador/1
+Content-Type: {{contentType}}
+Cookie: {{accessToken}}
+
+{
+  "nombre": "Dr. Test Actualizado",
+  "telefonos": "999-888-7777",
+  "categorias": [1, 2],
+  "especialidades": [1, 3],
+  "planes": [1, 2]
+}
+
+### Actualizar estado de prestador por nombre
+POST {{baseUrl}}/cartilla/actualizar-estado-prestador-por-nombre
+Content-Type: {{contentType}}
+Cookie: {{accessToken}}
+
+{
+  "nombre": "Dr. Test Actualizado",
+  "estado": "Inactivo"
+}
+
+### Dar de baja prestador
+POST {{baseUrl}}/cartilla/baja-prestador/1
+Cookie: {{accessToken}}
+
+### Descargar cartilla (CSV)
+GET {{baseUrl}}/cartilla/descargar-cartilla
+Cookie: {{accessToken}}
+
+### ============================================================
+### ABM OPERACIONES (REQUIEREN AUTENTICACIÓN ADMIN)
+### ============================================================
+
+### Obtener todos los planes (ABM)
+GET {{baseUrl}}/abm/planes
+Cookie: {{accessToken}}
+
+### Obtener plan por ID
+GET {{baseUrl}}/abm/planes/1
+Cookie: {{accessToken}}
+
+### Crear nuevo plan
+POST {{baseUrl}}/abm/planes
+Content-Type: {{contentType}}
+Cookie: {{accessToken}}
+
+{
+  "nombre": "Plan Test",
+  "estado": "Activo"
+}
+
+### Actualizar plan
+PUT {{baseUrl}}/abm/planes/1
+Content-Type: {{contentType}}
+Cookie: {{accessToken}}
+
+{
+  "nombre": "Plan Test Actualizado"
+}
+
+### Cambiar estado de plan
+PATCH {{baseUrl}}/abm/planes/1/toggle-status
+Cookie: {{accessToken}}
+
+### Eliminar plan
+DELETE {{baseUrl}}/abm/planes/2
+Cookie: {{accessToken}}
+
+### Obtener todas las categorías
+GET {{baseUrl}}/abm/categorias
+Cookie: {{accessToken}}
+
+### Crear nueva categoría
+POST {{baseUrl}}/abm/categorias
+Content-Type: {{contentType}}
+Cookie: {{accessToken}}
+
+{
+  "nombre": "Categoría Test",
+  "estado": "Activo"
+}
+
+### Obtener todas las especialidades
+GET {{baseUrl}}/abm/especialidades
+Cookie: {{accessToken}}
+
+### Crear nueva especialidad
+POST {{baseUrl}}/abm/especialidades
+Content-Type: {{contentType}}
+Cookie: {{accessToken}}
+
+{
+  "nombre": "Especialidad Test",
+  "estado": "Activo"
+}
+
+### Obtener todas las provincias
+GET {{baseUrl}}/abm/provincias
+Cookie: {{accessToken}}
+
+### Crear nueva provincia
+POST {{baseUrl}}/abm/provincias
+Content-Type: {{contentType}}
+Cookie: {{accessToken}}
+
+{
+  "nombre": "Provincia Test",
+  "estado": "Activo"
+}
+
+### Obtener localidades por provincia
+GET {{baseUrl}}/abm/localidades/provincia/1
+Cookie: {{accessToken}}
+
+### Crear nueva localidad
+POST {{baseUrl}}/abm/localidades
+Content-Type: {{contentType}}
+Cookie: {{accessToken}}
+
+{
+  "nombre": "Localidad Test",
+  "id_provincia": 1,
+  "estado": "Activo"
+}
+
+### ============================================================
+### AUDITORÍA (REQUIEREN AUTENTICACIÓN ADMIN)
+### ============================================================
+
+### Obtener todos los logs de auditoría
+GET {{baseUrl}}/audit/logs
+Cookie: {{accessToken}}
+
+### Obtener logs por entidad
+GET {{baseUrl}}/audit/logs/entity/planes
+Cookie: {{accessToken}}
+
+### Obtener logs por acción
+GET {{baseUrl}}/audit/logs/action/create
+Cookie: {{accessToken}}
+
+### Obtener logs por usuario
+GET {{baseUrl}}/audit/logs/user/1
+Cookie: {{accessToken}}
+
+### Obtener logs por entidad y ID
+GET {{baseUrl}}/audit/logs/entity/planes/id/1
+Cookie: {{accessToken}}
+
+### Obtener logs por rango de fechas
+GET {{baseUrl}}/audit/logs/date-range?startDate=2023-01-01&endDate=2023-12-31
+Cookie: {{accessToken}}
+
+### Obtener resumen de auditoría
+GET {{baseUrl}}/audit/summary
+Cookie: {{accessToken}}
+
+### ============================================================
+### PRUEBAS DE RATE LIMITING
+### ============================================================
+
+### Prueba de rate limiting (ejecutar múltiples veces)
+GET {{baseUrl}}/cartilla/planes
+
+### Prueba de rate limiting para login (ejecutar múltiples veces)
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "username": "admin",
+  "password": "admin123"
+}
+
+### ============================================================
+### RUTAS DE PRUEBA
+### ============================================================
+
+### Ruta pública de prueba
+GET {{baseUrl}}/test/public
+
+### Ruta protegida de prueba
+GET {{baseUrl}}/test/protected
+Cookie: {{accessToken}}

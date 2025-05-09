@@ -1,0 +1,38 @@
+GET http://localhost:3000/api/cartilla/categorias/plan/1 HTTP/1.1;
+###
+GET http://localhost:3000/api/cartilla/provincias/categoria/3/plan/1 HTTP/1.1;
+### /localidades/provincia/:idProvincia/categoria/:idCategoria/plan/:idPlan
+GET http://localhost:3000/api/cartilla/localidades/provincia/1/categoria/3/plan/1 HTTP/1.1;
+###
+GET http://localhost:3000/api/cartilla/especialidades/localidad/1/provincia/1/categoria/3/plan/1
+###
+GET http://localhost:3000/api/cartilla/prestadores/especialidad/3/localidad/1/provincia/1/categoria/1/plan/2
+###
+
+GET http://localhost:3000/api/cartilla/planes HTTP/1.1
+###
+GET http://localhost:3000/api/cartilla/categorias/plan/1 HTTP/1.1;
+###
+GET http://localhost:3000/api/cartilla/provincias/categoria/2/plan/3 HTTP/1.1;
+### /localidades/provincia/:idProvincia/categoria/:idCategoria/plan/:idPlan
+GET http://localhost:3000/api/cartilla/localidades/provincia/2/categoria/2/plan/1 HTTP/1.1;
+###
+GET http://localhost:3000/api/cartilla/especialidades/localidad/2/provincia/2/categoria/2/plan/1
+###
+GET http://localhost:3000/api/cartilla/prestadores/especialidad/3/localidad/2/provincia/2/categoria/2/plan/1 HTTP/1.1
+
+
+###
+GET http://localhost:3000/api/cartilla/categorias/plan/1 HTTP/1.1;
+###
+GET http://localhost:3000/api/cartilla/provincias/categoria/2/plan/1 HTTP/1.1;
+### /localidades/provincia/:idProvincia/categoria/:idCategoria/plan/:idPlan
+GET http://localhost:3000/api/cartilla/localidades/provincia/4/categoria/2/plan/1 HTTP/1.1;
+###
+GET http://localhost:3000/api/cartilla/especialidades/localidad/486/provincia/4/categoria/2/plan/1
+###
+GET http://localhost:3000/api/cartilla/prestadores/especialidad/18/localidad/486/provincia/4/categoria/2/plan/1 HTTP/1.1
+
+
+
+
