@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AdminDashboardPage from "./containers/pages/AdminDashboardPage";
 import './styles/index.css'
+import './styles/cartilla.css'
 import ProtectedRoute from './components/ProtectedRoute';
 import RoleBasedRoute from './components/RoleBasedRoute';
 import { FormCartillaPage } from './containers/pages/FormCartillaPage';
@@ -10,39 +11,39 @@ import StaffLayout from "./layouts/StaffLayout";
 
 
 function App() {
-return (
-  <BrowserRouter>
-    <Routes>
-    
-    {/* Rutas publicas */}
-    <Route path="/" element={<FormCartillaPage />} />
-    <Route path="/login" element={<LoginPage />} />
+  return (
+    <BrowserRouter>
+      <Routes>
+
+        {/* Rutas publicas */}
+        <Route path="/" element={<FormCartillaPage />} />
+        <Route path="/login" element={<LoginPage />} />
 
 
-    {/* Rutas privadas */}
-    <Route element={<ProtectedRoute />}>
+        {/* Rutas privadas */}
+        <Route element={<ProtectedRoute />}>
 
-      <Route element={<RoleBasedRoute allowedRoles={['admin']} />}>
-        {/* Rutas con Layout (Sidebar) */}
-       
-        
-      </Route>
+          <Route element={<RoleBasedRoute allowedRoles={['admin']} />}>
+            {/* Rutas con Layout (Sidebar) */}
 
-      <Route path="/user/dashboard" element={<div>User</div>} />
 
-      <Route path="/logout" element={<LogoutPage />} />
-    </Route>
+          </Route>
 
-    <Route path="*" element={<StaffLayout/>} />
+          <Route path="/user/dashboard" element={<div>User</div>} />
 
-     
-    
+          <Route path="/logout" element={<LogoutPage />} />
+        </Route>
 
-    
-    {/* Ruta para páginas no encontradas */}
-    <Route path="*" element={<div>404 Not Found</div>} />
-    </Routes>
-  </BrowserRouter>
+        <Route path="*" element={<StaffLayout />} />
+
+
+
+
+
+        {/* Ruta para páginas no encontradas */}
+        <Route path="*" element={<div>404 Not Found</div>} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 

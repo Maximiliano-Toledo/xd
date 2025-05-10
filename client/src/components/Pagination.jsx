@@ -1,6 +1,5 @@
-// components/Pagination.jsx
 import React from 'react';
-import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 
 const Pagination = ({
     currentPage,
@@ -49,66 +48,68 @@ const Pagination = ({
         return pages;
     };
 
-    return (
-        <div className="pagination-container mt-4">
-            <div className="d-flex justify-content-between align-items-center">
-                <div className="pagination-info">
-                    Mostrando {Math.min((currentPage - 1) * itemsPerPage + 1, totalItems)} a {Math.min(currentPage * itemsPerPage, totalItems)} de {totalItems} resultados
-                </div>
+    // Si no hay páginas, no mostrar la paginación
+    if (totalPages <= 0) return null;
 
-                <div>
+    return (
+        <div className="pagination-container">
+            <div className="pagination-info">
+                <div className="pagination-text">
+                    Mostrando <span className="pagination-highlight">{Math.min((currentPage - 1) * itemsPerPage + 1, totalItems)}-{Math.min(currentPage * itemsPerPage, totalItems)}</span> de <span className="pagination-highlight">{totalItems}</span> prestadores
+                </div>
+            </div>
+
+            <div className="pagination-controls">
+                <div className="items-per-page">
+                    <label htmlFor="itemsPerPage">Mostrar:</label>
                     <select
-                        className="form-select form-select-sm me-3 d-inline-block"
-                        style={{ width: "80px" }}
+                        id="itemsPerPage"
+                        className="items-per-page-select"
                         value={itemsPerPage}
-                        onChange={(e) => onItemsPerPageChange(Number(e.target.value))}
+                        onChange={(e) => {
+                            const newSize = Number(e.target.value);
+                            console.log("Cambiando tamaño de página a:", newSize);
+                            onItemsPerPageChange(newSize);
+                        }}
                     >
                         <option value="5">5</option>
                         <option value="10">10</option>
                         <option value="20">20</option>
                         <option value="50">50</option>
                     </select>
+                </div>
 
-                    <nav aria-label="Navegación de prestadores">
-                        <ul className="pagination pagination-sm mb-0">
-                            <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                                <button
-                                    className="page-link"
-                                    onClick={() => onPageChange(currentPage - 1)}
-                                    disabled={currentPage === 1}
-                                    aria-label="Anterior"
-                                >
-                                    <FaChevronLeft size={12} />
-                                </button>
-                            </li>
+                <div className="pagination-buttons">
+                    <button
+                        className={`pagination-button prev ${currentPage === 1 ? 'disabled' : ''}`}
+                        onClick={() => onPageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        aria-label="Página anterior"
+                    >
+                        <FiChevronLeft />
+                    </button>
 
-                            {getPageNumbers().map((page, index) => (
-                                <li
-                                    key={index}
-                                    className={`page-item ${page === currentPage ? 'active' : ''} ${page === '...' ? 'disabled' : ''}`}
-                                >
-                                    <button
-                                        className="page-link"
-                                        onClick={() => page !== '...' ? onPageChange(page) : null}
-                                        disabled={page === '...'}
-                                    >
-                                        {page}
-                                    </button>
-                                </li>
-                            ))}
+                    <div className="pagination-pages">
+                        {getPageNumbers().map((page, index) => (
+                            <button
+                                key={index}
+                                className={`pagination-page ${page === currentPage ? 'active' : ''} ${page === '...' ? 'ellipsis' : ''}`}
+                                onClick={() => page !== '...' ? onPageChange(page) : null}
+                                disabled={page === '...'}
+                            >
+                                {page}
+                            </button>
+                        ))}
+                    </div>
 
-                            <li className={`page-item ${currentPage === totalPages || totalPages === 0 ? 'disabled' : ''}`}>
-                                <button
-                                    className="page-link"
-                                    onClick={() => onPageChange(currentPage + 1)}
-                                    disabled={currentPage === totalPages || totalPages === 0}
-                                    aria-label="Siguiente"
-                                >
-                                    <FaChevronRight size={12} />
-                                </button>
-                            </li>
-                        </ul>
-                    </nav>
+                    <button
+                        className={`pagination-button next ${currentPage === totalPages ? 'disabled' : ''}`}
+                        onClick={() => onPageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                        aria-label="Página siguiente"
+                    >
+                        <FiChevronRight />
+                    </button>
                 </div>
             </div>
         </div>

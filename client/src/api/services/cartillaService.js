@@ -19,16 +19,22 @@ export const CartillaService = {
 
   getPrestadores: async (idPlan, idCategoria, idProvincia, idLocalidad, idEspecialidad, page = 1, limit = 10) => {
     try {
-      const response = await fetch(
-        `${API_URL}/cartilla/prestadores/especialidad/${idEspecialidad}/localidad/${idLocalidad}/provincia/${idProvincia}/categoria/${idCategoria}/plan/${idPlan}?page=${page}&limit=${limit}`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include'
-        }
-      );
+      // Crear URL con parámetros de paginación explícitos
+      const url = new URL(`${API_URL}/cartilla/prestadores/especialidad/${idEspecialidad}/localidad/${idLocalidad}/provincia/${idProvincia}/categoria/${idCategoria}/plan/${idPlan}`);
+
+      // Añadir parámetros de paginación como query params
+      url.searchParams.append('page', page);
+      url.searchParams.append('limit', limit);
+
+      console.log("URL de solicitud:", url.toString());
+
+      const response = await fetch(url.toString(), {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include'
+      });
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -37,9 +43,8 @@ export const CartillaService = {
       }
 
       const data = await response.json();
-      console.log("Datos recibidos de la API:", data); // Para depuración
+      console.log("Datos recibidos de la API:", data);
 
-      // Retornar toda la respuesta y dejar que el hook la procese
       return data;
     } catch (error) {
       console.error('Error in CartillaService.getPrestadores:', error);

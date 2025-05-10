@@ -149,9 +149,8 @@ export const useCartillaApi = () => {
     formData.plan,
   ]);
 
-  // Función para cargar prestadores con paginación
-  // En useCartillaApi.js, dentro de la función fetchPrestadores
-  const fetchPrestadores = useCallback(async (page = 1) => {
+  // Función corregida para cargar prestadores con paginación
+  const fetchPrestadores = useCallback(async (page = 1, pageSize = pagination.itemsPerPage) => {
     if (!formData.plan || !formData.provincia || !formData.localidad ||
       !formData.categoria || !formData.especialidad) {
       return;
@@ -168,59 +167,33 @@ export const useCartillaApi = () => {
         formData.localidad,
         formData.especialidad,
         page,
-        pagination.itemsPerPage
+        pageSize
       );
 
-      console.log("Respuesta completa de la API:", response); // Para depuración
+      console.log("Respuesta completa de la API:", response);
 
-      // Manejo más robusto de la respuesta
-      if (!response) {
-        throw new Error("La respuesta de la API está vacía");
+      // Verificar si la respuesta tiene la estructura esperada
+      if (!response || !response.data) {
+        throw new Error("La respuesta de la API no tiene la estructura esperada");
       }
 
-      // Verificar la estructura de la respuesta y adaptarse a ella
-      let items = [];
-      let paginationInfo = {
+      // Extraer los datos según la estructura real
+      const items = response.data.items || [];
+      const paginationInfo = response.data.pagination || {
         currentPage: page,
         totalPages: 1,
-        totalItems: 0,
-        itemsPerPage: pagination.itemsPerPage,
+        totalItems: items.length,
+        itemsPerPage: pageSize,
         hasNextPage: false,
         hasPrevPage: page > 1
       };
 
-      // Intentar extraer los datos según diferentes posibles estructuras
-      if (Array.isArray(response)) {
-        // Si la respuesta es directamente un array de prestadores
-        items = response;
-        paginationInfo.totalItems = items.length;
-      }
-      else if (response.items && Array.isArray(response.items)) {
-        // Si la respuesta tiene un formato {items: [...], pagination: {...}}
-        items = response.items;
-        paginationInfo = {
-          ...paginationInfo,
-          ...response.pagination
-        };
-      }
-      else if (response.data && Array.isArray(response.data)) {
-        // Si la respuesta tiene un formato {data: [...]}
-        items = response.data;
-        paginationInfo.totalItems = items.length;
-      }
-      else {
-        // Último intento: buscar cualquier array en la respuesta
-        const possibleArrays = Object.values(response).filter(val => Array.isArray(val));
-        if (possibleArrays.length > 0) {
-          items = possibleArrays[0];
-          paginationInfo.totalItems = items.length;
-        }
-      }
-
       setPrestadores(items);
       setPagination(prevPagination => ({
         ...prevPagination,
-        ...paginationInfo
+        ...paginationInfo,
+        itemsPerPage: pageSize, // Asegurarnos de que se actualice el tamaño de página
+        currentPage: page
       }));
 
       setShowResults(true);
@@ -231,7 +204,7 @@ export const useCartillaApi = () => {
         currentPage: 1,
         totalPages: 0,
         totalItems: 0,
-        itemsPerPage: 10,
+        itemsPerPage: pageSize,
         hasNextPage: false,
         hasPrevPage: false
       });
@@ -243,16 +216,20 @@ export const useCartillaApi = () => {
 
   // Manejador para cambiar de página
   const handlePageChange = (newPage) => {
-    fetchPrestadores(newPage);
+    fetchPrestadores(newPage, pagination.itemsPerPage);
   };
 
-  // Manejador para cambiar el tamaño de página
+  // Manejador corregido para cambiar el tamaño de página
   const handlePageSizeChange = (newSize) => {
+    // Actualizar la paginación y volver a la primera página
     setPagination(prev => ({
       ...prev,
-      itemsPerPage: newSize
+      itemsPerPage: newSize,
+      currentPage: 1 // Siempre volver a la primera página cuando se cambia el tamaño
     }));
-    fetchPrestadores(1); // Volver a la primera página con el nuevo tamaño
+
+    // Hacer una nueva solicitud con el nuevo tamaño de página
+    fetchPrestadores(1, newSize);
   };
 
   const handleSubmit = async (e) => {
@@ -265,12 +242,13 @@ export const useCartillaApi = () => {
       "categoria",
       "especialidad",
     ];
+
     if (requiredFields.some((field) => !formData[field])) {
       alert("Complete todos los campos obligatorios");
       return;
     }
 
-    fetchPrestadores(1); // Cargar la primera página de resultados
+    fetchPrestadores(1, pagination.itemsPerPage); // Cargar la primera página de resultados
   };
 
   return {
