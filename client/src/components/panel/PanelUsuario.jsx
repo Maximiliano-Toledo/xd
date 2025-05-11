@@ -5,102 +5,133 @@ import { Link, useNavigate } from "react-router";
 import { LuCircleUser } from "react-icons/lu";
 import '../../styles/panel-usuario.css'
 import { FaRegArrowAltCircleRight } from "react-icons/fa";
-import { MdOutlineKeyboardDoubleArrowRight } from "react-icons/md";
+import { MdOutlineKeyboardDoubleArrowRight, MdOutlineAccountCircle, MdOutlineHistory, MdOutlineLogout } from "react-icons/md";
+import { FiSettings } from "react-icons/fi";
+import { useEffect, useState } from "react";
+import useAuthStore from '../../stores/authStore';
 
 const PanelUsuario = () => {
-
     const navigate = useNavigate();
+    const { user } = useAuthStore();
+    const [userData, setUserData] = useState({ username: "Cargando..." });
+
+    useEffect(() => {
+        if (user) {
+            setUserData(user);
+        }
+    }, [user]);
+
     const handleVolver = () => {
         navigate(-1);
     };
 
+    const menuItems = [
+        {
+            title: "Editar contraseña",
+            icon: <FiSettings className="menu-icon" />,
+            description: "Actualiza tu contraseña para mantener tu cuenta segura",
+            path: "/cambiar-contraseña"
+        },
+        {
+            title: "Historial de actividad",
+            icon: <MdOutlineHistory className="menu-icon" />,
+            description: "Revisa tus acciones recientes en el sistema",
+            path: "/historial-actividad"
+        },
+        {
+            title: "Cerrar sesión",
+            icon: <MdOutlineLogout className="menu-icon" />,
+            description: "Finaliza tu sesión actual de manera segura",
+            path: "/logout"
+        }
+    ];
+
     return (
-        <div>
-           <HeaderStaff />
-            <h6 className=" w-25 fs-3 text-center pb-2 pt-2 rounded-top rounded-bottom fw-bold text-white p-container mt-0 mb-0 m-4 ">
-                Panel usuario
-            </h6>
-            <div className="d-flex justify-content-center align-items-start min-vh-25 mt-0">
-                <div className="w-100 d-flex flex-column border shadow-input p-3 rounded-3 shadow ps-5 ms-4 me-4 ">
-                <h1 className="fs-2 h1-titulo fw-bold">Desde aquí podés modificar tu Usuario y revisar las últimas acciones realizadas.</h1>
+        <div className="panel-usuario-container">
+            <HeaderStaff />
+
+            <div className="panel-header">
+                <h1 className="panel-title">Panel de Usuario</h1>
+                <p className="panel-subtitle">
+                    Administra tu cuenta y accede a las funciones de usuario
+                </p>
+            </div>
+
+            <div className="panel-content-container">
+                <div className="panel-profile-card">
+                    <div className="profile-header">
+                        <div className="profile-avatar">
+                            <LuCircleUser />
+                        </div>
+                        <div className="profile-info">
+                            <h2 className="profile-name">{userData.username}</h2>
+                            <span className="profile-role">{userData.role || "Usuario"}</span>
+                        </div>
+                    </div>
+
+                    <div className="profile-details">
+                        <div className="detail-item">
+                            <span className="detail-label">Email:</span>
+                            <span className="detail-value">{userData.email || "No disponible"}</span>
+                        </div>
+                        <div className="detail-item">
+                            <span className="detail-label">Última actividad:</span>
+                            <span className="detail-value">Hoy, 10:45 AM</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="panel-menu-container">
+                    <h3 className="section-title">Gestión de cuenta</h3>
+
+                    <div className="menu-grid">
+                        {menuItems.map((item, index) => (
+                            <Link to={item.path} className="menu-card" key={index}>
+                                <div className="menu-icon-container">
+                                    {item.icon}
+                                </div>
+                                <div className="menu-content">
+                                    <h4 className="menu-title">{item.title}</h4>
+                                    <p className="menu-description">{item.description}</p>
+                                </div>
+                                <div className="menu-arrow">
+                                    <FaRegArrowAltCircleRight />
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="panel-stats-container">
+                    <h3 className="section-title">Resumen de actividad</h3>
+
+                    <div className="stats-grid">
+                        <div className="stat-card">
+                            <div className="stat-number">12</div>
+                            <div className="stat-title">Ediciones este mes</div>
+                        </div>
+                        <div className="stat-card">
+                            <div className="stat-number">4</div>
+                            <div className="stat-title">Cargas realizadas</div>
+                        </div>
+                        <div className="stat-card">
+                            <div className="stat-number">2</div>
+                            <div className="stat-title">Acciones pendientes</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-           <div className="d-flex justify-content-center align-items-start min-vh-75">
-                <div className="w-100 d-flex flex-column border  shadow-input p-3 rounded-3 shadow m-4">  
-                       
-                    <div className="d-flex flex-column flex-md-row gap-5 justify-content-center m-4">
-                        <div className="border m-3 p-3 rounded-3 shadow" style={{ width: '25rem', height: '11rem' }} >
-                            <div className="card-body">
-                                <h6 className="subtitle-style fs-5 mb-3">Mi perfil</h6>
-                                    <div className="d-flex align-items-start mb-2">
-                                        <LuCircleUser className="me-2 user-style" />
-                                        <div className="ms-1">
-                                            <h5 className="title-style fs-4 mb-0 mt-1">Usuario:</h5>
-                                            <p className="mb-0 fs-5">Acá va el nombre de usuario</p>
-                                        </div>
-                                    </div>
-                            </div>
-                        </div>
+            <button
+                className='back-button'
+                type='button'
+                onClick={handleVolver}
+            >
+                <MdSubdirectoryArrowLeft />
+                <span>Volver</span>
+            </button>
 
-
-                        
-                        <div className="border m-4 p-3 rounded-3 shadow" style={{ width: '29rem' }}>
-                            <div className="card-body">
-                                <h5 className="title-style fs-3">Centro de control</h5>
-                                    
-                                    <div className="border rounded p-3 shadow m-2 d-flex align-items-center justify-content-between">
-                                        <div className="d-flex align-items-center">
-                                            <div className='rounded-color d-flex justify-content-center align-items-center me-4'>
-                                                <MdOutlineKeyboardDoubleArrowRight className="fs-4 text-white " />
-                                            </div>
-                                               <h6 className="h6-color fs-5 mb-0">Editar contraseña</h6>
-                                        </div>
-                                          <Link to="/cambiar-contraseña" className="ms-4 text-uppercase text-decoration-none text-white border fw-bold link-card-2 d-flex align-items-center">
-                                            Ir <FaRegArrowAltCircleRight className="ms-1" />
-                                         </Link>
-                                    </div>   
-
-
-                                    <div className="border rounded p-3 shadow m-2 d-flex align-items-center justify-content-between">
-                                        <div className="d-flex align-items-center">
-                                            <div className='rounded-color d-flex justify-content-center align-items-center me-4'>
-                                                <MdOutlineKeyboardDoubleArrowRight className="fs-4 text-white" />
-                                            </div>
-                                               <h6 className="h6-color fs-5 mb-0">Historial de actividad</h6>
-                                        </div>
-                                          <Link to="/historial-actividad" className="ms-4 text-uppercase text-decoration-none text-white border fw-bold link-card-2 d-flex align-items-center">
-                                            Ir <FaRegArrowAltCircleRight className="ms-1" />
-                                         </Link>
-                                    </div>
-
-                                    <div className="border rounded p-3 shadow m-2 d-flex align-items-center justify-content-between">
-                                        <div className="d-flex align-items-center">
-                                        <div className='rounded-color d-flex justify-content-center align-items-center me-4'>
-                                            <MdOutlineKeyboardDoubleArrowRight className="fs-4 text-white" />
-                                        </div>
-                                               <h6 className="h6-color fs-5 mb-0">Cerrar sesión</h6>
-                                        </div>
-                                          <Link to="/logout" className="ms-4 text-uppercase text-decoration-none text-white border fw-bold link-card-2 d-flex align-items-center">
-                                            Ir <FaRegArrowAltCircleRight className="ms-1" />
-                                         </Link>
-                                    </div>
-
-                             </div>
-
-                             
-                        </div>
-            </div>
-
-                </div>
-            </div>
-
-             <button className='btn btn-volver rounded-pill text-white text-center text-uppercase' 
-                     type='submit' onClick={handleVolver}>            
-                   <MdSubdirectoryArrowLeft className='text-white'/> Volver
-             </button>
-            <Footer/>
-        
+            <Footer />
         </div>
     );
 }
