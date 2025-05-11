@@ -44,6 +44,7 @@
     background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
     color: var(--color-white);
     padding: 25px 0;
+    border-radius: var(--border-radius-lg) 0 0 var(--border-radius-lg);
 }
 
 .sidebar-header {
@@ -279,7 +280,7 @@
     display: flex;
     flex-direction: column;
     gap: 15px;
-    max-height: 390px;
+    max-height: 420px;
     overflow-y: auto;
     padding-right: 10px;
 }
@@ -687,13 +688,24 @@
     top: calc(100% + 5px);
     left: 0;
     width: 100%;
-    max-height: 250px;
+    max-height: 150px;
     overflow-y: auto;
-    background-color: var(--color-white);
-    border-radius: var(--border-radius-sm);
-    box-shadow: var(--shadow-md);
-    z-index: 100;
-    border: 1px solid var(--color-gray);
+    background-color: white;
+    border-radius: 4px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    z-index: 9999;
+    /* Valor alto de z-index */
+    border: 1px solid #e0e0e0;
+}
+
+.search-form-card,
+.search-form-container,
+.search-form-selects,
+.search-select-group,
+.cartilla-content,
+.search-view {
+    overflow: visible !important;
+    position: relative;
 }
 
 .select-dropdown::-webkit-scrollbar {
@@ -870,7 +882,7 @@
     top: calc(100% + 5px);
     left: 0;
     width: 100%;
-    max-height: 250px;
+    max-height: 150px;
     overflow-y: auto;
     background-color: white;
     border-radius: 4px;
@@ -932,4 +944,242 @@
             /* Forzar un nuevo contexto de apilamiento */
         }
     }
+}
+
+
+
+
+/* Estilos para el nuevo formulario de búsqueda */
+.search-form-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px 15px;
+}
+
+.search-form-card {
+    background-color: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    padding: 30px;
+}
+
+.search-form-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.search-form-header h2 {
+    color: #446208;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.search-form-header p {
+    color: #666;
+    font-size: 1rem;
+}
+
+.search-form-selects {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.search-select-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.search-select-group {
+    position: relative;
+}
+
+.search-select {
+    width: 100%;
+}
+
+/* Estilos para la sección de categorías */
+.search-categories {
+    background-color: #f5f8f0;
+    border-radius: 15px;
+    padding: 20px;
+    margin: 10px 0;
+}
+
+.search-categories-label {
+    font-weight: 600;
+    color: #446208;
+    margin-bottom: 15px;
+    font-size: 0.95rem;
+}
+
+.search-categories-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.search-category-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    border-radius: 12px;
+    padding: 15px 5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border: 2px solid transparent;
+}
+
+.search-category-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.search-category-item.active {
+    border-color: #64A70B;
+    background-color: #f0f7e6;
+    box-shadow: 0 0 0 3px rgba(100, 167, 11, 0.1);
+}
+
+.search-category-icon {
+    color: #64A70B;
+    margin-bottom: 10px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.search-category-name {
+    font-size: 0.8rem;
+    color: #446208;
+    font-weight: 600;
+    line-height: 1.1;
+}
+
+/* Estilos para el botón de búsqueda */
+.search-button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.search-button {
+    background-color: #64A70B;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    padding: 14px 50px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 10px rgba(100, 167, 11, 0.3);
+}
+
+.search-button:hover:not(:disabled) {
+    background-color: #548e09;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(100, 167, 11, 0.4);
+}
+
+.search-button:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(100, 167, 11, 0.3);
+}
+
+.search-button:disabled {
+    background-color: #c3c3c3;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.search-button-icon {
+    margin-right: 8px;
+    font-size: 1.2rem;
+}
+
+/* Estilos para el selector de especialidad */
+.speciality-select {
+    position: relative;
+    z-index: 100;
+    /* Asegurar que esté por encima de otros elementos */
+}
+
+.cartilla-container,
+.results-container,
+main {
+    overflow: visible !important;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+    .search-select-row {
+        grid-template-columns: 1fr;
+    }
+
+    .search-categories-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .search-categories-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .search-form-card {
+        padding: 20px 15px;
+    }
+
+    .search-form-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .search-button {
+        width: 100%;
+        padding: 12px 20px;
+    }
+}
+
+/* Estilos para categorías deshabilitadas */
+.search-category-item.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: #f5f5f5;
+    position: relative;
+}
+
+.search-category-item.disabled .search-category-icon,
+.search-category-item.disabled .search-category-name {
+    opacity: 0.6;
+}
+
+.search-category-item.disabled:hover {
+    transform: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.category-unavailable-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.1);
+    color: #666;
+    font-size: 0.7rem;
+    padding: 3px;
+    text-align: center;
+    border-radius: 0 0 10px 10px;
 }

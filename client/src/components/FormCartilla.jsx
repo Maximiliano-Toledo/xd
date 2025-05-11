@@ -1,14 +1,19 @@
 import { useState, useEffect } from "react";
 import { useCartillaApi } from "../hooks/useCartillaApi";
 import CustomSelect from "./CustomSelect";
-import Pagination from "./Pagination"; // Cambiado a importación por defecto
+import Pagination from "./Pagination";
 
-// Iconos - Reemplazamos BsMedical con otros iconos disponibles
+// Iconos
 import { FiSearch, FiMapPin, FiPhone, FiMail, FiInfo } from "react-icons/fi";
 import { BsArrowLeft, BsHospital, BsGlobe } from "react-icons/bs";
-// Agregamos estos iconos de Font Awesome como alternativas para BsMedical
-import { FaStethoscope, FaHospital, FaMedkit } from "react-icons/fa";
+import { FaStethoscope } from "react-icons/fa";
 import { MdMedicalServices, MdHealthAndSafety } from "react-icons/md";
+
+// Iconos para categorías
+import { BsBuilding } from "react-icons/bs"; // Instituciones
+import { FaUserMd } from "react-icons/fa"; // Profesionales
+import { RiMedicineBottleLine } from "react-icons/ri"; // Farmacias
+import { IoGlassesOutline } from "react-icons/io5"; // Ópticas
 
 export const FormCartilla = () => {
   const {
@@ -26,18 +31,121 @@ export const FormCartilla = () => {
 
   // Estado para controlar la vista actual
   const [isResultsView, setIsResultsView] = useState(false);
+  // Estado para controlar la categoría seleccionada
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  // Estado para categorías disponibles
+  const [availableCategories, setAvailableCategories] = useState([]);
+  // Estado para verificar si se han seleccionado los criterios previos
+  const [criteriosSeleccionados, setCriteriosSeleccionados] = useState(false);
 
-  // Adaptar opciones para CustomSelect
-  const adaptarOpciones = (opciones, idKey, nombreKey) => {
-    return opciones.map((opcion) => ({
-      id: opcion[idKey],
-      nombre: opcion[nombreKey],
-    }));
+  // Definición de las categorías con sus IDs reales
+  const categories = [
+    {
+      id: "1",
+      name: "Instituciones",
+      icon: <BsBuilding size={30} />,
+      value: "1"
+    },
+    {
+      id: "2",
+      name: "Profesionales",
+      icon: <FaUserMd size={30} />,
+      value: "2"
+    },
+    {
+      id: "3",
+      name: "Farmacias",
+      icon: <RiMedicineBottleLine size={30} />,
+      value: "3"
+    },
+    {
+      id: "4",
+      name: "Ópticas",
+      icon: <IoGlassesOutline size={30} />,
+      value: "4"
+    }
+  ];
+
+  // Efecto para verificar si se han seleccionado todos los criterios previos
+  useEffect(() => {
+    setCriteriosSeleccionados(
+      formData.plan && formData.provincia && formData.localidad &&
+      !loading.planes && !loading.provincias && !loading.localidades
+    );
+  }, [formData.plan, formData.provincia, formData.localidad, loading.planes, loading.provincias, loading.localidades]);
+
+  // Efecto para actualizar el estado visual de categoría seleccionada cuando cambia formData.categoria
+  useEffect(() => {
+    if (!formData.categoria) {
+      setSelectedCategory(null);
+    } else {
+      const category = categories.find(cat => cat.value === formData.categoria);
+      setSelectedCategory(category ? category.id : null);
+    }
+  }, [formData.categoria]);
+
+  // Efecto para determinar categorías disponibles basadas en plan, provincia y localidad
+  useEffect(() => {
+    if (!formData.plan || !formData.provincia || !formData.localidad) {
+      // Si no se han seleccionado los criterios básicos, todas las categorías están disponibles pero deshabilitadas
+      setAvailableCategories([]);
+      return;
+    }
+
+    // Suponemos que las categorías disponibles vienen del backend en options.categorias
+    if (options.categorias && options.categorias.length > 0) {
+      // Extraer los IDs de las categorías disponibles
+      const availableCategoryIds = options.categorias.map(cat => cat.id_categoria.toString());
+      setAvailableCategories(availableCategoryIds);
+    } else {
+      setAvailableCategories([]);
+    }
+  }, [formData.plan, formData.provincia, formData.localidad, options.categorias]);
+
+  // Manejar clic en categoría
+  const handleCategoryClick = (category) => {
+    // No hacer nada si no se han seleccionado los criterios previos
+    if (!criteriosSeleccionados) {
+      return;
+    }
+
+    // Verificar si la categoría está disponible
+    if (!isCategoryAvailable(category.value)) {
+      return; // No hacer nada si la categoría no está disponible
+    }
+
+    // Si la categoría ya está seleccionada, deseleccionarla
+    const newSelectedCategory = category.id === selectedCategory ? null : category.id;
+    setSelectedCategory(newSelectedCategory);
+
+    // Actualizar formData con la categoría seleccionada o null si se deseleccionó
+    const event = {
+      target: {
+        name: "categoria",
+        value: newSelectedCategory ? category.value : ""
+      }
+    };
+    handleChange(event);
   };
 
-  // Manejador de formulario
-  const handleSubmit = async (e) => {
-    await apiHandleSubmit(e);
+  // Manejar envío del formulario
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const requiredFields = [
+      "plan",
+      "provincia",
+      "localidad",
+      "categoria",
+      "especialidad",
+    ];
+
+    if (requiredFields.some((field) => !formData[field])) {
+      alert("Complete todos los campos obligatorios");
+      return;
+    }
+
+    apiHandleSubmit(e);
     setIsResultsView(true);
   };
 
@@ -46,19 +154,27 @@ export const FormCartilla = () => {
     setIsResultsView(false);
   };
 
-  // Verificar si el formulario está completo
-  const isFormComplete = () => {
-    return (
-      formData.plan &&
-      formData.provincia &&
-      formData.localidad &&
-      formData.categoria &&
-      formData.especialidad
-    );
+  // Verificar si una categoría está disponible
+  const isCategoryAvailable = (categoryValue) => {
+    if (!criteriosSeleccionados) {
+      return false; // Deshabilitada si no se han seleccionado los criterios básicos
+    }
+    return availableCategories.includes(categoryValue);
   };
 
-  // Calcular el estado de cargando general
-  const isLoading = Object.values(loading).some((status) => status);
+  // Extendido manejador de cambio para monitorear cuando cambian provincia o localidad
+  const handleFormChange = (e) => {
+    const { name, value } = e.target;
+
+    // Si cambia provincia o localidad, asegurarse de resetear la selección visual de categoría
+    if (name === 'provincia' || name === 'localidad') {
+      setSelectedCategory(null);
+    }
+
+    // Pasar el evento al manejador original
+    // Pasar el evento al manejador original
+    handleChange(e);
+  };
 
   return (
     <div className="cartilla-container">
@@ -102,7 +218,7 @@ export const FormCartilla = () => {
       {/* Contenido principal - cambia según la vista */}
       <main className="cartilla-content">
         {!isResultsView ? (
-          /* Vista de búsqueda */
+          /* Vista de búsqueda mejorada */
           <div className="search-view">
             <div className="content-header">
               <h2 className="content-title">Buscar prestadores</h2>
@@ -111,102 +227,112 @@ export const FormCartilla = () => {
               </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="search-form">
-              <div className="form-card">
-                <div className="card-header">
-                  <FiSearch className="card-icon" />
-                  <h3 className="card-title">Ingresá tus criterios de búsqueda</h3>
+            <div className="search-form-container">
+              <div className="search-form-card">
+                <div className="search-form-header">
+                  <h2>Encontrá profesionales de la salud</h2>
+                  <p>Seleccioná los criterios para buscar prestadores en tu zona</p>
                 </div>
 
-                <div className="card-body">
-                  <div className="form-grid">
-                    <div className="form-group">
-                      <label>Plan:</label>
+                <form onSubmit={handleSubmit}>
+                  <div className="search-form-selects">
+                    <div className="search-select-group">
                       <CustomSelect
-                        options={adaptarOpciones(options.planes, "id_plan", "nombre")}
+                        options={options.planes.map(p => ({ id: p.id_plan, nombre: p.nombre }))}
                         value={formData.plan}
-                        onChange={handleChange}
+                        onChange={handleFormChange}
                         name="plan"
-                        placeholder="Seleccioná un plan"
+                        placeholder="Seleccioná tu plan"
                         disabled={loading.planes}
                         loading={loading.planes}
+                        className="search-select"
                       />
                     </div>
 
-                    <div className="form-group">
-                      <label>Provincia:</label>
-                      <CustomSelect
-                        options={adaptarOpciones(options.provincias, "id_provincia", "nombre")}
-                        value={formData.provincia}
-                        onChange={handleChange}
-                        name="provincia"
-                        placeholder="Seleccioná una provincia"
-                        disabled={!formData.plan || loading.provincias}
-                        loading={loading.provincias}
-                      />
+                    <div className="search-select-row">
+                      <div className="search-select-group">
+                        <CustomSelect
+                          options={options.provincias.map(p => ({ id: p.id_provincia, nombre: p.nombre }))}
+                          value={formData.provincia}
+                          onChange={handleFormChange}
+                          name="provincia"
+                          placeholder="Seleccioná la provincia"
+                          disabled={!formData.plan || loading.provincias}
+                          loading={loading.provincias}
+                          className="search-select"
+                        />
+                      </div>
+
+                      <div className="search-select-group">
+                        <CustomSelect
+                          options={options.localidades.map(l => ({ id: l.id_localidad, nombre: l.nombre }))}
+                          value={formData.localidad}
+                          onChange={handleFormChange}
+                          name="localidad"
+                          placeholder="Seleccioná la localidad"
+                          disabled={!formData.provincia || loading.localidades}
+                          loading={loading.localidades}
+                          className="search-select"
+                        />
+                      </div>
                     </div>
 
-                    <div className="form-group">
-                      <label>Localidad:</label>
-                      <CustomSelect
-                        options={adaptarOpciones(options.localidades, "id_localidad", "nombre")}
-                        value={formData.localidad}
-                        onChange={handleChange}
-                        name="localidad"
-                        placeholder="Seleccioná una localidad"
-                        disabled={!formData.provincia || loading.localidades}
-                        loading={loading.localidades}
-                      />
+                    <div className="search-categories">
+                      <div className="search-categories-label">Seleccioná una categoría</div>
+                      <div className="search-categories-grid">
+                        {categories.map(category => (
+                          <div
+                            key={category.id}
+                            className={`search-category-item 
+                              ${selectedCategory === category.id ? 'active' : ''} 
+                              ${!criteriosSeleccionados ? 'disabled' : !isCategoryAvailable(category.value) ? 'disabled unavailable' : ''}`}
+                            onClick={() => handleCategoryClick(category)}
+                          >
+                            <div className="search-category-icon">{category.icon}</div>
+                            <div className="search-category-name">{category.name}</div>
+                            {/* Solo mostrar el cartel de No disponible cuando los criterios están seleccionados y la categoría no está disponible */}
+                            {criteriosSeleccionados && !isCategoryAvailable(category.value) && (
+                              <div className="category-unavailable-overlay">
+                                No disponible
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
                     </div>
 
-                    <div className="form-group">
-                      <label>Categoría:</label>
+                    <div className="search-select-group speciality-select">
                       <CustomSelect
-                        options={adaptarOpciones(options.categorias, "id_categoria", "nombre")}
-                        value={formData.categoria}
-                        onChange={handleChange}
-                        name="categoria"
-                        placeholder="Seleccioná una categoría"
-                        disabled={!formData.localidad || loading.categorias}
-                        loading={loading.categorias}
-                      />
-                    </div>
-
-                    <div className="form-group">
-                      <label>Especialidad:</label>
-                      <CustomSelect
-                        options={adaptarOpciones(options.especialidades, "id_especialidad", "nombre")}
+                        options={options.especialidades.map(e => ({ id: e.id_especialidad, nombre: e.nombre }))}
                         value={formData.especialidad}
-                        onChange={handleChange}
+                        onChange={handleFormChange}
                         name="especialidad"
-                        placeholder="Seleccioná una especialidad"
+                        placeholder="Seleccioná la especialidad"
                         disabled={!formData.categoria || loading.especialidades}
                         loading={loading.especialidades}
+                        className="search-select"
                       />
                     </div>
-                  </div>
 
-                  <div className="form-actions">
-                    <button
-                      type="submit"
-                      className="btn-search"
-                      disabled={!isFormComplete() || isLoading}
-                    >
-                      {loading.prestadores ? (
-                        <>
-                          <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                          Buscando...
-                        </>
-                      ) : (
-                        <>
-                          <FiSearch className="btn-icon" /> Buscar prestadores
-                        </>
-                      )}
-                    </button>
+                    <div className="search-button-container">
+                      <button
+                        type="submit"
+                        className="search-button"
+                        disabled={!formData.plan || !formData.provincia || !formData.localidad || !formData.categoria || !formData.especialidad || Object.values(loading).some(Boolean)}
+                      >
+                        {Object.values(loading).some(Boolean) ? (
+                          <>Cargando...</>
+                        ) : (
+                          <>
+                            <FiSearch className="search-button-icon" /> Buscar prestadores
+                          </>
+                        )}
+                      </button>
+                    </div>
                   </div>
-                </div>
+                </form>
               </div>
-            </form>
+            </div>
           </div>
         ) : (
           /* Vista de resultados */
@@ -217,9 +343,26 @@ export const FormCartilla = () => {
               </button>
               <h2 className="results-title">Resultados de la búsqueda</h2>
               <div className="search-summary">
-                <span className="search-tag">{options.planes.find(p => p.id_plan.toString() === formData.plan)?.nombre || 'Plan'}</span>
-                <span className="search-tag">{options.provincias.find(p => p.id_provincia.toString() === formData.provincia)?.nombre || 'Provincia'}</span>
-                <span className="search-tag">{options.especialidades.find(e => e.id_especialidad.toString() === formData.especialidad)?.nombre || 'Especialidad'}</span>
+                <span className="search-tag">
+                  {options.planes.length > 0 && formData.plan ?
+                    (options.planes.find(p => p.id_plan == formData.plan) ||
+                      options.planes.find(p => String(p.id_plan) === String(formData.plan)))?.nombre || 'Plan'
+                    : 'Plan'}
+                </span>
+
+                <span className="search-tag">
+                  {options.provincias.length > 0 && formData.provincia ?
+                    (options.provincias.find(p => p.id_provincia == formData.provincia) ||
+                      options.provincias.find(p => String(p.id_provincia) === String(formData.provincia)))?.nombre || 'Provincia'
+                    : 'Provincia'}
+                </span>
+
+                <span className="search-tag">
+                  {options.especialidades.length > 0 && formData.especialidad ?
+                    (options.especialidades.find(e => e.id_especialidad == formData.especialidad) ||
+                      options.especialidades.find(e => String(e.id_especialidad) === String(formData.especialidad)))?.nombre || 'Especialidad'
+                    : 'Especialidad'}
+                </span>
               </div>
             </div>
 
@@ -241,7 +384,6 @@ export const FormCartilla = () => {
                     {prestadores.map((prestador) => (
                       <div key={prestador.id_prestador} className="prestador-card">
                         <div className="prestador-type">
-                          {/* Reemplazamos BsMedical con FaStethoscope */}
                           <FaStethoscope />
                         </div>
                         <div className="prestador-content">
@@ -287,16 +429,13 @@ export const FormCartilla = () => {
                       totalPages={pagination.totalPages}
                       onPageChange={handlePageChange}
                       itemsPerPage={pagination.itemsPerPage}
-                      onItemsPerPageChange={(newSize) => {
-                        console.log("Nuevo tamaño de página seleccionado:", newSize);
-                        handlePageSizeChange(newSize);
-                      }}
+                      onItemsPerPageChange={handlePageSizeChange}
                       totalItems={pagination.totalItems}
                     />
                   </div>
                 </>
               ) : (
-                <div className="no-results">
+                <div className="no-results">z
                   <div className="no-results-icon">
                     <FiSearch />
                   </div>

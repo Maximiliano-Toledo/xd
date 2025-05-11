@@ -1,3 +1,4 @@
+// Modificación del CustomSelect.jsx
 import { useState, useEffect, useRef } from "react";
 import { FiChevronDown, FiSearch, FiLoader } from "react-icons/fi";
 
@@ -15,6 +16,7 @@ export default function CustomSelect({
   const [searchTerm, setSearchTerm] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const [isFiltering, setIsFiltering] = useState(false); // Nuevo estado para controlar si estamos filtrando
   const dropdownRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -32,21 +34,24 @@ export default function CustomSelect({
 
   // Actualizar opciones filtradas cuando cambian las opciones o el término de búsqueda
   useEffect(() => {
-    if (searchTerm.trim() === "" || !isOpen) {
+    // Si no estamos filtrando o el dropdown está cerrado, mostrar todas las opciones
+    if (!isFiltering || !isOpen) {
       setFilteredOptions(options);
     } else {
+      // Solo filtrar cuando estamos en modo de filtrado
       const filtered = options.filter((option) =>
         option.nombre.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setFilteredOptions(filtered);
     }
-  }, [searchTerm, options, isOpen]);
+  }, [searchTerm, options, isOpen, isFiltering]);
 
   // Cerrar el dropdown cuando se hace clic fuera
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsOpen(false);
+        setIsFiltering(false); // Resetear el modo de filtrado al cerrar
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -64,6 +69,7 @@ export default function CustomSelect({
         e.preventDefault();
         if (!isOpen) {
           setIsOpen(true);
+          setIsFiltering(false); // No filtrar al abrir con tecla de flecha
         } else {
           setHighlightedIndex((prevIndex) =>
             prevIndex < filteredOptions.length - 1 ? prevIndex + 1 : prevIndex
@@ -80,16 +86,23 @@ export default function CustomSelect({
           handleSelectOption(filteredOptions[highlightedIndex]);
         } else if (!isOpen) {
           setIsOpen(true);
+          setIsFiltering(false); // No filtrar al abrir con Enter
         }
         break;
       case "Escape":
         e.preventDefault();
         setIsOpen(false);
+        setIsFiltering(false); // Resetear el modo de filtrado
         break;
       case "Tab":
         setIsOpen(false);
+        setIsFiltering(false); // Resetear el modo de filtrado
         break;
       default:
+        // Si el usuario está escribiendo, activar el modo de filtrado
+        if (e.key.length === 1 || e.key === "Backspace" || e.key === "Delete") {
+          setIsFiltering(true);
+        }
         break;
     }
   };
@@ -97,6 +110,7 @@ export default function CustomSelect({
   // Manejar cambios en el input
   const handleInputChange = (e) => {
     setSearchTerm(e.target.value);
+    setIsFiltering(true); // Activar el modo de filtrado cuando el usuario escribe
 
     if (!isOpen) {
       setIsOpen(true);
@@ -119,6 +133,7 @@ export default function CustomSelect({
     setSearchTerm(option.nombre);
     setIsOpen(false);
     setHighlightedIndex(-1);
+    setIsFiltering(false); // Resetear el modo de filtrado al seleccionar
 
     if (onChange) {
       // Crear un evento sintético similar al que produciría un select nativo
@@ -135,9 +150,14 @@ export default function CustomSelect({
   // Alternar apertura del dropdown
   const toggleDropdown = () => {
     if (!disabled) {
-      setIsOpen(!isOpen);
-      if (!isOpen && inputRef.current) {
-        inputRef.current.focus();
+      const newIsOpen = !isOpen;
+      setIsOpen(newIsOpen);
+
+      if (newIsOpen) {
+        setIsFiltering(false); // Al abrir el dropdown, mostrar todas las opciones
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
       }
     }
   };
@@ -154,8 +174,7 @@ export default function CustomSelect({
     <div
       className={`custom-select-container ${className}`}
       ref={dropdownRef}
-      // Asegurar que el contenedor tenga posición relativa
-      style={{ position: "relative" }}
+      style={{ position: "relative", zIndex: isOpen ? "1000" : "1" }} // Z-index dinámico
     >
       <div
         className={`custom-select ${isOpen ? 'open' : ''} ${disabled ? 'disabled' : ''}`}
@@ -185,14 +204,13 @@ export default function CustomSelect({
       {isOpen && !disabled && (
         <div
           className="select-dropdown"
-          // Asegurar que el dropdown tenga un z-index alto y posición absoluta
           style={{
             position: "absolute",
             top: "calc(100% + 5px)",
             left: 0,
             width: "100%",
-            zIndex: 9999,
-            maxHeight: "250px",
+            zIndex: 9999, // Z-index muy alto
+            maxHeight: "180px",
             overflowY: "auto",
             backgroundColor: "white",
             borderRadius: "4px",

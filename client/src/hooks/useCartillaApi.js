@@ -150,14 +150,18 @@ export const useCartillaApi = () => {
   ]);
 
   // Función corregida para cargar prestadores con paginación
-  const fetchPrestadores = useCallback(async (page = 1, pageSize = pagination.itemsPerPage) => {
+  const fetchPrestadores = useCallback(async (page = 1, pageSize = pagination.itemsPerPage, isPageChange = false) => {
     if (!formData.plan || !formData.provincia || !formData.localidad ||
       !formData.categoria || !formData.especialidad) {
       return;
     }
 
     setLoading((prev) => ({ ...prev, prestadores: true }));
-    setShowResults(false);
+
+    // Solo ocultar los resultados si no es un cambio de página
+    if (!isPageChange) {
+      setShowResults(false);
+    }
 
     try {
       const response = await CartillaService.getPrestadores(
@@ -169,8 +173,6 @@ export const useCartillaApi = () => {
         page,
         pageSize
       );
-
-      console.log("Respuesta completa de la API:", response);
 
       // Verificar si la respuesta tiene la estructura esperada
       if (!response || !response.data) {
@@ -192,7 +194,7 @@ export const useCartillaApi = () => {
       setPagination(prevPagination => ({
         ...prevPagination,
         ...paginationInfo,
-        itemsPerPage: pageSize, // Asegurarnos de que se actualice el tamaño de página
+        itemsPerPage: pageSize,
         currentPage: page
       }));
 
@@ -214,22 +216,22 @@ export const useCartillaApi = () => {
     }
   }, [formData, pagination.itemsPerPage]);
 
-  // Manejador para cambiar de página
+  // Manejador para cambiar de página modificado para no resetear la vista
   const handlePageChange = (newPage) => {
-    fetchPrestadores(newPage, pagination.itemsPerPage);
+    // Pasar true como tercer parámetro para indicar que es un cambio de página
+    fetchPrestadores(newPage, pagination.itemsPerPage, true);
   };
 
-  // Manejador corregido para cambiar el tamaño de página
+  // Manejador para cambiar el tamaño de página
   const handlePageSizeChange = (newSize) => {
-    // Actualizar la paginación y volver a la primera página
     setPagination(prev => ({
       ...prev,
       itemsPerPage: newSize,
-      currentPage: 1 // Siempre volver a la primera página cuando se cambia el tamaño
+      currentPage: 1
     }));
 
-    // Hacer una nueva solicitud con el nuevo tamaño de página
-    fetchPrestadores(1, newSize);
+    // Aquí usamos true como tercer parámetro también para mantener consistencia
+    fetchPrestadores(1, newSize, true);
   };
 
   const handleSubmit = async (e) => {
@@ -248,7 +250,8 @@ export const useCartillaApi = () => {
       return;
     }
 
-    fetchPrestadores(1, pagination.itemsPerPage); // Cargar la primera página de resultados
+    // Aquí no usamos el parámetro isPageChange ya que es una búsqueda inicial
+    fetchPrestadores(1, pagination.itemsPerPage, false);
   };
 
   return {
