@@ -12,6 +12,7 @@ const {
   expiresIn,
   refreshExpiresIn,
 } = require("../config/jwt");
+const { authRepository } = require("../repositories/authRepository");
 
 /**
  * Servicios para operaciones de autenticación y autorización
@@ -167,6 +168,9 @@ const AuthService = {
    */
   refreshToken: async (refreshToken) => {
     try {
+      // Verificar y revocar el token de refresco
+      await authRepository.isRefreshTokenRevoked(refreshToken);
+      
       const decoded = jwt.verify(refreshToken, refreshSecret);
       const user = await userRepository.getUserById(decoded.id);
 
@@ -174,14 +178,27 @@ const AuthService = {
         throw new Error("Usuario no encontrado");
       }
 
+      if (user.estado !== "Activo") {
+        throw new Error("El usuario esta deshabilitado");
+      }
+
+      await authRepository.revokeRefreshToken(refreshToken);
+
       const newAccessToken = jwt.sign(
         { id: user.id, role: user.role },
         secret,
         { expiresIn }
       );
 
+      const newRefreshToken = jwt.sign(
+        { id: user.id },
+        refreshSecret,
+        { expiresIn: refreshExpiresIn }
+      );
+
       return {
         accessToken: newAccessToken,
+        refreshToken: newRefreshToken,
         user: {
           id: user.id,
           username: user.username,

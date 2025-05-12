@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router';
 import { FaPlus } from 'react-icons/fa6';
 import { MdSubdirectoryArrowLeft } from 'react-icons/md';
 import { GoPencil } from 'react-icons/go';
+import Card from '../plan/Card';
 
 const EspecialidadDashboard = () => {
 
@@ -12,6 +13,23 @@ const EspecialidadDashboard = () => {
     const handleVolver = () => {
         navigate(-1);
     };
+
+    const cardEditarEspecialidad = {
+    title: "Editar, habilitar o deshabilitar especialidades",
+    link: "/editar-especialidad",
+    description:
+        "Seleccioná una especialidad para cambiar su nombre, modificar su visibilidad o volver a habilitar los que estén disponibles.",
+     icon: GoPencil,
+    };
+
+    const cardCrearEspecialidad = {
+        title: "Nueva especialidad",
+        link: "/crear-especialidad",
+        description:
+            "Creá y agregá una especialidad para luego realizar la carga correspondiente.",
+        icon: FaPlus,
+    };
+
 
     return (
         <div>
@@ -30,61 +48,15 @@ const EspecialidadDashboard = () => {
             </button>
                
            <div className="d-flex justify-content-center align-items-start min-vh-75">
-                <div className="w-75 d-flex flex-column border mb-4 shadow-input border p-4 custom-height shadow rounded-3">
+                <div className="w-75 d-flex flex-column border mb-4 shadow-input p-4 custom-height shadow rounded-3">
                     
                     <h4 className='mb-4 subtitle-dashboard'>Configuración de especialidades</h4>
 
-                    <div className="w-75 mx-auto border rounded p-3 shadow mb-5">
-                        <h6 className='fw-bold fs-5 text-center subtitle-dashboard'>Editar, habilitar o deshabilitar especialidades</h6>
-                    
-                        <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center ms-md-5 mt-3 mt-md-0">
-                            <div className='bg-color-icon p-2 rounded me-md-2 mb-2 mb-md-0'
-                                    style={{
-                                    position: "relative",
-                                    top: "-18px",
-                                    marginLeft: "-14px"
-                                    }}>
-                                <GoPencil className='icon-size subtitle-dashboard ms-1' />
-                            </div>
-
-                            
-                            <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center">
-                                <p className="text-center text-md-start p-color mb-2 mb-md-0 ps-4">
-                                    Seleccioná una especialidad para cambiar su nombre, modificar su visibilidad o volver a habilitar los que estén disponibles.
-                                    </p>
-                            
-                                    <Link to="/editar-especialidad" className="ms-md-4 mt-2 mt-md-0 text-uppercase text-decoration-none border fw-bold link-card-2"> 
-                                        Ir <FaRegArrowAltCircleRight />
-                                    </Link>
-                            </div>
-                            
-                        </div>
-                    </div>
+                    <Card {...cardEditarEspecialidad} />
 
                     <h4 className='mb-4 subtitle-dashboard'>Crear una nueva especialidad</h4>
-
-                    <div className="w-75 mx-auto border rounded p-3 shadow mb-5">
-                        <h6 className='fw-bold fs-5 text-center subtitle-dashboard'>Nueva especialidad</h6>
-                            <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center ms-md-5 mt-3 mt-md-0">
-                                <div className='bg-color-icon p-2 rounded me-md-2 mb-2 mb-md-0'
-                                        style={{
-                                        position: "relative",
-                                        top: "-18px",
-                                        marginLeft: "-14px"
-                                        }}> 
-                    
-                                    <FaPlus className='icon-size subtitle-dashboard ms-1' />
-                                </div>
-                    
-                                <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center">
-                                    <p className="text-center text-md-start p-color mb-2 mb-md-0 ps-4 ">
-                                                Creá y agregá una especialidad nueva para luego realizar la carga correspondiente</p>
-                                    <Link to="/crear-especialidad" className="ms-4 text-uppercase text-decoration-none border fw-bold link-card-2 ">
-                                      Ir <FaRegArrowAltCircleRight />
-                                     </Link>
-                                </div>
-                            </div>
-                    </div>
+                     <Card {...cardCrearEspecialidad} />
+                   
                 </div>
             </div>
 

@@ -53,22 +53,6 @@ export default function MenuList({darkTheme }) {
     ],
   };
 
-  const cargarSubmenuBaja = {
-    items: [
-      {
-        key: "Baja Individual",
-        icon: <PiNumberSquareOneLight className="icon-menu" />,
-        label: "Baja Individual",
-        onClick: () => navigate("/baja-individual"),
-      },
-      {
-        key: "Baja Masiva",
-        icon: <PiNumberSquareTwoLight className="icon-menu" />,
-        label: "Baja Masiva",
-        onClick: () => navigate("/baja-masiva"),
-      },
-    ],
-  };
   
 
   const items = [
@@ -123,28 +107,6 @@ export default function MenuList({darkTheme }) {
       icon: <FaStethoscope className="icon-menu" />,
       label: "Gestión especialidades",
       onClick: () => navigate("/gestion-especialidad"),
-    },
-    {
-      key: "baja",
-      icon: (
-        <Dropdown
-            menu={cargarSubmenuBaja}
-            trigger={["click"]}
-            open={activeSubmenu === "baja"}
-            onOpenChange={(open) => !open && setActiveSubmenu(null)}
-            placement="rightTop"
-            overlayClassName="submenu-dropdown"
-            overlayStyle={{ minWidth: "120px" }}
-           
-        >
-            <div onClick={(e) => handleSubmenuClick("baja", e)}>
-              < TiDocumentDelete className="icon-menu" />
-            </div>
-        </Dropdown>
-
-      ),
-      label: "Baja prestador",
-      
     },
     {
       key: "usuario",

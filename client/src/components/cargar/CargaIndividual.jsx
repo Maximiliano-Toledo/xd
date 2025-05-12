@@ -13,12 +13,11 @@ import { useAbmApi } from '../../hooks/useAbmApi';
 import CustomSelect from '../CustomSelect';
 
 export const CargaIndividual = () => {
-
   /**Validación para asegurarme que cargue todos los datos o no se activa el botón */
   const [formData, setFormData] = useState({
-    plan: "",
+    plan: [], // Cambiado a array
     categoria: "",
-    especialidad: "",
+    especialidad: [], // Cambiado a array
     provincia: "",
     localidad: "",
     direccion: "",
@@ -120,9 +119,6 @@ export const CargaIndividual = () => {
             confirmButtonColor: '#64A70B'
           });
           
-          // Opcional: redirigir a la lista de prestadores o limpiar el formulario
-          // navigate('/prestadores');
-          // o limpiar el formulario:
           limpiarFormulario();
           
         } catch (error) {
@@ -142,9 +138,9 @@ export const CargaIndividual = () => {
 
   const limpiarFormulario = () => {
     setFormData({
-      plan: "",
+      plan: [],
       categoria: "",
-      especialidad: "",
+      especialidad: [],
       provincia: "",
       localidad: "",
       direccion: "",
@@ -154,11 +150,10 @@ export const CargaIndividual = () => {
       informacion: ""
     });
     
-    // Limpiar los campos en react-hook-form
     reset({
-      plan: "",
+      plan: [],
       categoria: "",
-      especialidad: "",
+      especialidad: [],
       provincia: "",
       localidad: "",
       direccion: "",
@@ -168,7 +163,6 @@ export const CargaIndividual = () => {
       informacion: ""
     });
     
-    // Volver al primer paso del formulario
     setFormStep(0);
   };
 
@@ -197,37 +191,51 @@ export const CargaIndividual = () => {
       telefonos: data.telefono || "",
       email: data.email || "",
       informacion_adicional: data.informacion || "",
-      estado: "Activo", // Por defecto activo
+      estado: "Activo",
       id_localidad: parseInt(formData.localidad),
       categorias: [parseInt(formData.categoria)],
-      especialidades: [parseInt(formData.especialidad)],
-      planes: [parseInt(formData.plan)]
+      especialidades: formData.especialidad.map(id => parseInt(id)), // Convertir array de strings a array de números
+      planes: formData.plan.map(id => parseInt(id)) // Convertir array de strings a array de números
     };
     
     console.log('Datos a enviar:', datosFormateados);
     confirmarCarga(datosFormateados);
   });
+
+  // Manejar cambios en los inputs, incluyendo los selects múltiples
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    setValue(name, value); // Actualiza react-hook-form
     
-    // Limpiar el valor de localidad cuando cambia la provincia
-    if (name === 'provincia') {
-      setFormData((prev) => ({ ...prev, localidad: "" }));
-      setValue('localidad', "");
+    // Si el valor es un array (para selects múltiples)
+    if (Array.isArray(value)) {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+      setValue(name, value);
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+      setValue(name, value);
+      
+      // Limpiar el valor de localidad cuando cambia la provincia
+      if (name === 'provincia') {
+        setFormData((prev) => ({ ...prev, localidad: "" }));
+        setValue('localidad', "");
+      }
     }
   };
 
   // Verificar si los campos obligatorios están completos
   const camposObligatoriosCompletos = () => {
-    const camposRequeridos = [
-      'plan', 'categoria', 'especialidad', 'nombre',
-      'provincia', 'localidad', 'direccion'
-    ];
+    const camposRequeridos = {
+      plan: (value) => Array.isArray(value) && value.length > 0,
+      categoria: (value) => value && value.toString().trim() !== "",
+      especialidad: (value) => Array.isArray(value) && value.length > 0,
+      nombre: (value) => value && value.toString().trim() !== "",
+      provincia: (value) => value && value.toString().trim() !== "",
+      localidad: (value) => value && value.toString().trim() !== "",
+      direccion: (value) => value && value.toString().trim() !== ""
+    };
     
-    return camposRequeridos.every(campo => 
-      formData[campo] && formData[campo].toString().trim() !== ""
+    return Object.entries(camposRequeridos).every(([campo, validator]) => 
+      validator(formData[campo])
     );
   };
 
@@ -260,26 +268,28 @@ export const CargaIndividual = () => {
                   value={formData.plan}
                   onChange={handleChange}
                   name="plan"
-                  placeholder={loadingPlanes ? "Cargando planes..." : "Seleccione un plan"}
+                  placeholder={loadingPlanes ? "Cargando planes..." : "Seleccione uno o más planes"}
                   disabled={loadingPlanes}
                   loading={loadingPlanes}
+                  multiple={true}
                 />
-                {errors.plan && (<span className='ms-3 text-danger fw-bold'>El plan es requerido</span>)}
+                {errors.plan && (<span className='ms-3 text-danger fw-bold'>Al menos un plan es requerido</span>)}
               </div>
 
               <div className="form-group mb-4">
                 <label htmlFor="especialidad" className="fw-bold p-1 fs-6">Especialidad:</label>
-                <LiveAlert message=" Ingresá el nombre con mayúscula inicial en cada palabra. Ejemplo: Clínica Médica. Sólo una especialidad por vez." />
+                <LiveAlert message=" Ingresá el nombre con mayúscula inicial en cada palabra. Ejemplo: Clínica Médica. Puedes seleccionar múltiples especialidades." />
                 <CustomSelect
                   options={adaptarOpciones(especialidades, "id_especialidad", "nombre")}
                   value={formData.especialidad}
                   onChange={handleChange}
                   name="especialidad"
-                  placeholder={loadingEspecialidades ? "Cargando especialidades..." : "Seleccione una especialidad"}
+                  placeholder={loadingEspecialidades ? "Cargando especialidades..." : "Seleccione una o más especialidades"}
                   disabled={loadingEspecialidades}
                   loading={loadingEspecialidades}
+                  multiple={true}
                 />
-                {errors.especialidad && (<span className='ms-3 text-danger fw-bold'>La especialidad es requerida</span>)}
+                {errors.especialidad && (<span className='ms-3 text-danger fw-bold'>Al menos una especialidad es requerida</span>)}
               </div>
             </div>
 
@@ -302,10 +312,10 @@ export const CargaIndividual = () => {
               </div>
 
               <div className="form-group mb-4 position-relative">
+                  <LiveAlert message="Cada palabra debe iniciar con mayúscula. Ejemplo: Policlínico Regional Avellaneda. Ingresá un único prestador por vez." />
                 <label htmlFor="nombre" className="fw-bold p-1 fs-6">
                   Nombre del prestador:
                 </label>
-                <LiveAlert message="Cada palabra debe iniciar con mayúscula. Ejemplo: Policlínico Regional Avellaneda. Ingresá un único prestador por vez." />
                 <input
                   type="text"
                   {...register('nombre', {
@@ -313,7 +323,7 @@ export const CargaIndividual = () => {
                     minLength: 2,
                     onChange: (e) => handleChange(e)
                   })}
-                  className="form-control p-3 mt-2"
+                  className="form-control p-2 mt-2"
                   id="nombre"
                   placeholder="Ingresá el nombre completo del prestador"
                 />
@@ -358,10 +368,11 @@ export const CargaIndividual = () => {
                 </div>
 
                 <div className="form-group mb-5 position-relative">
+                   <LiveAlert message="Usa mayúscula inicial. Para múltiples alturas, separalas con /. Ejemplo: 25 de Mayo 340/344. Ingresá una única dirección. " />
                   <label htmlFor="direccion" className="fw-bold p-1 fs-6 ">
                     Dirección:
                   </label>
-                  <LiveAlert message="Usa mayúscula inicial. Para múltiples alturas, separalas con /. Ejemplo: 25 de Mayo 340/344. Ingresá una única dirección. " />
+                 
                   <input
                     type="text"
                     {...register('direccion', {
@@ -369,7 +380,7 @@ export const CargaIndividual = () => {
                       minLength: 4,
                       onChange: (e) => handleChange(e)
                     })}
-                    className="form-control p-3 mt-2"
+                    className="form-control p-2 mt-2"
                     id="direccion"
                     placeholder="Ingrese una dirección (Calle, Altura)"
                   />
@@ -383,33 +394,34 @@ export const CargaIndividual = () => {
               {/* Columna derecha */}
               <div className="w-50 ps-3">
                 <div className="form-group mb-5 position-relative">
+                  <LiveAlert message="Ingresá primero el código de área, seguido del número. No uses símbolos como ( ) ni /. Si hay interno, escribí int: seguido del número. Ejemplo: 011 43211234 int:11. Si son varios Teléfonos, separalos con coma (,). Ejemplo: 011 43211234, 011 43211235 int:12." />
                   <label htmlFor="telefono" className="fw-bold fs-6">
                     Teléfono:
                   </label>
-                  <LiveAlert message="Ingresá primero el código de área, seguido del número. No uses símbolos como ( ) ni /. Si hay interno, escribí int: seguido del número. Ejemplo: 011 43211234 int:11. Si son varios Teléfonos, separalos con coma (,). Ejemplo: 011 43211234, 011 43211235 int:12." />
+                  
                   <input
                     type="text"
                     {...register('telefono', {
                       onChange: (e) => handleChange(e)
                     })}
-                    className="form-control p-3 mt-2"
+                    className="form-control p-2 mt-2"
                     id="telefono"
                     placeholder="Ingrese el número de teléfono (ej: 011 12345678)"
                   />
                 </div>
 
                 <div className="form-group mb-5 position-relative">
+                    <LiveAlert
+                    message="Ingresá la dirección de correo electrónico en minúsculas. No uses espacios. Para múltiples correos, separalos con /. Evitá copiar y pegar mails con espacios invisibles. Ejemplo: contacto@contacto.com / consultas@consultas.com.ar" />
                   <label htmlFor="email" className="fw-bold fs-6">
                     E-mail:
                   </label>
-                  <LiveAlert
-                    message="Ingresá la dirección de correo electrónico en minúsculas. No uses espacios. Para múltiples correos, separalos con /. Evitá copiar y pegar mails con espacios invisibles. Ejemplo: contacto@contacto.com / consultas@consultas.com.ar" />
                   <input
                     type="email"
                     {...register('email', {
                       onChange: (e) => handleChange(e)
                     })}
-                    className="form-control p-3 mt-2"
+                    className="form-control p-2 mt-2"
                     id="email"
                     placeholder="ejemplo@correo.com"
                   />
@@ -424,7 +436,7 @@ export const CargaIndividual = () => {
                     {...register('informacion', {
                       onChange: (e) => handleChange(e)
                     })}
-                    className="form-control p-3"
+                    className="form-control p-2"
                     id="informacion"
                     placeholder="Observaciones"
                   />

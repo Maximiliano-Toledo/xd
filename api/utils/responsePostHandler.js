@@ -42,6 +42,10 @@ const handlePostResponse = async (
     eliminar: {
       success: `${entityName} eliminado exitosamente`,
       error: `Error al eliminar ${entityName}`
+    },
+    importar: {
+      success: `${entityName} importado exitosamente`,
+      error: `Error al importar ${entityName}`
     }
   };
 

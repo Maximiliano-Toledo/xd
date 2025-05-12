@@ -8,6 +8,8 @@ const ABMRepository = require('./abmRepository');
 const fs = require("fs");
 const path = require("path");
 const { Parser } = require("json2csv");
+const csv = require('csv-parser');
+const { Transform } = require('stream');
 
 /**
  * Carga un archivo de consulta SQL desde el directorio de consultas
@@ -127,6 +129,43 @@ const PrestadorRepository = {
   },
 
   /**
+   * Obtiene prestadores de cartilla con paginación
+   * @async
+   * @param {number} [page=1] - Número de página
+   * @param {number} [limit=10] - Límite de resultados por página
+   * @returns {Promise<Object>} - Promesa que resuelve a un objeto con items y metadatos de paginación
+   */
+  getPrestadoresCartilla: async (page = 1, limit = 10) => {
+    try {
+      const [results] = await pool.query(
+        "CALL GetPrestadoresCartillaPaginados(?, ?)",
+        [page, limit]
+      );
+      
+      const totalItems = results[0][0].total || 0;
+      const rows = results[1];
+
+      // Calcular metadatos de paginación
+      const totalPages = Math.ceil(totalItems / limit);
+
+      return [{
+        items: rows,
+        pagination: {
+          totalItems,
+          itemsPerPage: limit,
+          currentPage: page,
+          totalPages,
+          hasNextPage: page < totalPages,
+          hasPrevPage: page > 1
+        }
+      }];
+    } catch (error) {
+      console.error("Error al obtener prestadores de cartilla:", error);
+      throw error;
+    }
+  },
+
+  /**
    * Obtiene prestadores filtrados por varios criterios
    * @async
    * @param {number} idPlan - ID del plan
@@ -186,35 +225,63 @@ const PrestadorRepository = {
   },
 
   /**
- * Obtiene prestadores filtrados por nombre y otros criterios
+ * Obtiene prestadores filtrados por nombre y otros criterios con paginación
  * @async
  * @param {number} idPlan - ID del plan
  * @param {number} idCategoria - ID de la categoría
  * @param {number} idLocalidad - ID de la localidad
  * @param {number} idEspecialidad - ID de la especialidad
  * @param {string} nombre_prestador - Nombre o parte del nombre del prestador para búsqueda
- * @returns {Promise<Array>} - Promesa que resuelve a un array con los prestadores que coinciden con el criterio de búsqueda
+ * @param {number} [page=1] - Número de página
+ * @param {number} [limit=10] - Límite de resultados por página
+ * @returns {Promise<Object>} - Promesa que resuelve a un objeto con prestadores y metadatos de paginación
  */
-  getPrestadoresByNombre: async (
-    idPlan,
-    idCategoria,
-    idLocalidad,
-    idEspecialidad,
-    nombre_prestador
-  ) => {
-    try {
-      return await pool.query("CALL getPrestadoresByNombre(?, ?, ?, ?, ?);", [
-        idPlan,
-        idCategoria,
-        idLocalidad,
-        idEspecialidad,
-        nombre_prestador,
-      ]);
-    } catch (error) {
-      console.error("Error al obtener prestadores por nombre:", error);
-      throw error;
-    }
-  },
+getPrestadoresByNombre: async (
+  idPlan,
+  idCategoria,
+  idLocalidad,
+  idEspecialidad,
+  nombre_prestador,
+  page = 1,
+  limit = 10
+) => {
+  try {
+    // Cálculo del offset para paginación
+    const offset = (page - 1) * limit;
+
+    // Obtener total de registros (necesitarás crear un SP para contar los resultados filtrados por nombre)
+    const [countResult] = await pool.query(
+      "CALL getCountPrestadoresByNombre(?, ?, ?, ?, ?);",
+      [idPlan, idCategoria, idLocalidad, idEspecialidad, nombre_prestador]
+    );
+
+    const totalItems = countResult[0][0].total || 0;
+
+    // Obtener prestadores paginados usando el nuevo SP
+    const [rows] = await pool.query(
+      "CALL GetPrestadoresByNombrePaginados(?, ?, ?, ?, ?, ?, ?);",
+      [idPlan, idCategoria, idLocalidad, idEspecialidad, nombre_prestador, limit, offset]
+    );
+
+    // Calcular metadatos de paginación
+    const totalPages = Math.ceil(totalItems / limit);
+
+    return [{
+      items: rows[0],
+      pagination: {
+        totalItems,
+        itemsPerPage: limit,
+        currentPage: page,
+        totalPages,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1
+      }
+    }];
+  } catch (error) {
+    console.error("Error al obtener prestadores por nombre:", error);
+    throw error;
+  }
+},
 
   /**
    * Obtiene nombres de prestadores filtrados por varios criterios
@@ -278,158 +345,109 @@ const PrestadorRepository = {
   createPrestadorCompleto: async (prestadorData) => {
     let connection;
     try {
-      connection = await pool.getConnection();
-      await connection.beginTransaction();
+        connection = await pool.getConnection();
+        await connection.beginTransaction();
 
-      // 1. Insertar el prestador principal
-      const [result] = await connection.query(
-        `INSERT INTO prestadores SET ?`,
-        [{
-          nombre: prestadorData.nombre,
-          direccion: prestadorData.direccion,
-          telefonos: prestadorData.telefonos,
-          email: prestadorData.email,
-          informacion_adicional: prestadorData.informacion_adicional,
-          id_localidad: prestadorData.id_localidad,
-          estado: prestadorData.estado || 'Activo' // Valor por defecto si no viene
-        }]
-      );
-
-      const idPrestador = result.insertId;
-
-      // 2. Obtener nombres para los campos de cartilla
-      const [localidad] = await connection.query(
-        `SELECT nombre, id_provincia
-            FROM localidades 
-            WHERE id_localidad = ?`,
-        [prestadorData.id_localidad]
-      );
-
-      const [provincia] = await connection.query(
-        `SELECT nombre
-            FROM provincias
-            WHERE id_provincia = ?`,
-        [localidad[0].id_provincia]
-      );
-
-      // Obtener nombres de categorías, especialidades y planes
-      let categorias = [], especialidades = [], planes = [];
-
-      if (prestadorData.categorias && prestadorData.categorias.length > 0) {
-        [categorias] = await connection.query(
-          `SELECT nombre FROM categorias_prestador WHERE id_categoria IN (?)`,
-          [prestadorData.categorias]
+        // 1. Obtener datos comunes (localidad, provincia, categorías, etc.)
+        const [localidad] = await connection.query(
+            `SELECT nombre, id_provincia FROM localidades WHERE id_localidad = ?`,
+            [prestadorData.id_localidad]
         );
-      }
 
-      if (prestadorData.especialidades && prestadorData.especialidades.length > 0) {
-        [especialidades] = await connection.query(
-          `SELECT nombre FROM especialidades WHERE id_especialidad IN (?)`,
-          [prestadorData.especialidades]
+        const [provincia] = await connection.query(
+            `SELECT nombre FROM provincias WHERE id_provincia = ?`,
+            [localidad[0].id_provincia]
         );
-      }
 
-      if (prestadorData.planes && prestadorData.planes.length > 0) {
-        [planes] = await connection.query(
-          `SELECT nombre FROM planes WHERE id_plan IN (?)`,
-          [prestadorData.planes]
+        const [categorias] = await connection.query(
+            `SELECT nombre FROM categorias_prestador WHERE id_categoria IN (?)`,
+            [prestadorData.categorias]
         );
-      }
 
-      // 3. Crear registro en cartilla
-      await connection.query(
-        `INSERT INTO cartilla SET ?`,
-        {
-          id_prestador: idPrestador,
-          nombre_prestador: prestadorData.nombre,
-          direccion: prestadorData.direccion,
-          telefonos: prestadorData.telefonos,
-          email: prestadorData.email,
-          informacion_adicional: prestadorData.informacion_adicional,
-          localidad: localidad[0].nombre,
-          provincia: provincia[0].nombre,
-          categoria_prestador: categorias.map(c => c.nombre).join(', '),
-          especialidad: especialidades.map(e => e.nombre).join(', '),
-          plan: planes.map(p => p.nombre).join(', '),
-          estado: prestadorData.estado || 'Activo'
+        const [especialidades] = await connection.query(
+            `SELECT id_especialidad, nombre FROM especialidades WHERE id_especialidad IN (?)`,
+            [prestadorData.especialidades]
+        );
+
+        const [planes] = await connection.query(
+            `SELECT id_plan, nombre FROM planes WHERE id_plan IN (?)`,
+            [prestadorData.planes]
+        );
+
+        const categoriasStr = categorias.map(c => c.nombre).join(', ');
+        const resultados = [];
+
+        // 2. Procesar cada combinación plan × especialidad
+        for (const plan of planes) {
+            for (const especialidad of especialidades) {
+                // Crear nuevo prestador PARA CADA COMBINACIÓN
+                const newPrestador = await ABMRepository.create('prestadores', {
+                    nombre: prestadorData.nombre,
+                    direccion: prestadorData.direccion,
+                    telefonos: prestadorData.telefonos,
+                    email: prestadorData.email,
+                    informacion_adicional: prestadorData.informacion_adicional,
+                    id_localidad: prestadorData.id_localidad,
+                    estado: prestadorData.estado || 'Activo'
+                });
+
+                const idPrestador = newPrestador.id;
+
+                // Crear registro en cartilla
+                await ABMRepository.create('cartilla', {
+                    id_prestador: idPrestador,
+                    nombre_prestador: prestadorData.nombre,
+                    direccion: prestadorData.direccion,
+                    telefonos: prestadorData.telefonos,
+                    email: prestadorData.email,
+                    informacion_adicional: prestadorData.informacion_adicional,
+                    localidad: localidad[0].nombre,
+                    provincia: provincia[0].nombre,
+                    categoria_prestador: categoriasStr,
+                    especialidad: especialidad.nombre,
+                    plan: plan.nombre,
+                    estado: prestadorData.estado || 'Activo'
+                });
+
+                // Insertar relaciones (categorías, especialidades, planes)
+                const insertRelations = async (table, field, values) => {
+                    if (!Array.isArray(values) || values.length === 0) return;
+                    
+                    const relations = values.map(id => [idPrestador, id]);
+                    await connection.query(
+                        `INSERT INTO ${table} (id_prestador, ${field}) VALUES ?`,
+                        [relations]
+                    );
+                };
+
+                // Para este prestador específico:
+                await insertRelations('prestador_categoria', 'id_categoria', prestadorData.categorias);
+                await insertRelations('prestador_especialidad', 'id_especialidad', [especialidad.id_especialidad]); // Solo la especialidad actual
+                await insertRelations('prestador_plan', 'id_plan', [plan.id_plan]); // Solo el plan actual
+
+                resultados.push({
+                    id_prestador: idPrestador,
+                    plan: plan.nombre,
+                    especialidad: especialidad.nombre
+                });
+            }
         }
-      );
 
-      // 4. Insertar relaciones
-      const insertRelations = async (table, field, values) => {
-        if (!Array.isArray(values) || values.length === 0) return;
-
-        const relations = values.map(id => [idPrestador, id]);
-        await connection.query(
-          `INSERT INTO ${table} (id_prestador, ${field}) VALUES ?`,
-          [relations]
-        );
-      };
-
-      if (prestadorData.categorias && prestadorData.categorias.length > 0) {
-        await insertRelations('prestador_categoria', 'id_categoria', prestadorData.categorias);
-      }
-
-      if (prestadorData.especialidades && prestadorData.especialidades.length > 0) {
-        await insertRelations('prestador_especialidad', 'id_especialidad', prestadorData.especialidades);
-      }
-
-      if (prestadorData.planes && prestadorData.planes.length > 0) {
-        await insertRelations('prestador_plan', 'id_plan', prestadorData.planes);
-      }
-
-      // 5. Obtener datos completos del prestador creado para la respuesta
-      const [prestadorResult] = await connection.query(
-        `SELECT * FROM prestadores WHERE id_prestador = ?`,
-        [idPrestador]
-      );
-
-      const [categoriasResult] = await connection.query(
-        `SELECT c.id_categoria, c.nombre 
-             FROM categorias_prestador c
-             INNER JOIN prestador_categoria pc ON c.id_categoria = pc.id_categoria
-             WHERE pc.id_prestador = ?`,
-        [idPrestador]
-      );
-
-      const [especialidadesResult] = await connection.query(
-        `SELECT e.id_especialidad, e.nombre 
-             FROM especialidades e
-             INNER JOIN prestador_especialidad pe ON e.id_especialidad = pe.id_especialidad
-             WHERE pe.id_prestador = ?`,
-        [idPrestador]
-      );
-
-      const [planesResult] = await connection.query(
-        `SELECT p.id_plan, p.nombre 
-             FROM planes p
-             INNER JOIN prestador_plan pp ON p.id_plan = pp.id_plan
-             WHERE pp.id_prestador = ?`,
-        [idPrestador]
-      );
-
-      await connection.commit();
-
-      // Construir objeto de respuesta completo
-      return {
-        id: idPrestador,
-        success: true,
-        prestador: {
-          ...prestadorResult[0],
-          categorias: categoriasResult,
-          especialidades: especialidadesResult,
-          planes: planesResult
-        }
-      };
+        await connection.commit();
+        return {
+            success: true,
+            registros_creados: resultados,
+            total: resultados.length
+        };
 
     } catch (error) {
-      if (connection) await connection.rollback();
-      console.error("Error in createPrestadorCompleto:", error);
-      throw new Error("Error creating prestador completo");
+        if (connection) await connection.rollback();
+        console.error("Error in createPrestadorCompleto:", error);
+        throw new Error("Error creating prestador completo");
     } finally {
-      if (connection) connection.release();
+        if (connection) connection.release();
     }
-  },
+},
 
   /**
  * Actualiza un prestador existente y devuelve los datos completos actualizados
@@ -730,6 +748,168 @@ const PrestadorRepository = {
     } catch (error) {
       console.error("Error en baja de prestador:", error);
       throw new Error("Error en baja de prestador");
+    }
+  },
+
+
+  /**
+   * Procesa un archivo CSV masivo de prestadores médicos con streams
+   * @async
+   * @param {string} filePath - Ruta del archivo CSV
+   * @param {Object} [options] - Opciones de configuración
+   * @param {string} [options.delimiter=','] - Delimitador de campos
+   * @param {number} [options.batchSize=1000] - Tamaño del lote para inserción
+   * @param {Function} [options.progressCallback] - Callback para notificar progreso
+   * @returns {Promise<Object>} - Resultados del proceso
+   */
+  processMassiveCSVStream: async (filePath, options = {}) => {
+    const {
+      delimiter = ',',
+      batchSize = 1000,
+      progressCallback
+    } = options;
+
+    let processedCount = 0;
+    let connection;
+    try {
+      connection = await pool.getConnection();
+      await connection.beginTransaction();
+
+      // 1. Limpiar cartilla inicialmente
+      await connection.query('CALL LimpiarCartilla()');
+      
+      let batchValues = [];
+      let batchNumber = 0;
+
+      // Transform stream para procesar cada línea
+      const csvTransformer = new Transform({
+        objectMode: true,
+        transform(row, encoding, callback) {
+          try {
+            // Validación básica de campos requeridos
+            if (!row.nombre_prestador || !row.plan || !row.especialidad) {
+              return callback(new Error(`Fila ${processedCount + 1}: Faltan campos requeridos`));
+            }
+
+            // Preparar valores para la inserción
+            const values = [
+              row.plan || '',
+              row.categoria || '',
+              row.especialidad || '',
+              row.provincia || '',
+              row.localidad || '',
+              row.nombre_prestador || '',
+              row.direccion || '',
+              row.telefonos || '',
+              row.email || '',
+              row.informacion_adicional || '',
+              row.estado || 'Activo'
+            ];
+
+            batchValues.push(values);
+            processedCount++;
+
+            // Notificar progreso cada 1000 registros
+            if (progressCallback && processedCount % 1000 === 0) {
+              progressCallback({
+                totalProcessed: processedCount,
+                batchNumber: Math.floor(processedCount / batchSize),
+                status: 'processing'
+              });
+            }
+
+            // Si el batch está lleno, insertar
+            if (batchValues.length >= batchSize) {
+              this.push(batchValues);
+              batchValues = [];
+              batchNumber++;
+            }
+
+            callback();
+          } catch (error) {
+            callback(error);
+          }
+        },
+        flush(callback) {
+          // Insertar los registros restantes en el último batch
+          if (batchValues.length > 0) {
+            this.push(batchValues);
+          }
+          callback();
+        }
+      });
+
+      // Stream para insertar los batches en la base de datos
+      const dbInserter = new Transform({
+        objectMode: true,
+        async transform(batch, encoding, callback) {
+          try {
+            await connection.query(
+              `INSERT INTO cartilla 
+              (plan, categoria_prestador, especialidad, provincia, localidad, 
+                nombre_prestador, direccion, telefonos, email, informacion_adicional, estado) 
+              VALUES ?`,
+              [batch]
+            );
+            callback();
+          } catch (error) {
+            callback(error);
+          }
+        }
+      });
+
+      // Pipeline completo
+      await new Promise((resolve, reject) => {
+        fs.createReadStream(filePath)
+          .pipe(csv({
+            separator: delimiter,
+            mapValues: ({ value }) => value.trim(),
+            skipLines: 0 // Asumiendo que no hay encabezados
+          }))
+          .on('error', reject)
+          .pipe(csvTransformer)
+          .on('error', reject)
+          .pipe(dbInserter)
+          .on('error', reject)
+          .on('finish', resolve);
+      });
+
+      // 3. Limpiar tablas de cartilla
+      await connection.query('CALL LimpiarTablasCartilla()');
+
+      // 4. Procesar la cartilla para poblar las tablas relacionadas
+      await connection.query('CALL ProcesarCartilla()');
+
+      await connection.commit();
+
+      if (progressCallback) {
+        progressCallback({
+          totalProcessed: processedCount,
+          status: 'completed'
+        });
+      }
+
+      return {
+        success: true,
+        totalProcessed: processedCount,
+        message: `CSV procesado exitosamente. ${processedCount} registros cargados.`
+      };
+
+    } catch (error) {
+      if (connection) await connection.rollback();
+      
+      if (progressCallback) {
+        progressCallback({
+          error: error.message,
+          status: 'failed',
+          totalProcessed: processedCount || 0
+        });
+      }
+
+      console.error('Error al procesar CSV:', error);
+      throw new Error(`Error al procesar CSV: ${error.message}`);
+    } finally {
+      if (connection) connection.release();
     }
   },
 };

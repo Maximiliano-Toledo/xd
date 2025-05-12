@@ -29,11 +29,9 @@ const ProtectedRoute = () => {
       }
     };
     
-    // Verificación periódica (cada 5 minutos)
-    const verificationInterval = setInterval(verifySession, 5 * 60 * 1000);
+    const verificationInterval = setInterval(verifySession, 30 * 60 * 1000);
     
-    // Renovación del token (cada 30 minutos)
-    const refreshInterval = setInterval(verifyRefresh, 30 * 60 * 1000);
+    const refreshInterval = setInterval(verifyRefresh, 55 * 60 * 1000);
     
     return () => {
       clearInterval(verificationInterval);

@@ -2,7 +2,7 @@
 const Logo = () => {
     return (
             <div className='logo-icon'>
-                <img src='/ossacra-fondoverde.jpg' style={{ height: 45, width: 'auto' }}/>
+                <img src='/amasalud.png' style={{ height: 22, width: 'auto' }}/>
             </div>
        
     );

@@ -180,7 +180,23 @@ const AuthController = {
 
     try {
       const response = await AuthService.refreshToken(refreshToken);
-      res.status(200).json(response);
+      res.cookie("accessToken", response.accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: "lax",
+        maxAge: 3600000, // 1 hora
+        path: '/'
+      });
+
+      res.cookie("refreshToken", response.refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: "lax",
+        maxAge: 7 * 24 * 3600000, // 7 días
+        path: '/'
+      });
+
+      res.status(200).json({ user: response.user })
     } catch (error) {
       res.status(400).json({ error: error.message });
     }

@@ -22,6 +22,7 @@ function App() {
 
         {/* Rutas privadas */}
         <Route element={<ProtectedRoute />}>
+          <Route path="*" element={<StaffLayout />} />
 
           <Route element={<RoleBasedRoute allowedRoles={['admin']} />}>
             {/* Rutas con Layout (Sidebar) */}
@@ -34,7 +35,7 @@ function App() {
           <Route path="/logout" element={<LogoutPage />} />
         </Route>
 
-        <Route path="*" element={<StaffLayout />} />
+        
 
 
 

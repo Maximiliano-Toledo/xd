@@ -946,9 +946,6 @@
     }
 }
 
-
-
-
 /* Estilos para el nuevo formulario de búsqueda */
 .search-form-container {
     max-width: 900px;
@@ -1035,9 +1032,10 @@
     text-align: center;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     border: 2px solid transparent;
+    position: relative;
 }
 
-.search-category-item:hover {
+.search-category-item:hover:not(.disabled) {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
@@ -1122,37 +1120,6 @@ main {
     overflow: visible !important;
 }
 
-/* Estilos responsivos */
-@media (max-width: 768px) {
-    .search-select-row {
-        grid-template-columns: 1fr;
-    }
-
-    .search-categories-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 8px;
-    }
-}
-
-@media (max-width: 480px) {
-    .search-categories-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .search-form-card {
-        padding: 20px 15px;
-    }
-
-    .search-form-header h2 {
-        font-size: 1.5rem;
-    }
-
-    .search-button {
-        width: 100%;
-        padding: 12px 20px;
-    }
-}
-
 /* Estilos para categorías deshabilitadas */
 .search-category-item.disabled {
     opacity: 0.6;
@@ -1182,4 +1149,39 @@ main {
     padding: 3px;
     text-align: center;
     border-radius: 0 0 10px 10px;
+}
+
+/* Estilos para las pestañas de método de búsqueda */
+.search-method-tabs {
+    display: flex;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--color-gray);
+}
+
+.search-method-tab {
+    flex: 1;
+    padding: 12px 15px;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--color-text-light);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: var(--transition);
+    border-bottom: 2px solid transparent;
+}
+
+.search-method-tab.active {
+    color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
+    font-weight: 600;
+}
+
+.search-method-tab:hover:not(.active) {
+    background-color: var(--color-gray-light);
+    color: var(--color-primary-dark);
 }

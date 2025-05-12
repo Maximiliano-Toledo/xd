@@ -7,6 +7,9 @@ export const useAbmApi = (entity) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+    // Helper para capitalizar
+  const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
+
   // Métodos genéricos
   const getAll = async () => {
     try {
@@ -53,8 +56,8 @@ export const useAbmApi = (entity) => {
   const createPrestador = async (formData) => {
     try {
       setLoading(true);
-      const response = await ABMService[`createPrestador`](formData);
-      await getAll(); // Refrescar la lista
+      const response = await ABMService.createPrestador(formData);
+      // await getAll(); // Refrescar la lista
       return response;
     } catch (err) {
       setError(err);
@@ -119,8 +122,7 @@ export const useAbmApi = (entity) => {
     }
   };
 
-  // Helper para capitalizar
-  const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
+
 
   return {
     data,

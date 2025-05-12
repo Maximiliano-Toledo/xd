@@ -1,6 +1,5 @@
-// Modificación del CustomSelect.jsx
 import { useState, useEffect, useRef } from "react";
-import { FiChevronDown, FiSearch, FiLoader } from "react-icons/fi";
+import { FiChevronDown, FiSearch, FiLoader, FiX, FiCheck } from "react-icons/fi";
 
 export default function CustomSelect({
   options = [],
@@ -11,35 +10,35 @@ export default function CustomSelect({
   disabled = false,
   loading = false,
   className = "",
+  multiple = false, // Nuevo prop para modo múltiple
 }) {
   const [filteredOptions, setFilteredOptions] = useState(options);
   const [searchTerm, setSearchTerm] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
-  const [isFiltering, setIsFiltering] = useState(false); // Nuevo estado para controlar si estamos filtrando
+  const [isFiltering, setIsFiltering] = useState(false);
   const dropdownRef = useRef(null);
   const inputRef = useRef(null);
 
+  // Convertir value a array si estamos en modo múltiple
+  const selectedValues = multiple
+    ? (Array.isArray(value) ? value : (value ? [value] : [])
+    ) : value;
+
   // Actualizar el valor mostrado cuando cambia el valor seleccionado externamente
   useEffect(() => {
-    if (value) {
-      const selectedOption = options.find((option) => option.id.toString() === value.toString());
-      if (selectedOption) {
-        setSearchTerm(selectedOption.nombre);
-      }
-    } else {
-      setSearchTerm("");
+    if (!multiple) {
+      const selectedOption = options.find(option => option.id.toString() === value.toString());
+      setSearchTerm(selectedOption ? selectedOption.nombre : "");
     }
-  }, [value, options]);
+  }, [value, options, multiple]);
 
-  // Actualizar opciones filtradas cuando cambian las opciones o el término de búsqueda
+  // Actualizar opciones filtradas
   useEffect(() => {
-    // Si no estamos filtrando o el dropdown está cerrado, mostrar todas las opciones
     if (!isFiltering || !isOpen) {
       setFilteredOptions(options);
     } else {
-      // Solo filtrar cuando estamos en modo de filtrado
-      const filtered = options.filter((option) =>
+      const filtered = options.filter(option =>
         option.nombre.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setFilteredOptions(filtered);
@@ -51,14 +50,15 @@ export default function CustomSelect({
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsOpen(false);
-        setIsFiltering(false); // Resetear el modo de filtrado al cerrar
+        setIsFiltering(false);
+        if (multiple) setSearchTerm(""); // Limpiar búsqueda al cerrar en modo múltiple
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [multiple]);
 
   // Manejo de teclado
   const handleKeyDown = (e) => {
@@ -69,16 +69,16 @@ export default function CustomSelect({
         e.preventDefault();
         if (!isOpen) {
           setIsOpen(true);
-          setIsFiltering(false); // No filtrar al abrir con tecla de flecha
+          setIsFiltering(false);
         } else {
-          setHighlightedIndex((prevIndex) =>
+          setHighlightedIndex(prevIndex =>
             prevIndex < filteredOptions.length - 1 ? prevIndex + 1 : prevIndex
           );
         }
         break;
       case "ArrowUp":
         e.preventDefault();
-        setHighlightedIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : 0));
+        setHighlightedIndex(prevIndex => (prevIndex > 0 ? prevIndex - 1 : 0));
         break;
       case "Enter":
         e.preventDefault();
@@ -86,20 +86,21 @@ export default function CustomSelect({
           handleSelectOption(filteredOptions[highlightedIndex]);
         } else if (!isOpen) {
           setIsOpen(true);
-          setIsFiltering(false); // No filtrar al abrir con Enter
+          setIsFiltering(false);
         }
         break;
       case "Escape":
         e.preventDefault();
         setIsOpen(false);
-        setIsFiltering(false); // Resetear el modo de filtrado
+        setIsFiltering(false);
+        if (multiple) setSearchTerm("");
         break;
       case "Tab":
         setIsOpen(false);
-        setIsFiltering(false); // Resetear el modo de filtrado
+        setIsFiltering(false);
+        if (multiple) setSearchTerm("");
         break;
       default:
-        // Si el usuario está escribiendo, activar el modo de filtrado
         if (e.key.length === 1 || e.key === "Backspace" || e.key === "Delete") {
           setIsFiltering(true);
         }
@@ -110,41 +111,65 @@ export default function CustomSelect({
   // Manejar cambios en el input
   const handleInputChange = (e) => {
     setSearchTerm(e.target.value);
-    setIsFiltering(true); // Activar el modo de filtrado cuando el usuario escribe
+    setIsFiltering(true);
 
     if (!isOpen) {
       setIsOpen(true);
     }
 
-    // Si el usuario borra el input, notificar cambio con valor vacío
-    if (e.target.value === "" && onChange) {
-      const event = {
+    if (e.target.value === "" && onChange && !multiple) {
+      onChange({
         target: {
           name,
           value: "",
         },
-      };
-      onChange(event);
+      });
     }
   };
 
   // Seleccionar una opción
   const handleSelectOption = (option) => {
-    setSearchTerm(option.nombre);
-    setIsOpen(false);
-    setHighlightedIndex(-1);
-    setIsFiltering(false); // Resetear el modo de filtrado al seleccionar
+    if (multiple) {
+      // Lógica para selección múltiple
+      const newValue = selectedValues.includes(option.id.toString())
+        ? selectedValues.filter(v => v !== option.id.toString())
+        : [...selectedValues, option.id.toString()];
 
-    if (onChange) {
-      // Crear un evento sintético similar al que produciría un select nativo
-      const event = {
+      onChange({
+        target: {
+          name,
+          value: newValue,
+        },
+      });
+
+      setSearchTerm("");
+      inputRef.current?.focus();
+    } else {
+      // Lógica para selección simple
+      setSearchTerm(option.nombre);
+      setIsOpen(false);
+      setHighlightedIndex(-1);
+      setIsFiltering(false);
+
+      onChange({
         target: {
           name,
           value: option.id,
         },
-      };
-      onChange(event);
+      });
     }
+  };
+
+  // Eliminar un elemento seleccionado en modo múltiple
+  const handleRemoveSelected = (id, e) => {
+    e.stopPropagation();
+    const newValue = selectedValues.filter(v => v !== id.toString());
+    onChange({
+      target: {
+        name,
+        value: newValue,
+      },
+    });
   };
 
   // Alternar apertura del dropdown
@@ -154,43 +179,101 @@ export default function CustomSelect({
       setIsOpen(newIsOpen);
 
       if (newIsOpen) {
-        setIsFiltering(false); // Al abrir el dropdown, mostrar todas las opciones
-        if (inputRef.current) {
-          inputRef.current.focus();
-        }
+        setIsFiltering(false);
+        inputRef.current?.focus();
+      } else if (multiple) {
+        setSearchTerm("");
       }
     }
   };
 
   // Determinar el texto del placeholder según el estado
   const getPlaceholderText = () => {
-    if (loading) {
-      return "Cargando...";
-    }
+    if (loading) return "Cargando...";
+    if (multiple && selectedValues.length > 0) return "";
     return placeholder;
+  };
+
+  // Obtener opciones seleccionadas para mostrar en modo múltiple
+  const getSelectedOptions = () => {
+    return options.filter(option => selectedValues.includes(option.id.toString()));
   };
 
   return (
     <div
       className={`custom-select-container ${className}`}
       ref={dropdownRef}
-      style={{ position: "relative", zIndex: isOpen ? "1000" : "1" }} // Z-index dinámico
+      style={{ position: "relative", zIndex: isOpen ? "1000" : "1" }}
     >
       <div
         className={`custom-select ${isOpen ? 'open' : ''} ${disabled ? 'disabled' : ''}`}
         onClick={toggleDropdown}
+        style={multiple ? { minHeight: "40px", padding: "5px" } : {}}
       >
-        <input
-          ref={inputRef}
-          type="text"
-          value={searchTerm}
-          onChange={handleInputChange}
-          onKeyDown={handleKeyDown}
-          placeholder={getPlaceholderText()}
-          disabled={disabled}
-          className="select-input"
-          autoComplete="off"
-        />
+        {multiple ? (
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "5px", flexGrow: 1 }}>
+            {getSelectedOptions().map(option => (
+              <div
+                key={option.id}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  backgroundColor: "#e0e0e0",
+                  color: "black",
+                  borderRadius: "4px",
+                  padding: "2px 6px",
+                  fontSize: "0.85rem"
+                }}
+              >
+                {option.nombre}
+                <button
+                  type="button"
+                  onClick={(e) => handleRemoveSelected(option.id, e)}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    marginLeft: "4px",
+                    display: "flex",
+                    alignItems: "center"
+                  }}
+                >
+                  <FiX size={14} />
+                </button>
+              </div>
+            ))}
+            <input
+              ref={inputRef}
+              type="text"
+              value={searchTerm}
+              onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
+              placeholder={getPlaceholderText()}
+              disabled={disabled}
+              className="select-input"
+              autoComplete="off"
+              style={{
+                flexGrow: 1,
+                minWidth: "50px",
+                border: "none",
+                outline: "none",
+                background: "transparent"
+              }}
+            />
+          </div>
+        ) : (
+          <input
+            ref={inputRef}
+            type="text"
+            value={searchTerm}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyDown}
+            placeholder={getPlaceholderText()}
+            disabled={disabled}
+            className="select-input"
+            autoComplete="off"
+          />
+        )}
 
         <div className="select-icon">
           {loading ? (
@@ -209,7 +292,7 @@ export default function CustomSelect({
             top: "calc(100% + 5px)",
             left: 0,
             width: "100%",
-            zIndex: 9999, // Z-index muy alto
+            zIndex: 9999,
             maxHeight: "180px",
             overflowY: "auto",
             backgroundColor: "white",
@@ -220,7 +303,6 @@ export default function CustomSelect({
         >
           {filteredOptions.length === 0 ? (
             <div
-              className="select-no-options"
               style={{
                 padding: "15px",
                 textAlign: "center",
@@ -237,7 +319,6 @@ export default function CustomSelect({
             </div>
           ) : (
             <ul
-              className="select-options"
               style={{
                 listStyle: "none",
                 padding: 0,
@@ -256,11 +337,17 @@ export default function CustomSelect({
                     transition: "background-color 0.2s ease",
                     backgroundColor: index === highlightedIndex ? "#DCEDC8" : "transparent",
                     color: "#333333",
-                    borderBottom: index < filteredOptions.length - 1 ? "1px solid #f5f5f5" : "none"
+                    borderBottom: index < filteredOptions.length - 1 ? "1px solid #f5f5f5" : "none",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between"
                   }}
                   onMouseEnter={() => setHighlightedIndex(index)}
                 >
                   {option.nombre}
+                  {multiple && selectedValues.includes(option.id.toString()) && (
+                    <FiCheck size={16} style={{ marginLeft: "8px", color: "#4CAF50" }} />
+                  )}
                 </li>
               ))}
             </ul>

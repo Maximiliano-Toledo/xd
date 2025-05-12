@@ -146,23 +146,41 @@ const PrestadorService = {
   },
 
   /**
- * Obtiene prestadores filtrados por nombre y otros criterios
+ * Obtiene prestadores filtrados por nombre y otros criterios con paginación
  * @async
  * @param {number} idPlan - ID del plan
  * @param {number} idCategoria - ID de la categoría
  * @param {number} idLocalidad - ID de la localidad
  * @param {number} idEspecialidad - ID de la especialidad
  * @param {string} nombre_prestador - Nombre o parte del nombre del prestador para búsqueda
- * @returns {Promise<Array>} - Promesa que resuelve a un array con los prestadores que coinciden con el criterio de búsqueda
+ * @param {number} [page=1] - Número de página (default: 1)
+ * @param {number} [limit=10] - Límite de resultados por página (default: 10)
+ * @returns {Promise<Object>} - Promesa que resuelve a un objeto con items y metadatos de paginación
  */
-  getPrestadoresByNombre: async (idPlan, idCategoria, idLocalidad, idEspecialidad, nombre_prestador) => {
-    try {
-      return await PrestadorRepository.getPrestadoresByNombre(idPlan, idCategoria, idLocalidad, idEspecialidad, nombre_prestador);
-    } catch (error) {
-      console.error('Error al obtener prestadores por nombre:', error);
-      throw error;
-    }
-  },
+getPrestadoresByNombre: async (
+  idPlan, 
+  idCategoria, 
+  idLocalidad, 
+  idEspecialidad, 
+  nombre_prestador,
+  page = 1,
+  limit = 10
+) => {
+  try {
+      return await PrestadorRepository.getPrestadoresByNombre(
+        idPlan,
+        idCategoria,
+        idLocalidad,
+        idEspecialidad,
+        nombre_prestador,
+        page,
+        limit
+      );
+  } catch (error) {
+    console.error('Error al obtener prestadores por nombre:', error);
+    throw error;
+  }
+},
 
   /**
    * Obtiene nombres de prestadores filtrados por varios criterios
@@ -178,6 +196,15 @@ const PrestadorService = {
       return await PrestadorRepository.getNombrePrestadores(idPlan, idProvincia, idLocalidad, idCategoria);
     } catch (error) {
       console.error('Error al obtener nombres de prestadores:', error);
+      throw error;
+    }
+  },
+
+  getPrestadoresCartilla: async (page = 1, limit = 10) => {
+    try {
+      return await PrestadorRepository.getPrestadoresCartilla(page, limit);
+    } catch (error) {
+      console.error('Error al obtener prestadores de cartilla:', error);
       throw error;
     }
   },
@@ -293,7 +320,96 @@ const PrestadorService = {
 
       throw new Error(`Error al procesar cartilla: ${error.message}`);
     }
-  }
+  },
+
+    /**
+   * Procesa un archivo CSV masivo de prestadores médicos
+   * @async
+   * @param {string} filePath - Ruta del archivo CSV
+   * @param {Object} [options] - Opciones de configuración
+   * @returns {Promise<Object>} - Resultados del proceso
+   */
+  processMassiveCSV: async (filePath, options = {}) => {
+    try {
+      // Validar que el archivo existe
+      if (!fs.existsSync(filePath)) {
+        throw new Error(`El archivo ${filePath} no existe`);
+      }
+
+      // Procesar el archivo con el repositorio
+      const result = await PrestadorRepository.processMassiveCSVStream(filePath, options);
+
+      return {
+        success: true,
+        ...result,
+        message: `Archivo CSV procesado exitosamente. ${result.totalProcessed} registros cargados.`
+      };
+    } catch (error) {
+      console.error('Error en servicio processMassiveCSV:', error);
+      
+      // Notificar error al callback de progreso si existe
+      if (options.progressCallback) {
+        options.progressCallback({
+          error: error.message,
+          status: 'failed'
+        });
+      }
+
+      throw new Error(`Error al procesar CSV: ${error.message}`);
+    }
+  },
+
+  /**
+   * Maneja la carga y procesamiento de un archivo CSV subido
+   * @async
+   * @param {Object} file - Objeto de archivo subido (Multer)
+   * @param {Function} [progressCallback] - Función para reportar progreso
+   * @returns {Promise<Object>} - Resultado del procesamiento
+   */
+  handleCSVUpload: async (file, progressCallback) => {
+    try {
+      if (!file) {
+        throw new Error('No se subió ningún archivo');
+      }
+
+      // Validar extensión
+      if (!file.originalname.match(/\.(csv)$/i)) {
+        throw new Error('Solo se permiten archivos CSV');
+      }
+
+      // Mover el archivo a la carpeta de datos
+      const destPath = path.join(dataDir, `upload_${Date.now()}.csv`);
+      await fs.promises.rename(file.path, destPath);
+
+      // Procesar el archivo con notificación de progreso
+      const result = await PrestadorService.processMassiveCSV(destPath, {
+        progressCallback,
+        batchSize: 2000 // Tamaño de lote optimizado
+      });
+
+      // Eliminar el archivo después de procesarlo (opcional)
+      try {
+        await fs.promises.unlink(destPath);
+      } catch (cleanupError) {
+        console.warn('No se pudo eliminar el archivo temporal:', cleanupError);
+      }
+
+      return result;
+    } catch (error) {
+      console.error('Error en handleCSVUpload:', error);
+      
+      // Limpiar archivo temporal si existe
+      if (file && fs.existsSync(file.path)) {
+        try {
+          await fs.promises.unlink(file.path);
+        } catch (cleanupError) {
+          console.warn('Error al limpiar archivo temporal:', cleanupError);
+        }
+      }
+
+      throw error;
+    }
+  },
 };
 
 module.exports = PrestadorService;

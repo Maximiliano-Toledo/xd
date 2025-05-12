@@ -67,15 +67,6 @@ const useAuthStore = create((set, get) => ({
     }
   }
 
-  // hasRole: (requiredRoles) => {
-  //   const state = useAuthStore.getState();
-  //   const user = state.user;
-  //   if (!user) return false;
-    
-  //   const role = user.role;
-  //   return requiredRoles.includes(role);
-  // },
-
 }));
 
 export default useAuthStore;
