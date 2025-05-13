@@ -17,7 +17,7 @@ const fs = require("fs");
 const upload = multer({
   dest: path.join(__dirname, '../temp'),
   limits: {
-    fileSize: 50 * 1024 * 1024, // 50MB máximo tamaño de archivo
+    fileSize: 100 * 1024 * 1024, // 100MB máximo tamaño de archivo
   },
   fileFilter: (req, file, cb) => {
     // Aceptar solo archivos CSV
@@ -361,6 +361,29 @@ const PrestadorController = {
       console.error("Error en exportCartillaToCSV:", error);
       res.status(500).json({
         error: "Error al generar el archivo CSV",
+        details: error.message,
+      });
+    }
+  },
+
+  async getCartillaPDF(req, res) {
+    try {
+      const pdfData = await PrestadorService.getCartillaPDF(
+        req.params.idPlan,
+        req.params.idProvincia,
+      );
+
+      res.set({
+        "Content-Type": "application/pdf",
+        "Content-Disposition": `attachment; filename*=UTF-8''${encodeURIComponent(pdfData.nombreArchivo)}`,
+        "Content-Length": pdfData.pdfBytes.length,
+        "Access-Control-Expose-Headers": "Content-Disposition",
+      });
+      res.send(Buffer.from(pdfData.pdfBytes));
+    } catch (error) {
+      console.error("Error en exportCartillaToPDF:", error);
+      res.status(500).json({
+        error: "Error al generar el archivo PDF",
         details: error.message,
       });
     }

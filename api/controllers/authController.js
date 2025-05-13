@@ -94,6 +94,23 @@ const AuthController = {
     }
   },
 
+  changePassword: async (req, res) => {
+    const accessToken = req.cookies.accessToken;
+
+    if (!accessToken) {
+      return res.status(401).json({ error: 'No access token provided' });
+    }
+    
+    const { oldPassword, newPassword } = req.body;
+
+    try {
+      const response = await AuthService.changePassword(accessToken, oldPassword, newPassword);
+      res.status(200).json(response);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  },
+
   /**
    * Maneja el cierre de sesión de usuarios
    * @async

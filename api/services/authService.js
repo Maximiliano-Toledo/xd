@@ -247,6 +247,36 @@ const AuthService = {
     }
   },
 
+  async changePassword(accessToken, oldPassword, newPassword) {
+    try{
+      if (!accessToken || !oldPassword || !newPassword) {
+        throw new Error('Datos insuficientes');
+      }
+
+      const decoded = jwt.verify(accessToken, secret);
+      const username = decoded.username;
+
+      const user = await userRepository.getUser(username);
+      const isValidPassword = await bcrypt.compare(oldPassword, user.password);
+      if (isValidPassword) {
+        const hashedPassword = bcrypt.hashSync(newPassword, 12);
+        userRepository.updatePassword(user.id, hashedPassword);
+        return {
+          success: true,
+          message: 'Contraseña cambiada correctamente'
+        }
+      } else {
+        return {
+          success: false,
+          message: 'Contraseña antigua incorrecta'
+        }
+      }
+    } catch (error) {
+      console.error('Error in changePassword:', error);
+      throw new Error('Error updating password');
+    }
+  },
+
   /**
    * Cierra la sesión de un usuario
    * @returns {boolean} - true si la operación fue exitosa

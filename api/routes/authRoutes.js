@@ -11,5 +11,6 @@ router.post('/logout', authMiddleware(), AuthController.logout);
 router.post('/validate-session', authMiddleware(), AuthController.verifyToken);
 router.post('/refresh-token', generalLimiter, AuthController.refreshToken);
 router.post('/verify-role', authMiddleware(), AuthController.verifyRole);
+router.post('/change-password', authMiddleware(), AuthController.changePassword);
 
 module.exports = router;

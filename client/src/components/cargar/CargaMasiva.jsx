@@ -207,22 +207,6 @@ const resetAll = () => {
               />
             </div>
 
-            {/* Barra de progreso */}
-            {isUploading && (
-              <div className="progress mb-3">
-                <div 
-                  className="progress-bar progress-bar-striped progress-bar-animated" 
-                  role="progressbar"
-                  style={{ width: `${uploadProgress}%` }}
-                  aria-valuenow={uploadProgress}
-                  aria-valuemin="0"
-                  aria-valuemax="100"
-                >
-                  {uploadProgress}%
-                </div>
-              </div>
-            )}
-
             <div className="w-100 d-flex justify-content-center">
               <div className="div-pautas-size text-center">
                 <p className="fw-bold fs-6 mb-2">
@@ -246,7 +230,15 @@ const resetAll = () => {
 
                 <div className="border m-2">
                   <div className="texto-y-icono">
-                    <span className="fs-6">No debe tener fuentes incrustadas</span>
+                    <span className="p-2 fs-6">No debe tener fuentes incrustadas</span>
+                    <CiCircleAlert className="icono-verde" />
+                  </div>
+                  <div className="linea-verde"></div>
+                </div>
+
+                <div className="border m-2">
+                  <div className="texto-y-icono">
+                    <span className="fs-6">El tamaño del archivo no debe superar los 100MB</span>
                     <CiCircleAlert className="icono-verde" />
                   </div>
                   <div className="linea-verde"></div>

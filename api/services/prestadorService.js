@@ -3,12 +3,12 @@
  * @description Servicios para operaciones relacionadas con prestadores médicos
  */
 
-const fs = require('fs');
-const path = require('path');
-const PrestadorRepository = require('../repositories/prestadorRepository');
+const fs = require("fs");
+const path = require("path");
+const PrestadorRepository = require("../repositories/prestadorRepository");
 
 // Asegurar que la carpeta /data exista
-const dataDir = path.join(__dirname, '../data');
+const dataDir = path.join(__dirname, "../data");
 if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir, { recursive: true });
 }
@@ -27,7 +27,7 @@ const PrestadorService = {
     try {
       return await PrestadorRepository.getPlanes();
     } catch (error) {
-      console.error('Error al obtener planes:', error);
+      console.error("Error al obtener planes:", error);
       throw error;
     }
   },
@@ -42,7 +42,7 @@ const PrestadorService = {
     try {
       return await PrestadorRepository.getProvincias(idPlan);
     } catch (error) {
-      console.error('Error al obtener provincias:', error);
+      console.error("Error al obtener provincias:", error);
       throw error;
     }
   },
@@ -58,7 +58,7 @@ const PrestadorService = {
     try {
       return await PrestadorRepository.getLocalidades(idPlan, idProvincia);
     } catch (error) {
-      console.error('Error al obtener localidades:', error);
+      console.error("Error al obtener localidades:", error);
       throw error;
     }
   },
@@ -74,7 +74,7 @@ const PrestadorService = {
     try {
       return await PrestadorRepository.getCategorias(idPlan, idLocalidad);
     } catch (error) {
-      console.error('Error al obtener categorías:', error);
+      console.error("Error al obtener categorías:", error);
       throw error;
     }
   },
@@ -90,9 +90,14 @@ const PrestadorService = {
    */
   getEspecialidades: async (idPlan, idCategoria, idProvincia, idLocalidad) => {
     try {
-      return await PrestadorRepository.getEspecialidades(idPlan, idCategoria, idProvincia, idLocalidad);
+      return await PrestadorRepository.getEspecialidades(
+        idPlan,
+        idCategoria,
+        idProvincia,
+        idLocalidad
+      );
     } catch (error) {
-      console.error('Error al obtener especialidades:', error);
+      console.error("Error al obtener especialidades:", error);
       throw error;
     }
   },
@@ -107,11 +112,26 @@ const PrestadorService = {
    * @param {string} nombre_prestador - Nombre del prestador
    * @returns {Promise<Array>} - Promesa que resuelve a un array con las especialidades
    */
-  getEspecialidadesByNombrePrestador: async (idPlan, idProvincia, idLocalidad, idCategoria, nombre_prestador) => {
+  getEspecialidadesByNombrePrestador: async (
+    idPlan,
+    idProvincia,
+    idLocalidad,
+    idCategoria,
+    nombre_prestador
+  ) => {
     try {
-      return await PrestadorRepository.getEspecialidadesByNombrePrestador(idPlan, idProvincia, idLocalidad, idCategoria, nombre_prestador);
+      return await PrestadorRepository.getEspecialidadesByNombrePrestador(
+        idPlan,
+        idProvincia,
+        idLocalidad,
+        idCategoria,
+        nombre_prestador
+      );
     } catch (error) {
-      console.error('Error al obtener especialidades por nombre de prestador:', error);
+      console.error(
+        "Error al obtener especialidades por nombre de prestador:",
+        error
+      );
       throw error;
     }
   },
@@ -128,7 +148,15 @@ const PrestadorService = {
    * @param {number} [limit=10] - Límite de resultados por página
    * @returns {Promise<Object>} - Promesa que resuelve a un objeto con prestadores y metadatos de paginación
    */
-  getPrestadores: async (idPlan, idCategoria, idProvincia, idLocalidad, idEspecialidad, page = 1, limit = 10) => {
+  getPrestadores: async (
+    idPlan,
+    idCategoria,
+    idProvincia,
+    idLocalidad,
+    idEspecialidad,
+    page = 1,
+    limit = 10
+  ) => {
     try {
       return await PrestadorRepository.getPrestadores(
         idPlan,
@@ -140,33 +168,33 @@ const PrestadorService = {
         limit
       );
     } catch (error) {
-      console.error('Error al obtener prestadores:', error);
+      console.error("Error al obtener prestadores:", error);
       throw error;
     }
   },
 
   /**
- * Obtiene prestadores filtrados por nombre y otros criterios con paginación
- * @async
- * @param {number} idPlan - ID del plan
- * @param {number} idCategoria - ID de la categoría
- * @param {number} idLocalidad - ID de la localidad
- * @param {number} idEspecialidad - ID de la especialidad
- * @param {string} nombre_prestador - Nombre o parte del nombre del prestador para búsqueda
- * @param {number} [page=1] - Número de página (default: 1)
- * @param {number} [limit=10] - Límite de resultados por página (default: 10)
- * @returns {Promise<Object>} - Promesa que resuelve a un objeto con items y metadatos de paginación
- */
-getPrestadoresByNombre: async (
-  idPlan, 
-  idCategoria, 
-  idLocalidad, 
-  idEspecialidad, 
-  nombre_prestador,
-  page = 1,
-  limit = 10
-) => {
-  try {
+   * Obtiene prestadores filtrados por nombre y otros criterios con paginación
+   * @async
+   * @param {number} idPlan - ID del plan
+   * @param {number} idCategoria - ID de la categoría
+   * @param {number} idLocalidad - ID de la localidad
+   * @param {number} idEspecialidad - ID de la especialidad
+   * @param {string} nombre_prestador - Nombre o parte del nombre del prestador para búsqueda
+   * @param {number} [page=1] - Número de página (default: 1)
+   * @param {number} [limit=10] - Límite de resultados por página (default: 10)
+   * @returns {Promise<Object>} - Promesa que resuelve a un objeto con items y metadatos de paginación
+   */
+  getPrestadoresByNombre: async (
+    idPlan,
+    idCategoria,
+    idLocalidad,
+    idEspecialidad,
+    nombre_prestador,
+    page = 1,
+    limit = 10
+  ) => {
+    try {
       return await PrestadorRepository.getPrestadoresByNombre(
         idPlan,
         idCategoria,
@@ -176,11 +204,11 @@ getPrestadoresByNombre: async (
         page,
         limit
       );
-  } catch (error) {
-    console.error('Error al obtener prestadores por nombre:', error);
-    throw error;
-  }
-},
+    } catch (error) {
+      console.error("Error al obtener prestadores por nombre:", error);
+      throw error;
+    }
+  },
 
   /**
    * Obtiene nombres de prestadores filtrados por varios criterios
@@ -191,11 +219,21 @@ getPrestadoresByNombre: async (
    * @param {number} idCategoria - ID de la categoría
    * @returns {Promise<Array>} - Promesa que resuelve a un array con los nombres de prestadores
    */
-  getNombrePrestadores: async (idPlan, idProvincia, idLocalidad, idCategoria) => {
+  getNombrePrestadores: async (
+    idPlan,
+    idProvincia,
+    idLocalidad,
+    idCategoria
+  ) => {
     try {
-      return await PrestadorRepository.getNombrePrestadores(idPlan, idProvincia, idLocalidad, idCategoria);
+      return await PrestadorRepository.getNombrePrestadores(
+        idPlan,
+        idProvincia,
+        idLocalidad,
+        idCategoria
+      );
     } catch (error) {
-      console.error('Error al obtener nombres de prestadores:', error);
+      console.error("Error al obtener nombres de prestadores:", error);
       throw error;
     }
   },
@@ -204,7 +242,7 @@ getPrestadoresByNombre: async (
     try {
       return await PrestadorRepository.getPrestadoresCartilla(page, limit);
     } catch (error) {
-      console.error('Error al obtener prestadores de cartilla:', error);
+      console.error("Error al obtener prestadores de cartilla:", error);
       throw error;
     }
   },
@@ -218,7 +256,23 @@ getPrestadoresByNombre: async (
     try {
       return await PrestadorRepository.getCartillaStream();
     } catch (error) {
-      console.error('Error en servicio getCartillaStream:', error);
+      console.error("Error en servicio getCartillaStream:", error);
+      throw error;
+    }
+  },
+
+  /**
+   * Descarga la cartilla en formato PDF
+   * @async
+   * @param {number} id_plan - ID del plan
+   * @param {number} id_provincia - ID de la provincia
+   * @returns {Promise<Object>} - Promesa que resuelve a un objeto con los bytes del PDF y nombre del archivo
+   */
+  getCartillaPDF: async (id_plan, id_provincia) => {
+    try {
+      return await PrestadorRepository.downloadCartillaPDF(id_plan, id_provincia);
+    } catch (error) {
+      console.error("Error en servicio getCartillaPDF:", error);
       throw error;
     }
   },
@@ -233,7 +287,7 @@ getPrestadoresByNombre: async (
     try {
       return await PrestadorRepository.createPrestadorCompleto(prestador);
     } catch (error) {
-      console.error('Error en servicio postCrearPrestador:', error);
+      console.error("Error en servicio postCrearPrestador:", error);
       throw error;
     }
   },
@@ -249,7 +303,7 @@ getPrestadoresByNombre: async (
     try {
       return await PrestadorRepository.updatePrestador(id, prestador);
     } catch (error) {
-      console.error('Error en servicio postActualizarPrestador:', error);
+      console.error("Error en servicio postActualizarPrestador:", error);
       throw error;
     }
   },
@@ -263,9 +317,15 @@ getPrestadoresByNombre: async (
    */
   postActualizarEstadoPrestadorPorNombre: async (nombre, estado) => {
     try {
-      return await PrestadorRepository.updateEstadoPrestadorPorNombre(nombre, estado);
+      return await PrestadorRepository.updateEstadoPrestadorPorNombre(
+        nombre,
+        estado
+      );
     } catch (error) {
-      console.error('Error en servicio postActualizarEstadoPrestadorPorNombre:', error);
+      console.error(
+        "Error en servicio postActualizarEstadoPrestadorPorNombre:",
+        error
+      );
       throw error;
     }
   },
@@ -280,7 +340,7 @@ getPrestadoresByNombre: async (
     try {
       return await PrestadorRepository.downPrestador(id);
     } catch (error) {
-      console.error('Error en servicio postBajaPrestador:', error);
+      console.error("Error en servicio postBajaPrestador:", error);
       throw error;
     }
   },
@@ -294,16 +354,16 @@ getPrestadoresByNombre: async (
   processUploadedCartilla: async (file) => {
     try {
       if (!file) {
-        throw new Error('No se subió ningún archivo');
+        throw new Error("No se subió ningún archivo");
       }
 
       // Validar que sea un CSV
-      if (!file.originalname.endsWith('.csv')) {
-        throw new Error('El archivo debe ser de tipo CSV');
+      if (!file.originalname.endsWith(".csv")) {
+        throw new Error("El archivo debe ser de tipo CSV");
       }
 
       // Ruta destino
-      const destPath = path.join(dataDir, 'cartilla.csv');
+      const destPath = path.join(dataDir, "cartilla.csv");
 
       // Mover/renombrar el archivo
       await fs.promises.rename(file.path, destPath);
@@ -311,7 +371,7 @@ getPrestadoresByNombre: async (
       // Procesar el archivo
       return await PrestadorRepository.loadCartilla();
     } catch (error) {
-      console.error('Error procesando cartilla:', error);
+      console.error("Error procesando cartilla:", error);
 
       // Limpiar archivo subido si falla
       if (file && fs.existsSync(file.path)) {
@@ -322,7 +382,7 @@ getPrestadoresByNombre: async (
     }
   },
 
-    /**
+  /**
    * Procesa un archivo CSV masivo de prestadores médicos
    * @async
    * @param {string} filePath - Ruta del archivo CSV
@@ -337,21 +397,24 @@ getPrestadoresByNombre: async (
       }
 
       // Procesar el archivo con el repositorio
-      const result = await PrestadorRepository.processMassiveCSVStream(filePath, options);
+      const result = await PrestadorRepository.processMassiveCSVStream(
+        filePath,
+        options
+      );
 
       return {
         success: true,
         ...result,
-        message: `Archivo CSV procesado exitosamente. ${result.totalProcessed} registros cargados.`
+        message: `Archivo CSV procesado exitosamente. ${result.totalProcessed} registros cargados.`,
       };
     } catch (error) {
-      console.error('Error en servicio processMassiveCSV:', error);
-      
+      console.error("Error en servicio processMassiveCSV:", error);
+
       // Notificar error al callback de progreso si existe
       if (options.progressCallback) {
         options.progressCallback({
           error: error.message,
-          status: 'failed'
+          status: "failed",
         });
       }
 
@@ -369,12 +432,12 @@ getPrestadoresByNombre: async (
   handleCSVUpload: async (file, progressCallback) => {
     try {
       if (!file) {
-        throw new Error('No se subió ningún archivo');
+        throw new Error("No se subió ningún archivo");
       }
 
       // Validar extensión
       if (!file.originalname.match(/\.(csv)$/i)) {
-        throw new Error('Solo se permiten archivos CSV');
+        throw new Error("Solo se permiten archivos CSV");
       }
 
       // Mover el archivo a la carpeta de datos
@@ -384,26 +447,26 @@ getPrestadoresByNombre: async (
       // Procesar el archivo con notificación de progreso
       const result = await PrestadorService.processMassiveCSV(destPath, {
         progressCallback,
-        batchSize: 2000 // Tamaño de lote optimizado
+        batchSize: 2000, // Tamaño de lote optimizado
       });
 
       // Eliminar el archivo después de procesarlo (opcional)
       try {
         await fs.promises.unlink(destPath);
       } catch (cleanupError) {
-        console.warn('No se pudo eliminar el archivo temporal:', cleanupError);
+        console.warn("No se pudo eliminar el archivo temporal:", cleanupError);
       }
 
       return result;
     } catch (error) {
-      console.error('Error en handleCSVUpload:', error);
-      
+      console.error("Error en handleCSVUpload:", error);
+
       // Limpiar archivo temporal si existe
       if (file && fs.existsSync(file.path)) {
         try {
           await fs.promises.unlink(file.path);
         } catch (cleanupError) {
-          console.warn('Error al limpiar archivo temporal:', cleanupError);
+          console.warn("Error al limpiar archivo temporal:", cleanupError);
         }
       }
 

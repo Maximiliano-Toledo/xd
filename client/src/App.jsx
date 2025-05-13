@@ -22,12 +22,10 @@ function App() {
 
         {/* Rutas privadas */}
         <Route element={<ProtectedRoute />}>
+          
           <Route path="*" element={<StaffLayout />} />
-
           <Route element={<RoleBasedRoute allowedRoles={['admin']} />}>
-            {/* Rutas con Layout (Sidebar) */}
-
-
+           
           </Route>
 
           <Route path="/user/dashboard" element={<div>User</div>} />

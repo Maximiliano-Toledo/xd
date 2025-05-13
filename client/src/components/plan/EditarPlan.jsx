@@ -1,219 +1,393 @@
-import HeaderStaff from '../../layouts/HeaderStaff';
-import { MdSubdirectoryArrowLeft } from 'react-icons/md';
-import { useNavigate } from 'react-router';
-import CustomSelect from '../CustomSelect';
-import { useAbmApi } from '../../hooks/useAbmApi';
-import { useEffect, useState } from 'react';
-import LiveAlert from '../utils/LiveAlert';
+import HeaderStaff from "../../layouts/HeaderStaff";
+import { MdSubdirectoryArrowLeft } from "react-icons/md";
+import { useNavigate } from "react-router";
+import CustomSelect from "../CustomSelect";
+import { useAbmApi } from "../../hooks/useAbmApi";
+import { useEffect, useState } from "react";
+import LiveAlert from "../utils/LiveAlert";
+import "../../styles/cargar-cartilla.css";
+import Swal from "sweetalert2";
+import { useForm } from "react-hook-form";
 
 const EditarPlan = () => {
+  const navigate = useNavigate();
+  const handleVolver = () => {
+    navigate(-1);
+  };
+  const { handleSubmit } = useForm();
 
-  //volver atrás
-    const navigate = useNavigate();
-    const handleVolver = () => {
-        navigate(-1);
-    };
+  const [formData, setFormData] = useState({ plan: "", nombre: "" });
+  const [planSeleccionado, setPlanSeleccionado] = useState(null);
+  const [estadoSeleccionado, setEstadoSeleccionado] = useState(null);
+  const [mostrarOpcionesEstado, setMostrarOpcionesEstado] = useState(false);
 
+  const {
+    data: planes,
+    loading: loadingPlanes,
+    getAll: getPlanes,
+    getById: getPlanById,
+    update: updatePlan,
+    toggleStatus: togglePlanStatus,
+  } = useAbmApi("planes");
 
-    const [formData, setFormData] = useState({plan: ""});
-    
-    // Hook para api plan
-    const {
-      data: planes,
-      loading: loadingPlanes,
-      getAll: getPlanes
-    } = useAbmApi('planes');
+  // Cargar datos al montar el componente
+  useEffect(() => {
+    getPlanes();
+  }, []);
 
-    // Cargar datos al montar el componente
-      useEffect(() => {
-        getPlanes();
-      }, []);
+  // Adaptar opciones para CustomSelect
+  const adaptarOpciones = (opciones, idKey, nombreKey) => {
+    return opciones.map((opcion) => ({
+      id: opcion[idKey],
+      nombre: opcion[nombreKey],
+    }));
+  };
 
-    // Adaptar opciones para CustomSelect
-    const adaptarOpciones = (opciones, idKey, nombreKey) => {
-        return opciones.map((opcion) => ({
-        id: opcion[idKey],
-        nombre: opcion[nombreKey],
-        }));
-    };
+  const handleChange = async (selectedOption) => {
+    const idPlan = selectedOption.target["value"];
 
-   const handleChange = (selectedOption) => {
-  setFormData((prevData) => ({
-    ...prevData,
-    plan: selectedOption.value, // si `value` es el id del plan
-  }));
-};
+    if (!idPlan) {
+      setFormData({
+        plan: "",
+        nombre: "",
+      });
+      setPlanSeleccionado(null);
+      setEstadoSeleccionado(null);
+      setMostrarOpcionesEstado(false);
+      return;
+    }
 
-//esto para habilitar / deshabilitar
-  const [isEnabled, setIsEnabled] = useState(true)
-  const [planName, setPlanName] = useState("")
+    setFormData((prevData) => ({
+      ...prevData,
+      plan: idPlan,
+    }));
 
+    try {
+      const plan = await getPlanById(idPlan);
+      setPlanSeleccionado(plan);
+      setFormData((prev) => ({
+        ...prev,
+        nombre: plan.nombre,
+      }));
+      setEstadoSeleccionado(null);
+      setMostrarOpcionesEstado(false);
+    } catch (error) {
+      console.error("Error al cargar el plan:", error);
+      Swal.fire({
+        title: "Error",
+        text: "No se pudo cargar la información del plan",
+        icon: "error",
+        confirmButtonColor: "#64A70B",
+      });
+    }
+  };
 
+  const handleEstadoChange = (e) => {
+    setEstadoSeleccionado(e.target.value);
+  };
 
-    return (
-        <div>
-            <HeaderStaff/>
-                <h6 className="w-25 fs-4 text-center pb-2 rounded-top rounded-bottom fw-bold text-white p-container mb-0 ">
-                    Editar plan
-                </h6>
-                <div className="d-flex justify-content-center align-items-start min-vh-25 mt-0">
-                    <div className="w-100 d-flex flex-column border  shadow-input p-3 rounded-3 shadow ps-5">
-                        <h1 className="fs-4 h1-titulo fw-bold ">
-                        Seleccioná un plan para cambiar su nombre, modificar su visibilidad o volver a habilitar los que
-                        estén disponibles.
-                        </h1>
-                    </div>
-                </div>
+  const handleNombreChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      nombre: e.target.value,
+    }));
+  };
 
-             <div className="d-flex justify-content-center align-items-start min-vh-75">
-                <div className="w-100 d-flex flex-column border shadow-input p-5 rounded-3 shadow mt-5 ">
+  const confirmarEditar = async () => {
+    try {
+      const cambios = {};
+      let necesitaActualizar = false;
 
-                  <form className="mb-4">
-                    {/**Select de Plan */}      
-                      <div className="form-group mb-4 w-50 mx-auto">
-                        <label htmlFor="plan" className="p-1 fs-6 text-uppercase">
-                          Plan:
-                        </label>
-                          <CustomSelect
-                             options={adaptarOpciones(planes, "id_plan", "nombre")}
-                              value={formData.plan}
-                              onChange={handleChange}
-                              name="plan"
-                              placeholder="Buscar..."
-                              disabled={loadingPlanes}
-                              loading={loadingPlanes} /> 
-                      </div>
+      // Verificar si cambió el nombre
+      if (formData.nombre !== planSeleccionado.nombre) {
+        cambios.nombre = formData.nombre;
+        necesitaActualizar = true;
+      }
 
+      // Verificar si se seleccionó cambiar el estado
+      if (estadoSeleccionado) {
+        try {
+          await togglePlanStatus(formData.plan);
+          // Refrescar datos después de cambiar el estado
+          const planActualizado = await getPlanById(formData.plan);
+          setPlanSeleccionado(planActualizado);
+        } catch (error) {
+          console.error("Error al cambiar el estado:", error);
+          throw error;
+        }
+      }
 
-                       {/**Tabla */}  
-                      <div className="container py-4">
-                          <div className=" mb-4">
-                            <div className="card-body p-0">
-                              <div className="table-responsive">
-                                <table className="table table-bordered mb-0">
-                                    <thead>
-                                      <tr>
-                                        <th className="text-center align-middle fs-6">Nombre</th>
-                                        <th className="text-center align-middle fs-6">Estado</th>
-                                        <th className="text-center">
-                                          Habilitar
-                                          <LiveAlert message={(
-                                                <span style={{ fontWeight: 'normal' }}>
-                                                  Habilitar un plan:
-                                                  Esta acción reactiva la visibilidad del
-                                                  plan.
-                                                  El plan volverá a estar disponible para
-                                                  los afiliados y podrá utilizarse
-                                                  nuevamente.
-                                                  Asegurate de que los datos estén
-                                                  actualizados antes de habilitarlo.
-                                                </span>
-                                              )}
-                                            />
-                                          
-                                        </th>
-                                        <th className="text-center fs-6">
-                                            Deshabilitar
-                                            <LiveAlert
-                                              message={(
-                                                <span style={{ fontWeight: 'normal' }}>
-                                                  Deshabilitar un plan:
-                                                  Esta acción oculta el plan
-                                                  seleccionado para los afiliados.
-                                                  El plan no será visible ni estará
-                                                  disponible para su uso, pero se
-                                                  conservará en el sistema por si necesita
-                                                  volver a habilitarlo más adelante.
-                                                  No se elimina ningún dato. Solo cambia
-                                                  el estado de visibilidad.
-                                                </span>
-                                              )}
-                                            />
-                                          </th>
+      // Actualizar nombre si cambió
+      if (necesitaActualizar) {
+        await updatePlan(formData.plan, cambios);
+      }
 
-                                      </tr>
-                                    </thead>
+      // Si no hay cambios en nombre ni estado seleccionado
+      if (!necesitaActualizar && !estadoSeleccionado) {
+        Swal.fire({
+          title: "No se realizaron cambios",
+          text: "No se detectaron modificaciones para guardar",
+          icon: "info",
+          confirmButtonColor: "#64A70B",
+        });
+        return;
+      }
 
-                                  <tbody>
-                                    <tr>
-                                      <td className="align-middle">Acá Iria el nombre seleccionado</td>
-                                      <td className="text-center align-middle">Su estado</td>
-                                      <td className="text-center align-middle">
-                                        <div className="form-check d-flex justify-content-center" onClick={() => setIsEnabled(true)}>
-                                          <input
-                                            type="checkbox"
-                                            className="form-check-input"
-                                            checked={isEnabled}
-                                            onChange={() => {}}
-                                            style={{ backgroundColor: isEnabled ? "#3c6e29" : "", borderColor: isEnabled ? "#3c6e29" : "" }}
-                                          />
-                                        </div>
-                                      </td>
-                                      <td className="text-center align-middle">
-                                        <div className="form-check d-flex justify-content-center" onClick={() => setIsEnabled(false)}>
-                                          <input
-                                            type="checkbox"
-                                            className="form-check-input"
-                                            checked={!isEnabled}
-                                            onChange={() => {}}
-                                            style={{
-                                              backgroundColor: !isEnabled ? "#3c6e29" : "",
-                                              borderColor: !isEnabled ? "#3c6e29" : "",
-                                            }}
-                                          />
-                                        </div>
-                                      </td>
-                                    </tr>
-                                  </tbody>
-                                </table>
-                              </div>
-                            </div>
-                          </div>
+      Swal.fire({
+        title: "Plan actualizado correctamente",
+        icon: "success",
+        confirmButtonColor: "#64A70B",
+      });
 
+      // Refrescar datos
+      const planActualizado = await getPlanById(formData.plan);
+      setPlanSeleccionado(planActualizado);
+      setEstadoSeleccionado(null);
+      setMostrarOpcionesEstado(false);
+    } catch (error) {
+      console.error("Error al editar el plan:", error);
+      Swal.fire({
+        title: "Error al editar el plan",
+        text:
+          error.message || "Ha ocurrido un error al intentar editar el plan.",
+        icon: "error",
+        confirmButtonColor: "#64A70B",
+      });
+    }
+  };
 
-                         {/*Modificar el nombre */}   
-                          <div className="card-body mb-4">
-                            <p className="fw-bold fs-5 h1-titulo text-start">Modificar el nombre del Plan.</p>
-                          </div>     
-                          <div className="card-body">
-                              <h2 className="text-center mb-4" style={{ color: "#3c6e29" }}>
-                                  EDICIÓN NOMBRE DEL PLAN
-                              </h2>
-                              <div className="row justify-content-center">
-                                  <div className="col-md-8">
-                                    <input
-                                        type="text"
-                                        className="form-control p-3"
-                                        placeholder="Ingresá el nombre del plan"
-                                        value={planName}
-                                        onChange={(e) => setPlanName(e.target.value)}
-                                    />
-                                    </div>
-                                </div>
-                          </div>
-                            
-                      </div>
+  const onSubmit = handleSubmit(() => {
+      Swal.fire({
+        title: "¿Confirmar cambios?",
+        text: "¿Estás seguro de que deseas guardar los cambios realizados?",
+        icon: "warning",
+        showCancelButton: true,
+        cancelButtonText: "Cancelar",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Confirmar",
+        confirmButtonColor: "#64A70B",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          confirmarEditar();
+        }
+      });
+  });
 
-                       <div className="d-flex justify-content-center mt-4">
-                            <button className="btn btn-volver rounded-pill text-white text-center text-uppercase w-md-auto white-space-nowrap"
-                                     type="submit">
-                                   Editar nombre
-                            </button>
-                         </div>
-                  </form>
-                       
-                <button className='btn btn-volver rounded-pill text-white text-center text-uppercase ' type='submit' onClick={handleVolver}>            
-                <MdSubdirectoryArrowLeft className='text-white' /> Volver
-                </button>  
+  // Verificar si hay una especialidad seleccionada
+  const hayPlanSeleccionado = !!planSeleccionado;
 
-                </div>
-             </div>
-
-           
-
-          
+  return (
+    <div>
+      <HeaderStaff />
+      <h1 className="w-25 fs-4 text-center pb-2 rounded-top rounded-bottom fw-bold text-white p-container mb-0 ">
+        Editar plan
+      </h1>
+      <div className="d-flex justify-content-center align-items-start min-vh-25 mt-0">
+        <div className="w-100 d-flex flex-column border  shadow-input p-3 rounded-3 shadow ps-5">
+          <h6 className="fs-4 h1-titulo fw-bold ">
+            Visualización del plan seleccionado. Gestioná su estado
+            (habilitado/deshabilitado) y actualizá su nombre desde la sección
+            inferior.
+          </h6>
         </div>
-    );
-}
+      </div>
+
+      <div className="d-flex justify-content-center align-items-start min-vh-75">
+        <div className="w-100 d-flex flex-column border shadow-input p-5 rounded-3 shadow mt-5 ">
+          {/*Seleccionar el plan */}
+          <div className="border m-1 rounded">
+            {/**Select de Plan */}
+            <div className="form-group mb-4 w-50 mx-auto">
+              <label
+                htmlFor="plan"
+                className="p-1 fs-6 text-uppercase text-success-label"
+              >
+                Plan:
+              </label>
+              <CustomSelect
+                options={adaptarOpciones(planes, "id_plan", "nombre")}
+                value={formData.plan}
+                onChange={handleChange}
+                name="plan"
+                placeholder="Seleccioná el plan que querés editar"
+                disabled={loadingPlanes}
+                loading={loadingPlanes}
+              />
+            </div>
+
+            {/**Tabla */}
+            <div className="container py-4">
+              <div className="w-50 mx-auto mb-4">
+                <div className="card-body p-0">
+                  <div className="table-responsive">
+                    <table className="table table-bordered mb-0">
+                      <thead>
+                        <tr>
+                          <th className="text-center align-middle fs-6 bg-light letter-color">
+                            Nombre
+                          </th>
+                          <th className="text-center align-middle fs-6 bg-light letter-color">
+                            <div className="d-flex justify-content-center align-items-center gap-2">
+                              <span>Estado</span>
+                              <LiveAlert
+                                message={
+                                  <span
+                                    style={{
+                                      fontWeight: "normal",
+                                      fontSize: "0.8rem",
+                                    }}
+                                  >
+                                    <b>Activo:</b> visible para los afiliados.{" "}
+                                    <br />
+                                    <b>Desactivado:</b> seguirá disponible en el
+                                    sistema para editar o actualizar, pero no
+                                    será visible para los afiliados.
+                                  </span>
+                                }
+                              />
+                            </div>
+                          </th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        <tr>
+                          <td className="align-middle">
+                            {planSeleccionado?.nombre || "Nombre de la especialidad seleccionada"}
+                          </td>
+                          <td className="text-center align-middle">
+                            {planSeleccionado?.estado ? (planSeleccionado.estado === "Activo" ? "Activo" : "Inactivo") : "-"}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/*Modificar el Estado */}
+          <div className="border m-1 rounded p-4">
+            <div className="d-flex align-items-center ms-5 w-75">
+              <h6 className="fw-bold fs-5 h1-titulo text-start mb-0 me-3">
+                Modificar el estado del plan.
+              </h6>
+              <LiveAlert
+                message={
+                  <span
+                    style={{
+                      fontSize: "0.875rem",
+                      fontWeight: "normal",
+                      color: "#555",
+                    }}
+                  >
+                    Esta acción cambia la visibilidad del plan. <br />
+                    <b>Habilitar</b>: lo hace visible para los afiliados. <br />
+                    <b>Deshabilitar</b>: lo oculta, pero sigue disponible para
+                    editar.
+                    <br />
+                    Si no necesitás cambiar el estado actual, no realices
+                    ninguna acción.
+                  </span>
+                }
+              />
+            </div>
+
+            <div className="d-flex flex-column align-items-center text-center">
+              <button
+                className="btn btn-outline-success mb-3"
+                onClick={() => setMostrarOpcionesEstado(!mostrarOpcionesEstado)}
+                disabled={!hayPlanSeleccionado}
+              >
+                {mostrarOpcionesEstado ? "Ocultar opciones" : "Cambiar estado"}
+              </button>
+
+              {mostrarOpcionesEstado && (
+                <div className="custom-select-container w-50">
+                  <select
+                    className="form-select custom-select border border-success rounded"
+                    id="estado"
+                    value={estadoSeleccionado || ""}
+                    onChange={handleEstadoChange}
+                    disabled={!hayPlanSeleccionado}
+                  >
+                    <option value="">Seleccionar acción...</option>
+                    {planSeleccionado?.estado === "Activo" ? (
+                      <option value="deshabilitar">Deshabilitar</option>
+                    ) : (
+                      <option value="habilitar">Habilitar</option>
+                    )}
+                  </select>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/*Modificar el nombre */}
+          <div className="border m-1 rounded p-4">
+            <div className="d-flex align-items-center ms-5 w-75">
+              <h6 className="fw-bold fs-5 h1-titulo text-start mb-0 me-3">
+                Modificar el nombre del plan.
+              </h6>
+              <LiveAlert
+                message={
+                  <span
+                    style={{
+                      fontSize: "0.875rem",
+                      fontWeight: "normal",
+                      color: "#555",
+                    }}
+                  >
+                    Modificá el nombre solo si es necesario. <br />
+                    Si no querés hacer cambios, no es obligatorio completar este
+                    campo.
+                  </span>
+                }
+              />
+            </div>
+
+            <div className="d-flex flex-column align-items-center text-center">
+              <label
+                htmlFor="plan"
+                className="text-success-label fw-bold text-uppercase mb-2"
+              >
+                Edición del nombre del plan
+              </label>
+
+              <input
+                type="text"
+                className="form-control w-50"
+                placeholder="Ingresá el nuevo nombre"
+                value={formData.nombre}
+                onChange={handleNombreChange}
+                disabled={!hayPlanSeleccionado}
+              />
+            </div>
+          </div>
+
+          <div className="d-flex justify-content-center mt-4">
+            <button
+              className="btn btn-volver rounded-pill text-white text-center text-uppercase w-md-auto white-space-nowrap"
+              type="submit"
+              onClick={onSubmit}
+              disabled={!hayPlanSeleccionado}
+            >
+              Guardar cambios
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <button
+        className="btn btn-volver rounded-pill text-white text-center text-uppercase mt-5"
+        type="submit"
+        onClick={handleVolver}
+      >
+        <MdSubdirectoryArrowLeft className="text-white" /> Volver
+      </button>
+    </div>
+  );
+};
 
 export default EditarPlan;

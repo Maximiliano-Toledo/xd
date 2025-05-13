@@ -154,6 +154,49 @@ export const CartillaService = {
       throw error;
     }
   },
+
+  descargarCartillaPDF: async (idPlan, idProvincia) => {
+  try {
+    const response = await fetch(
+      `${API_URL}/cartilla/descargar-cartilla-pdf/plan/${idPlan}/provincia/${idProvincia}`,
+      {
+        method: 'GET',
+        credentials: 'include'
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Error ${response.status}: ${errorText}`);
+    }
+    
+    // Obtener el blob
+    const blob = await response.blob();
+    
+    // Extraer nombre del archivo de forma más robusta
+    let filename = 'cartilla.pdf';
+    const contentDisposition = response.headers.get('content-disposition') || response.headers.get('Content-Disposition');
+    
+    if (contentDisposition) {
+      // Primero intentar con filename* (formato RFC 6266 para UTF-8)
+      const utf8FilenameMatch = contentDisposition.match(/filename\*=UTF-8''([^;]+)/i);
+      if (utf8FilenameMatch && utf8FilenameMatch[1]) {
+        filename = decodeURIComponent(utf8FilenameMatch[1]);
+      } else {
+        // Fallback a filename normal
+        const basicFilenameMatch = contentDisposition.match(/filename="([^"]+)"/i);
+        if (basicFilenameMatch && basicFilenameMatch[1]) {
+          filename = basicFilenameMatch[1];
+        }
+      }
+    }
+
+    return { blob, filename };
+  } catch (error) {
+    console.error('Error al descargar cartilla PDF:', error);
+    throw error;
+  }
+},
   
   // Subir archivo CSV de cartilla
   subirCartilla: async (file, onProgress) => {
@@ -179,7 +222,7 @@ export const CartillaService = {
           });
         }
         
-        xhr.open('POST', `${API_URL}/cartilla/prestadores/subir-cartilla`);
+        xhr.open('POST', `${API_URL}/cartilla/subir-cartilla`);
         
         // Asegurarse de incluir las cookies en la solicitud para autenticación
         xhr.withCredentials = true;

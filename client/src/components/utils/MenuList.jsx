@@ -3,18 +3,16 @@ import { Menu, Dropdown } from "antd"
 import { IoMdHome } from "react-icons/io"
 import { IoIosCreate } from "react-icons/io"
 import { AiOutlineFileAdd } from "react-icons/ai"
-import { IoIosSettings } from "react-icons/io"
 import { IoIosInformationCircleOutline } from "react-icons/io"
 import { FaPowerOff } from "react-icons/fa6"
-import { TiDocumentDelete } from "react-icons/ti"
 import { RiFileList3Line } from "react-icons/ri"
 import { FiUser } from "react-icons/fi"
 import { useLocation } from "react-router"
 import "../../styles/sidebar.css"
 import Logo from "./Logo"
 import { useNavigate } from "react-router"
-import React from "react"
 import { CiFolderOn } from "react-icons/ci";
+import { GoDownload } from "react-icons/go";
 import { FaStethoscope } from "react-icons/fa6";
 import { PiNumberSquareOneLight } from "react-icons/pi";
 import { PiNumberSquareTwoLight } from "react-icons/pi";
@@ -53,7 +51,22 @@ export default function MenuList({darkTheme }) {
     ],
   };
 
-  
+  const descargaSubmenu = {
+    items: [
+      {
+        key: "Descargar PDF",
+        icon: <PiNumberSquareOneLight className="icon-menu" />,
+        label: "Descargar PDF",
+        onClick: () => navigate("/descargar-cartilla-pdf"),
+      },
+      {
+        key: "Descargar CSV",
+        icon: <PiNumberSquareTwoLight className="icon-menu" />,
+        label: "Descargar CSV",
+        onClick: () => navigate("/descargar-cartilla-csv"),
+      },
+    ],
+  };
 
   const items = [
     {
@@ -89,6 +102,25 @@ export default function MenuList({darkTheme }) {
       ),
       label: "Carga",
      
+    }, 
+    {
+      key: "descargar",
+      icon: (
+        <Dropdown
+            menu={descargaSubmenu}
+            trigger={["click"]}
+            open={activeSubmenu === "descargar"}
+            onOpenChange={(open) => !open && setActiveSubmenu(null)}
+            placement="rightTop"
+            overlayClassName="submenu-dropdown"
+            overlayStyle={{ minWidth: "120px" }}
+        >
+            <div onClick={(e) => handleSubmenuClick("descargar", e)}>
+              <GoDownload className="icon-menu" />
+            </div>
+        </Dropdown>
+      ),
+      label: "Descargar cartilla",
     },
     {
       key: "editar",
@@ -145,5 +177,3 @@ export default function MenuList({darkTheme }) {
     </>
   )
 }
-
-

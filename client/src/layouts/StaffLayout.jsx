@@ -1,4 +1,3 @@
-
 import Sidebar from './Sidebar'
 import { Route, Routes } from 'react-router'
 import { FormCartilla } from '../components/FormCartilla'
@@ -7,9 +6,7 @@ import AdminDashboardPage from '../containers/pages/AdminDashboardPage'
 import CargaMasivaPage from '../containers/pages/CargaMasivaPage'
 import CargaIndividualPage from '../containers/pages/CargaIndividualPage'
 import InfoPage from '../containers/pages/InfoPage'
-import BajaIndividualPage from '../containers/pages/BajaIndividualPage'
 import EspecialidadPage from '../containers/pages/EspecialidadPage'
-import BajaMasiva from '../components/BajaMasiva'
 import GestionPlanPage from '../containers/pages/GestionPlanPage'
 import EditarPlan from '../components/plan/EditarPlan'
 import CrearPlan from '../components/plan/CrearPlan'
@@ -19,6 +16,8 @@ import PanelUsuarioPage from '../containers/pages/PanelUsuarioPage'
 import Historial from '../components/panel/Historial'
 import ChangePass from '../components/panel/ChangePass'
 import EditarPrestadorPage from '../containers/pages/EditarCartillaPage'
+import DescargarCartillaPDFPage from '../containers/pages/DescargarCartillaPDFPage'
+import DescargarCartillaCSVPage from '../containers/pages/DescargarCartillaCSVPage'
 
 export default function StaffLayout() {
   
@@ -44,15 +43,17 @@ export default function StaffLayout() {
         <Route path ='/editar-especialidad' element={<EditarEspecialidad/>} />
         <Route path= '/crear-especialidad' element={<CrearEspecialidad/> } />
 
-
-        <Route path='/info' element={<InfoPage />} />
-        <Route path='/baja-masiva' element={<BajaMasiva />} />
-        <Route path='/baja-individual' element={<BajaIndividualPage />} />
-
         {/* Usuario */}
         <Route path='/panel-usuario' element={<PanelUsuarioPage />} />
         <Route path='/cambiar-contraseña' element={<ChangePass />} />
         <Route path='/historial-actividad' element={<Historial />} />
+
+        {/* Descargas */}
+        <Route path='/descargar-cartilla-pdf' element={<DescargarCartillaPDFPage />} />
+        <Route path='/descargar-cartilla-csv' element={<DescargarCartillaCSVPage />} />
+
+        <Route path='/info' element={<InfoPage />} />
+
         
       </Routes>
     </Sidebar>

@@ -23,17 +23,17 @@ export default function ChangePass() {
   return (
     <div>
         <HeaderStaff />
-            <h6 className="w-25 fs-3 text-center pb-2 pt-2 rounded-top rounded-bottom fw-bold text-white p-container mt-0 mb-0 m-4 ">
+            <h1 className="w-25 fs-3 text-center pb-2 pt-2 rounded-top rounded-bottom fw-bold text-white p-container mt-0 mb-0 m-4 ">
                 Panel usuario
-            </h6>
+            </h1>
             <div className="d-flex justify-content-center align-items-start min-vh-25 mt-0">
                 <div className="w-100 d-flex flex-column border shadow-input p-3 rounded-3 shadow ps-5 ms-4 me-4 ">
-                    <h1 className="fs-2 h1-titulo fw-bold border p-2 d-flex align-items-center"> 
+                    <h6 className="fs-2 h1-titulo fw-bold border p-2 d-flex align-items-center"> 
                         <div className='rounded-color d-flex justify-content-center align-items-center me-4'>
                           <MdOutlineKeyboardDoubleArrowRight className="fs-1 text-white  " /> 
                         </div>
                         Editar contraseña
-                    </h1>
+                    </h6>
                     <h2 className="fs-2 h1-titulo p-2 fw-normal">     
                     Modificá tu contraseña actual por una nueva de forma segura.
                     </h2>

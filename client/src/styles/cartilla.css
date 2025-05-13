@@ -946,6 +946,9 @@
     }
 }
 
+
+
+
 /* Estilos para el nuevo formulario de búsqueda */
 .search-form-container {
     max-width: 900px;
@@ -1032,10 +1035,9 @@
     text-align: center;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     border: 2px solid transparent;
-    position: relative;
 }
 
-.search-category-item:hover:not(.disabled) {
+.search-category-item:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
@@ -1120,6 +1122,166 @@ main {
     overflow: visible !important;
 }
 
+/* Estilos responsivos */
+@media (max-width: 768px) {
+    .search-select-row {
+        grid-template-columns: 1fr;
+    }
+
+    .search-categories-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .search-categories-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .search-form-card {
+        padding: 20px 15px;
+    }
+
+    .search-form-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .search-button {
+        width: 100%;
+        padding: 12px 20px;
+    }
+}
+
+/* SOLUCIÓN MEJORADA - Estilos para las pestañas de método de búsqueda */
+
+.search-method-tabs {
+    display: flex;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    background-color: #f5f8f0;
+    padding: 4px;
+    gap: 4px;
+}
+
+.search-method-tab {
+    flex: 1;
+    padding: 14px 20px;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #757575;
+    /* Color específico en lugar de variable */
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Método 1: Solo con pseudo-elemento */
+.search-method-tab::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, #64A70B, #3e6907);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: -1;
+    /* Cambiar a -1 en lugar de 0 */
+}
+
+.search-method-tab>* {
+    position: relative;
+    z-index: 1;
+}
+
+/* Estado activo - múltiples formas de aplicar blanco */
+.search-method-tab.active {
+    color: #ffffff !important;
+    background-color: transparent;
+    box-shadow: 0 2px 8px rgba(100, 167, 11, 0.3);
+}
+
+.search-method-tab.active::before {
+    opacity: 1;
+}
+
+/* Asegurar que los iconos también sean blancos */
+.search-method-tab.active svg,
+.search-method-tab.active * {
+    color: #ffffff !important;
+    fill: #ffffff !important;
+    /* Para SVGs que usan fill */
+}
+
+/* MÉTODO ALTERNATIVO: Con background directo */
+.search-method-tab.active-alt {
+    background: linear-gradient(135deg, #64A70B, #3e6907) !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 8px rgba(100, 167, 11, 0.3);
+}
+
+.search-method-tab.active-alt svg {
+    color: #ffffff !important;
+}
+
+/* Estados hover y active */
+.search-method-tab:hover:not(.active) {
+    background-color: rgba(100, 167, 11, 0.1);
+    color: #3e6907;
+    transform: translateY(-1px);
+}
+
+.search-method-tab:active {
+    transform: translateY(0);
+}
+
+/* Animación de icono */
+.search-method-tab svg {
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.search-method-tab:hover svg {
+    transform: scale(1.1);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .search-method-tabs {
+        flex-direction: column;
+        gap: 8px;
+        padding: 8px;
+    }
+
+    .search-method-tab {
+        padding: 12px 16px;
+        font-size: 0.95rem;
+    }
+}
+
+/* DEPURACIÓN - Añade esto temporalmente para verificar */
+.search-method-tab.active {
+    /* Forzar todos los estilos posibles */
+    color: white !important;
+    background: linear-gradient(135deg, #64A70B, #3e6907) !important;
+    border: none !important;
+}
+
+.search-method-tab.active,
+.search-method-tab.active span,
+.search-method-tab.active div {
+    color: white !important;
+}
+
 /* Estilos para categorías deshabilitadas */
 .search-category-item.disabled {
     opacity: 0.6;
@@ -1138,6 +1300,7 @@ main {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
+/* Estilo para el overlay "No disponible" */
 .category-unavailable-overlay {
     position: absolute;
     bottom: 0;
@@ -1151,37 +1314,16 @@ main {
     border-radius: 0 0 10px 10px;
 }
 
-/* Estilos para las pestañas de método de búsqueda */
-.search-method-tabs {
-    display: flex;
-    margin-bottom: 20px;
-    border-bottom: 1px solid var(--color-gray);
+/* Combinación de disabled y unavailable */
+.search-category-item.disabled.unavailable {
+    opacity: 0.5;
+    background-color: #f0f0f0;
 }
 
-.search-method-tab {
-    flex: 1;
-    padding: 12px 15px;
-    background: none;
-    border: none;
-    font-size: 1rem;
-    font-weight: 500;
-    color: var(--color-text-light);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    transition: var(--transition);
-    border-bottom: 2px solid transparent;
+.search-category-item.disabled.unavailable .search-category-icon {
+    color: #bbb;
 }
 
-.search-method-tab.active {
-    color: var(--color-primary);
-    border-bottom-color: var(--color-primary);
-    font-weight: 600;
-}
-
-.search-method-tab:hover:not(.active) {
-    background-color: var(--color-gray-light);
-    color: var(--color-primary-dark);
+.search-category-item.disabled.unavailable .search-category-name {
+    color: #888;
 }

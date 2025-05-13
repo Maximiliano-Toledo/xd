@@ -5,7 +5,7 @@
   }
 
   .subtitle-dashboard{
-    color:#3e6907;
+    color:#3e6907 !important;
     font-weight: 900;
   }
   
@@ -122,11 +122,16 @@
 }
 
 .text-success-label{
-  color: #64A70B;
+  color: #64A70B !important; 
 }
 
 .arrow-style{
   font-size: 1.5rem;
+}
+
+/*Letras de editar prestador*/
+.letter-color{
+  color:#3e6907 !important;
 }
       
   

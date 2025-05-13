@@ -5,261 +5,371 @@ import LiveAlert from "../utils/LiveAlert";
 import { useEffect, useState } from "react";
 import { useAbmApi } from "../../hooks/useAbmApi";
 import CustomSelect from "../CustomSelect";
-import { FaPlus } from "react-icons/fa6";
 import Swal from "sweetalert2";
 import { useForm } from "react-hook-form";
+import "../../styles/cargar-cartilla.css";
 
 const EditarEspecialidad = () => {
-
   const navigate = useNavigate();
   const handleVolver = () => {
-      navigate(-1);
+    navigate(-1);
   };
-
   const { handleSubmit } = useForm();
 
-  const [isEnabled, setIsEnabled] = useState(true)
-  const [especialidadName, setEspecialidadName] = useState("")
-  const [formData, setFormData] = useState({especialidad: ""});
-        
-  // Hook para api especialidad
-    const {
-        data: especialidades,
-        loading: loadingEspecialidades,
-        getAll: getEspecialidades
-    } = useAbmApi('especialidades');
-    
-  // Cargar datos al montar el componente
-      useEffect(() => {
-          getEspecialidades();
-      }, []);
-    
-  // Adaptar opciones para CustomSelect
-    const adaptarOpciones = (opciones, idKey, nombreKey) => {
-        return opciones.map((opcion) => ({
-              id: opcion[idKey],
-              nombre: opcion[nombreKey],
-              }));
-    };
-    
-    const handleChange = (e) => {
-      const { name, value } = e.target;
-       setFormData((prev) => ({ ...prev, [name]: value }));        
-    };
+  const [formData, setFormData] = useState({ 
+    especialidad: "",
+    nombre: ""
+  });
+  const [especialidadSeleccionada, setEspecialidadSeleccionada] = useState(null);
+  const [estadoSeleccionado, setEstadoSeleccionado] = useState(null);
+  const [mostrarOpcionesEstado, setMostrarOpcionesEstado] = useState(false);
+  
+  const {
+    data: especialidades,
+    loading: loadingEspecialidades,
+    getAll: getEspecialidades,
+    getById: getEspecialidadById,
+    update: updateEspecialidad,
+    toggleStatus: toggleEspecialidadStatus
+  } = useAbmApi("especialidades");
 
+  useEffect(() => {
+    getEspecialidades();
+  }, []);
 
-  //el mensaje de confirmar editar
-  const confirmarEditar=()=>{
-        Swal.fire({
-            title: "¿Editar el nombre de la especialidad?",
-            icon: "warning",
-            color: "#64A70B",
-            showCancelButton: true,
-            cancelButtonText: 'Cancelar y volver',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Aceptar',
-            confirmButtonColor: '#64A70B'
-      }).then((result) => {
-          if (result.isConfirmed) {       
-            try {
-              // Acá llamaria a la API para editar el nombre del plan
-               Swal.fire({
-                    title: 'Nombre editado correctamente',
-                    icon: 'success',
-                    color: "#64A70B",
-                    confirmButtonText: 'Aceptar',
-                    confirmButtonColor: '#64A70B'
-                  });    
-            } catch (error) {
-                  console.error("Error al editar la especialidad:", error);
-                  Swal.fire({
-                  title: 'Error al editar la especialidad',
-                  text: error.message || 'Ha ocurrido un error al intentar editar la especialidad.',
-                  icon: 'error',
-                  color: "#d33",
-                  confirmButtonText: 'Aceptar',
-                  confirmButtonColor: '#64A70B'
-                  });
-            } 
-        }
+  const adaptarOpciones = (opciones, idKey, nombreKey) => {
+    return opciones.map((opcion) => ({
+      id: opcion[idKey],
+      nombre: opcion[nombreKey],
+    }));
+  };
+
+  const handleChange = async (selectedOption) => {
+    const idEspecialidad = selectedOption.target['value'];
+
+    if (!idEspecialidad) {
+      // Si no se seleccionó ninguna especialidad, limpiar todo
+      setFormData({
+        especialidad: "",
+        nombre: ""
       });
-  }
+      setEspecialidadSeleccionada(null);
+      setEstadoSeleccionado(null);
+      setMostrarOpcionesEstado(false);
+      return;
+    }
+
+    setFormData(prev => ({
+      ...prev,
+      especialidad: idEspecialidad
+    }));
+    
+    try {
+      const especialidad = await getEspecialidadById(idEspecialidad);
+      setEspecialidadSeleccionada(especialidad);
+      setFormData(prev => ({
+        ...prev,
+        nombre: especialidad.nombre
+      }));
+      setEstadoSeleccionado(null);
+      setMostrarOpcionesEstado(false);
+    } catch (error) {
+      console.error("Error al cargar la especialidad:", error);
+      Swal.fire({
+        title: "Error",
+        text: "No se pudo cargar la información de la especialidad",
+        icon: "error",
+        confirmButtonColor: "#64A70B",
+      });
+    }
+  };
+
+  const handleEstadoChange = (e) => {
+    setEstadoSeleccionado(e.target.value);
+  };
+
+  const handleNombreChange = (e) => {
+    setFormData(prev => ({
+      ...prev,
+      nombre: e.target.value
+    }));
+  };
+
+  const confirmarEditar = async () => {
+    try {
+      const cambios = {};
+      let necesitaActualizar = false;
+      
+      // Verificar si cambió el nombre
+      if (formData.nombre !== especialidadSeleccionada.nombre) {
+        cambios.nombre = formData.nombre;
+        necesitaActualizar = true;
+      }
+      
+      // Verificar si se seleccionó cambiar el estado
+      if (estadoSeleccionado) {
+        try {
+          await toggleEspecialidadStatus(formData.especialidad);
+          // Refrescar datos después de cambiar el estado
+          const especialidadActualizada = await getEspecialidadById(formData.especialidad);
+          setEspecialidadSeleccionada(especialidadActualizada);
+        } catch (error) {
+          console.error("Error al cambiar el estado:", error);
+          throw error;
+        }
+      }
+      
+      // Actualizar nombre si cambió
+      if (necesitaActualizar) {
+        await updateEspecialidad(formData.especialidad, cambios);
+      }
+      
+      // Si no hay cambios en nombre ni estado seleccionado
+      if (!necesitaActualizar && !estadoSeleccionado) {
+        Swal.fire({
+          title: "No se realizaron cambios",
+          text: "No se detectaron modificaciones para guardar",
+          icon: "info",
+          confirmButtonColor: "#64A70B",
+        });
+        return;
+      }
+      
+      Swal.fire({
+        title: "Especialidad actualizada correctamente",
+        icon: "success",
+        confirmButtonColor: "#64A70B",
+      });
+      
+      // Refrescar datos
+      const especialidadActualizada = await getEspecialidadById(formData.especialidad);
+      setEspecialidadSeleccionada(especialidadActualizada);
+      setEstadoSeleccionado(null);
+      setMostrarOpcionesEstado(false);
+      
+    } catch (error) {
+      console.error("Error al editar la especialidad:", error);
+      Swal.fire({
+        title: "Error al editar la especialidad",
+        text: error.message || "Ha ocurrido un error al intentar editar la especialidad.",
+        icon: "error",
+        confirmButtonColor: "#64A70B",
+      });
+    }
+  };
 
   const onSubmit = handleSubmit(() => {
-       confirmarEditar()      
-   })
+    Swal.fire({
+      title: "¿Confirmar cambios?",
+      text: "¿Estás seguro de que deseas guardar los cambios realizados?",
+      icon: "warning",
+      showCancelButton: true,
+      cancelButtonText: "Cancelar",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Confirmar",
+      confirmButtonColor: "#64A70B",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        confirmarEditar();
+      }
+    });
+  });
 
-    return (
-        <div>
-              <HeaderStaff/>
-                <h6 className="w-25 fs-4 text-center pb-2 rounded-top rounded-bottom fw-bold text-white p-container mb-0 ">
-                    Editar especialidad
-                </h6>
-                <div className="d-flex justify-content-center align-items-start min-vh-25 mt-0">
-                    <div className="w-100 d-flex flex-column border  shadow-input p-3 rounded-3 shadow ps-5">
-                        <h1 className="fs-2 h1-titulo fw-bold ">
-                        Edita una especialidad disponible
-                        </h1>
-                    </div>
-                </div>
+  // Verificar si hay una especialidad seleccionada
+  const hayEspecialidadSeleccionada = !!especialidadSeleccionada;
 
+  return (
+    <div>
+      <HeaderStaff />
+      <h1 className="w-25 fs-4 text-center pb-2 rounded-top rounded-bottom fw-bold text-white p-container mb-0">
+        Editar especialidad
+      </h1>
 
-                <div className="d-flex justify-content-center align-items-start min-vh-75">
-                    <div className="w-100 d-flex flex-column border shadow-input p-5 rounded-3 shadow mt-5 ">
-
-                    <form className="mb-4" onSubmit={onSubmit}>   
-                             {/**Select de Especialidad */}      
-                        <div className="form-group mb-4 w-50 mx-auto">
-                             <label htmlFor="especialidad" className="p-1 fs-6 text-uppercase">
-                                Especialidad:
-                              </label>
-                              <CustomSelect
-                                options={adaptarOpciones(especialidades, "id_especialidad", "nombre")}
-                                value={formData.especialidad}
-                                onChange={handleChange}
-                                name="especialidad"
-                                placeholder="Buscar..."
-                                disabled={loadingEspecialidades}
-                                loading={loadingEspecialidades} /> 
-                        </div>
-
-
-                        <div className="container py-4">
-                            <div className=" mb-4">
-                              <div className="card-body p-0">
-                                <div className="table-responsive">
-                                  <table className="table table-bordered mb-0">
-                                      <thead>
-                                        <tr>
-                                          <th className="text-center align-middle fs-6">Nombre</th>
-                                          <th className="text-center align-middle fs-6">Estado</th>
-                                          <th className="text-center fs-6">
-                                            Habilitar
-                                            <LiveAlert
-                                                message={(
-                                                  <span style={{ fontWeight: 'normal' }}>
-                                                    Habilitar una especialidad:
-                                                    Esta acción reactiva la visibilidad del
-                                                    especialidad.
-                                                    La especialidad volverá a estar disponible para
-                                                    los afiliados y podrá utilizarse
-                                                    nuevamente.
-                                                    Asegurate de que los datos estén
-                                                    actualizados antes de habilitarlo.
-                                                  </span>
-                                                )}
-                                              />
-                                            
-                                          </th>
-                                          <th className="text-center fs-6">
-                                              Deshabilitar
-                                              <LiveAlert
-                                                message={(
-                                                  <span style={{ fontWeight: 'normal' }}>
-                                                    Deshabilitar una especialidad:
-                                                    Esta acción oculta la especialidad
-                                                    seleccionado para los afiliados.
-                                                    La especialidad no será visible ni estará
-                                                    disponible para su uso, pero se
-                                                    conservará en el sistema por si necesita
-                                                    volver a habilitarlo más adelante.
-                                                    No se elimina ningún dato. Solo cambia
-                                                    el estado de visibilidad.
-                                                  </span>
-                                                )}
-                                              />
-                                            </th>
-
-                                        </tr>
-                                      </thead>
-
-                                    <tbody>
-                                      <tr>
-                                        <td className="align-middle">Acá Iria el nombre seleccionado</td>
-                                        <td className="text-center align-middle">Su estado</td>
-                                        <td className="text-center align-middle">
-                                          <div className="form-check d-flex justify-content-center" onClick={() => setIsEnabled(true)}>
-                                            <input
-                                              type="checkbox"
-                                              className="form-check-input"
-                                              checked={isEnabled}
-                                              onChange={() => {}}
-                                              style={{ backgroundColor: isEnabled ? "#3c6e29" : "", borderColor: isEnabled ? "#3c6e29" : "" }}
-                                            />
-                                          </div>
-                                        </td>
-                                        <td className="text-center align-middle">
-                                          <div className="form-check d-flex justify-content-center" onClick={() => setIsEnabled(false)}>
-                                            <input
-                                              type="checkbox"
-                                              className="form-check-input"
-                                              checked={!isEnabled}
-                                              onChange={() => {}}
-                                              style={{
-                                                backgroundColor: !isEnabled ? "#3c6e29" : "",
-                                                borderColor: !isEnabled ? "#3c6e29" : "",
-                                              }}
-                                            />
-                                          </div>
-                                        </td>
-                                      </tr>
-                                    </tbody>
-                                  </table>
-                                </div>
-                              </div>
-                            </div>
-
-                                
-                            <div className="card-body mb-4">
-                              <p className="fw-bold fs-5 h1-titulo text-start">Modificar el nombre de la especialidad.</p>
-                            </div>
-                                
-
-                              
-                            <div className="card-body">
-                                <h2 className="text-center mb-4" style={{ color: "#3c6e29" }}>
-                                    EDICIÓN NOMBRE DE LA ESPECIALIDAD
-                                </h2>
-                                  <div className="row justify-content-center">
-                                      <div className="col-md-8">
-                                        <input
-                                          type="text"
-                                          className="form-control p-3"
-                                          placeholder="Ingresá el nombre de la especialidad"
-                                          value={especialidadName}
-                                          onChange={(e) => setEspecialidadName(e.target.value)}
-                                        />
-                                      </div>
-                                  </div>
-                            </div>
-                              
-                        </div>
-                        
-                         <div className="d-flex justify-content-center mt-4">
-                            <button className="btn btn-volver rounded-pill text-white text-center text-uppercase w-md-auto white-space-nowrap"
-                                     type="submit">
-                                   Editar nombre
-                            </button>
-                         </div>
-
-                    </form> 
-                        
- 
-                        <button className='btn btn-volver rounded-pill text-white text-center text-uppercase ' 
-                                type='submit' onClick={handleVolver}>            
-                        <MdSubdirectoryArrowLeft className='text-white' /> Volver
-                        </button>  
-
-                    </div>
-                </div>
-
-            
-
-            
-            
-                            
+      <div className="d-flex justify-content-center align-items-start min-vh-25 mt-0">
+        <div className="w-100 d-flex flex-column border shadow-input p-3 rounded-3 shadow ps-5">
+          <h6 className="fs-4 h1-titulo fw-bold">
+            Visualizá la especialidad seleccionada. Gestioná su estado
+            (habilitada/deshabilitada) y actualizá su nombre desde la sección
+            inferior.
+          </h6>
         </div>
-    );
-}
+      </div>
+
+      <div className="d-flex justify-content-center align-items-start min-vh-75">
+        <div className="w-100 d-flex flex-column border shadow-input p-5 rounded-3 shadow mt-5">
+          <div className="border m-1 rounded">
+            <div className="form-group mb-4 w-50 mx-auto">
+              <label
+                htmlFor="especialidad"
+                className="p-1 fs-6 text-uppercase text-success-label"
+              >
+                Especialidad:
+              </label>
+              <CustomSelect
+                options={adaptarOpciones(
+                  especialidades,
+                  "id_especialidad",
+                  "nombre"
+                )}
+                value={formData.especialidad}
+                onChange={handleChange}
+                name="especialidad"
+                placeholder="Seleccioná la especialidad que querés editar"
+                disabled={loadingEspecialidades}
+                loading={loadingEspecialidades}
+              />
+            </div>
+
+            {/* Tabla */}
+            <div className="container py-4">
+              <div className="w-50 mx-auto mb-4">
+                <div className="card-body p-0">
+                  <div className="table-responsive">
+                    <table className="table table-bordered mb-0">
+                      <thead>
+                        <tr>
+                          <th className="text-center align-middle fs-6 bg-light letter-color">
+                            Nombre
+                          </th>
+                          <th className="text-center align-middle fs-6 bg-light letter-color">
+                            <div className="d-flex justify-content-center align-items-center gap-2">
+                              <span>Estado</span>
+                              <LiveAlert
+                                message={
+                                  <span style={{ fontWeight: "normal", fontSize: '0.8rem' }}>
+                                    <b>Activo:</b> visible para los afiliados. <br />
+                                    <b>Desactivado:</b> seguirá disponible en el sistema para 
+                                      editar o actualizar, pero no será visible para los afiliados.
+                                  </span>
+                                }
+                              />
+                            </div>
+                          </th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        <tr>
+                          <td className="align-middle">
+                            {especialidadSeleccionada?.nombre || "Nombre de la especialidad seleccionada"}
+                          </td>
+                          <td className="text-center align-middle">
+                            {especialidadSeleccionada?.estado ? (especialidadSeleccionada.estado === "Activo" ? "Activo" : "Inactivo") : "-"}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Modificar Estado */}
+          <div className="border m-1 rounded p-4">
+            <div className="d-flex align-items-center ms-5 w-75 mb-3">
+              <h6 className="fw-bold fs-5 h1-titulo text-start mb-0 me-3">
+                Modificar el estado de la especialidad.
+              </h6>
+              <LiveAlert
+                message={
+                  <span style={{ fontSize: '0.875rem', fontWeight: 'normal', color: '#555' }}>
+                    Esta acción cambia la visibilidad de la especialidad. <br />
+                    <b>Habilitar</b>: lo hace visible para los afiliados. <br />
+                    <b>Deshabilitar</b>: lo oculta, pero sigue disponible para editar.  
+                    <br />
+                    Si no necesitás cambiar el estado actual, no realices ninguna acción.
+                  </span>
+                }
+              />
+            </div>
+
+            <div className="d-flex flex-column align-items-center text-center">
+              <button
+                className="btn btn-outline-success mb-3"
+                onClick={() => setMostrarOpcionesEstado(!mostrarOpcionesEstado)}
+                disabled={!hayEspecialidadSeleccionada}
+              >
+                {mostrarOpcionesEstado ? "Ocultar opciones" : "Cambiar estado"}
+              </button>
+
+              {mostrarOpcionesEstado && (
+                <div className="custom-select-container w-50">
+                  <select
+                    className="form-select custom-select border border-success rounded"
+                    id="estado"
+                    value={estadoSeleccionado || ""}
+                    onChange={handleEstadoChange}
+                    disabled={!hayEspecialidadSeleccionada}
+                  >
+                    <option value="">Seleccionar acción...</option>
+                    {especialidadSeleccionada?.estado === "Activo" ? (
+                      <option value="deshabilitar">Deshabilitar</option>
+                    ) : (
+                      <option value="habilitar">Habilitar</option>
+                    )}
+                  </select>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Modificar Nombre */}
+          <div className="border m-1 rounded p-4">
+            <div className="d-flex align-items-center ms-5 w-75">
+              <h6 className="fw-bold fs-5 h1-titulo text-start mb-0 me-3">
+                Modificar el nombre de la especialidad.
+              </h6>
+              <LiveAlert message={
+                <span style={{ fontSize: '0.875rem', fontWeight: 'normal', color: '#555' }}>
+                  Modificá el nombre solo si es
+                  necesario. <br/>Si no querés hacer
+                  cambios, no es obligatorio
+                  completar este campo.
+                </span>
+              }/>
+            </div>
+            <div className="d-flex flex-column align-items-center text-center">
+              <label
+                htmlFor="especialidad"
+                className="text-success-label fw-bold text-uppercase mb-2"
+              >
+                Edición del nombre de la especialidad
+              </label>
+
+              <input
+                type="text"
+                className="form-control w-50"
+                placeholder="Ingresá el nuevo nombre"
+                value={formData.nombre}
+                onChange={handleNombreChange}
+                disabled={!hayEspecialidadSeleccionada}
+              />
+            </div>
+          </div>
+
+          <div className="d-flex justify-content-center mt-4">
+            <button
+              className="btn btn-volver rounded-pill text-white text-center text-uppercase w-md-auto white-space-nowrap"
+              type="submit"
+              onClick={onSubmit}
+              disabled={!hayEspecialidadSeleccionada}
+            >
+              Guardar cambios
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <button
+        className="btn btn-volver rounded-pill text-white text-center text-uppercase mt-5"
+        type="submit"
+        onClick={handleVolver}
+      >
+        <MdSubdirectoryArrowLeft className="text-white" /> Volver
+      </button>
+    </div>
+  );
+};
 
 export default EditarEspecialidad;

@@ -242,12 +242,12 @@ export const CargaIndividual = () => {
   return (
     <div>
       <HeaderStaff />
-      <h6 className=" w-25 fs-4 text-center pb-2 pt-2 rounded-top rounded-bottom fw-bold text-white p-container mt-0 mb-0 m-4 ">
+      <h1 className=" w-25 fs-4 text-center pb-2 pt-2 rounded-top rounded-bottom fw-bold text-white p-container mt-0 mb-0 m-4 ">
         Carga individual
-      </h6>
+      </h1>
       <div className="d-flex justify-content-center align-items-start min-vh-25 mt-0">
         <div className="w-100 d-flex flex-column border shadow-input p-3 rounded-3 shadow ps-5 ms-4 me-4 ">
-          <h1 className="fs-2 h1-titulo fw-bold ">Cargar un prestador.</h1>
+          <h6 className="fs-2 h1-titulo fw-bold ">Cargar un prestador.</h6>
         </div>
       </div>
 
@@ -277,8 +277,14 @@ export const CargaIndividual = () => {
               </div>
 
               <div className="form-group mb-4">
+                  <LiveAlert message={
+                            <>
+                              Ingresá el nombre con mayúscula inicial en cada palabra. <b>Ejemplo:</b> Clínica Médica. <br />
+                              Puedes seleccionar múltiples especialidades.
+                            </>
+                 }/>
+
                 <label htmlFor="especialidad" className="fw-bold p-1 fs-6">Especialidad:</label>
-                <LiveAlert message=" Ingresá el nombre con mayúscula inicial en cada palabra. Ejemplo: Clínica Médica. Puedes seleccionar múltiples especialidades." />
                 <CustomSelect
                   options={adaptarOpciones(especialidades, "id_especialidad", "nombre")}
                   value={formData.especialidad}
@@ -312,7 +318,13 @@ export const CargaIndividual = () => {
               </div>
 
               <div className="form-group mb-4 position-relative">
-                  <LiveAlert message="Cada palabra debe iniciar con mayúscula. Ejemplo: Policlínico Regional Avellaneda. Ingresá un único prestador por vez." />
+                  <LiveAlert message={
+                                <>
+                                  Cada palabra debe iniciar con mayúscula. <b>Ejemplo</b>: Policlínico Regional Avellaneda.<br />
+                                  Ingresá un único prestador por vez.
+                                </>
+                              } />
+
                 <label htmlFor="nombre" className="fw-bold p-1 fs-6">
                   Nombre del prestador:
                 </label>
@@ -368,7 +380,15 @@ export const CargaIndividual = () => {
                 </div>
 
                 <div className="form-group mb-5 position-relative">
-                   <LiveAlert message="Usa mayúscula inicial. Para múltiples alturas, separalas con /. Ejemplo: 25 de Mayo 340/344. Ingresá una única dirección. " />
+                   <LiveAlert message={
+                              <>
+                                Usa mayúscula inicial. <br />
+                                Para múltiples alturas, separalas con /. <b>Ejemplo:</b> 25 de Mayo 340/344. <br />
+                                Ingresá una única dirección.
+                              </>
+                          }
+                        />
+
                   <label htmlFor="direccion" className="fw-bold p-1 fs-6 ">
                     Dirección:
                   </label>
@@ -394,7 +414,16 @@ export const CargaIndividual = () => {
               {/* Columna derecha */}
               <div className="w-50 ps-3">
                 <div className="form-group mb-5 position-relative">
-                  <LiveAlert message="Ingresá primero el código de área, seguido del número. No uses símbolos como ( ) ni /. Si hay interno, escribí int: seguido del número. Ejemplo: 011 43211234 int:11. Si son varios Teléfonos, separalos con coma (,). Ejemplo: 011 43211234, 011 43211235 int:12." />
+                  <LiveAlert
+                        message={
+                          <>
+                            Ingresá primero el código de área, seguido del número. <br /> No uses símbolos como ( ) ni /. <br />
+                            Si hay interno, escribí int: seguido del número. <b>Ejemplo:</b> 011 43211234 int:11. <br />
+                            Si son varios Teléfonos, separalos con coma (,). <b>Ejemplo:</b> 011 43211234, 011 43211235 int:12.
+                          </>
+                        }
+                  />
+
                   <label htmlFor="telefono" className="fw-bold fs-6">
                     Teléfono:
                   </label>
@@ -411,8 +440,16 @@ export const CargaIndividual = () => {
                 </div>
 
                 <div className="form-group mb-5 position-relative">
-                    <LiveAlert
-                    message="Ingresá la dirección de correo electrónico en minúsculas. No uses espacios. Para múltiples correos, separalos con /. Evitá copiar y pegar mails con espacios invisibles. Ejemplo: contacto@contacto.com / consultas@consultas.com.ar" />
+                    <LiveAlert message={
+                          <>
+                            Ingresá la dirección de correo electrónico en minúsculas. <br />
+                            No uses espacios. <br /> Para múltiples correos, separalos con /. <br />
+                            Evitá copiar y pegar mails con espacios invisibles.
+                           <b> Ejemplo:</b> contacto@contacto.com / consultas@consultas.com.ar
+                          </>
+                        }
+                      />
+
                   <label htmlFor="email" className="fw-bold fs-6">
                     E-mail:
                   </label>

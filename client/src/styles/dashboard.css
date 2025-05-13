@@ -1,7 +1,7 @@
 /*Dashboard planes*/
 
 .bg-color-icon{
-    background-color: rgb(190, 228, 125);
+    background-color: rgb(190, 228, 125) !important;
 }
 
 /*Color de la pelotita del icono*/

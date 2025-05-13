@@ -20,8 +20,9 @@ router.get('/nombrePrestadores/plan/:idPlan/provincia/:idProvincia/localidad/:id
 router.get('/prestadores/especialidad/:idEspecialidad/localidad/:idLocalidad/provincia/:idProvincia/categoria/:idCategoria/plan/:idPlan', PrestadorController.getPrestadores);
 router.get('/prestadoresPorNombre/plan/:idPlan/categoria/:idCategoria/localidad/:idLocalidad/especialidad/:idEspecialidad/nombre/:nombre_prestador', PrestadorController.getPrestadoresByNombre);
 router.get('/prestadoresCartilla', PrestadorController.getPrestadoresCartilla);
-router.post('/prestadores/subir-cartilla', authMiddleware(), PrestadorController.uploadCSV);
 // Rutas protegidas que requieren autenticación
+router.post('/subir-cartilla', authMiddleware(), PrestadorController.uploadCSV);
+router.get('/descargar-cartilla-pdf/plan/:idPlan/provincia/:idProvincia', authMiddleware(), PrestadorController.getCartillaPDF);
 router.get('/descargar-cartilla', authMiddleware(), PrestadorController.getCartilla);
 
 
