@@ -37,10 +37,12 @@ export const CartillaService = {
   getEspecialidadesPrestadorEdit: (planId, provinciaId, localidadId, categoriaId, nombrePrestador) =>
     apiWrapper('get', `/cartilla/especialidadesPrestadorEdit/plan/${planId}/provincia/${provinciaId}/localidad/${localidadId}/categoria/${categoriaId}/nombre/${nombrePrestador}/edit/true`),
 
+  // FIX: Correct method for public access
   getNombrePrestadores: (planId, provinciaId, localidadId, categoriaId) =>
     apiWrapper('get', `/cartilla/nombrePrestadores/plan/${planId}/provincia/${provinciaId}/localidad/${localidadId}/categoria/${categoriaId}`),
 
-  getNombrePrestadores: (planId, provinciaId, localidadId, categoriaId) =>
+  // FIX: Separate method for authenticated access (renamed to avoid conflict)
+  getNombrePrestadoresEdit: (planId, provinciaId, localidadId, categoriaId) =>
     apiWrapper('get', `/cartilla/nombrePrestadoresEdit/plan/${planId}/provincia/${provinciaId}/localidad/${localidadId}/categoria/${categoriaId}/edit/true`),
 
   getPrestadoresPorNombre: async (planId, categoriaId, localidadId, especialidadId, nombrePrestador, page = 1, limit = 10) => {
@@ -190,7 +192,7 @@ export const CartillaService = {
   // Versión alternativa sin paginación (manteniendo compatibilidad)
   getPrestadoresBasic: (planId, categoriaId, provinciaId, localidadId, especialidadId) =>
     apiWrapper('get', `/cartilla/prestadores/especialidad/${especialidadId}/localidad/${localidadId}/provincia/${provinciaId}/categoria/${categoriaId}/plan/${planId}`),
-  
+
   // Descarga de la cartilla completa en CSV
   descargarCartilla: async () => {
     try {
@@ -212,32 +214,32 @@ export const CartillaService = {
       // Convertimos la respuesta a blob para la descarga
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
-      
+
       // Creamos un enlace temporal para la descarga
       const a = document.createElement('a');
       a.style.display = 'none';
       a.href = url;
-      
+
       // Intentamos obtener el nombre del archivo desde la cabecera
       const contentDisposition = response.headers.get('content-disposition');
       let filename = 'cartilla.csv';
-      
+
       if (contentDisposition) {
         const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
         const matches = filenameRegex.exec(contentDisposition);
-        if (matches != null && matches[1]) { 
+        if (matches != null && matches[1]) {
           filename = matches[1].replace(/['"]/g, '');
         }
       }
-      
+
       a.download = filename;
       document.body.appendChild(a);
       a.click();
-      
+
       // Limpiamos
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
-      
+
       return { success: true, message: 'Archivo descargado correctamente' };
     } catch (error) {
       console.error('Error in CartillaService.descargarCartilla:', error);
@@ -246,48 +248,48 @@ export const CartillaService = {
   },
 
   descargarCartillaPDF: async (idPlan, idProvincia) => {
-  try {
-    const response = await fetch(
-      `${API_URL}/cartilla/descargar-cartilla-pdf/plan/${idPlan}/provincia/${idProvincia}`,
-      {
-        method: 'GET',
-        credentials: 'include'
-      }
-    );
+    try {
+      const response = await fetch(
+        `${API_URL}/cartilla/descargar-cartilla-pdf/plan/${idPlan}/provincia/${idProvincia}`,
+        {
+          method: 'GET',
+          credentials: 'include'
+        }
+      );
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Error ${response.status}: ${errorText}`);
-    }
-    
-    // Obtener el blob
-    const blob = await response.blob();
-    
-    // Extraer nombre del archivo de forma más robusta
-    let filename = 'cartilla.pdf';
-    const contentDisposition = response.headers.get('content-disposition') || response.headers.get('Content-Disposition');
-    
-    if (contentDisposition) {
-      // Primero intentar con filename* (formato RFC 6266 para UTF-8)
-      const utf8FilenameMatch = contentDisposition.match(/filename\*=UTF-8''([^;]+)/i);
-      if (utf8FilenameMatch && utf8FilenameMatch[1]) {
-        filename = decodeURIComponent(utf8FilenameMatch[1]);
-      } else {
-        // Fallback a filename normal
-        const basicFilenameMatch = contentDisposition.match(/filename="([^"]+)"/i);
-        if (basicFilenameMatch && basicFilenameMatch[1]) {
-          filename = basicFilenameMatch[1];
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Error ${response.status}: ${errorText}`);
+      }
+
+      // Obtener el blob
+      const blob = await response.blob();
+
+      // Extraer nombre del archivo de forma más robusta
+      let filename = 'cartilla.pdf';
+      const contentDisposition = response.headers.get('content-disposition') || response.headers.get('Content-Disposition');
+
+      if (contentDisposition) {
+        // Primero intentar con filename* (formato RFC 6266 para UTF-8)
+        const utf8FilenameMatch = contentDisposition.match(/filename\*=UTF-8''([^;]+)/i);
+        if (utf8FilenameMatch && utf8FilenameMatch[1]) {
+          filename = decodeURIComponent(utf8FilenameMatch[1]);
+        } else {
+          // Fallback a filename normal
+          const basicFilenameMatch = contentDisposition.match(/filename="([^"]+)"/i);
+          if (basicFilenameMatch && basicFilenameMatch[1]) {
+            filename = basicFilenameMatch[1];
+          }
         }
       }
-    }
 
-    return { blob, filename };
-  } catch (error) {
-    console.error('Error al descargar cartilla PDF:', error);
-    throw error;
-  }
-},
-  
+      return { blob, filename };
+    } catch (error) {
+      console.error('Error al descargar cartilla PDF:', error);
+      throw error;
+    }
+  },
+
   // Subir archivo CSV de cartilla
   subirCartilla: async (file, onProgress) => {
     try {
@@ -297,7 +299,7 @@ export const CartillaService = {
       // Usamos XMLHttpRequest para poder monitorear el progreso
       return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
-        
+
         // Configurar evento de progreso si se proporciona función de callback
         if (typeof onProgress === 'function') {
           xhr.upload.addEventListener('progress', (event) => {
@@ -311,13 +313,13 @@ export const CartillaService = {
             }
           });
         }
-        
+
         xhr.open('POST', `${API_URL}/cartilla/subir-cartilla`);
-        
+
         // Asegurarse de incluir las cookies en la solicitud para autenticación
         xhr.withCredentials = true;
-        
-        xhr.onload = function() {
+
+        xhr.onload = function () {
           if (xhr.status >= 200 && xhr.status < 300) {
             try {
               const data = JSON.parse(xhr.responseText);
@@ -335,11 +337,11 @@ export const CartillaService = {
             }
           }
         };
-        
-        xhr.onerror = function() {
+
+        xhr.onerror = function () {
           reject(new Error('Error de red al subir el archivo'));
         };
-        
+
         xhr.send(formData);
       });
     } catch (error) {
@@ -347,7 +349,7 @@ export const CartillaService = {
       throw error;
     }
   },
-  
+
   // Obtener la lista de prestadores en la cartilla (con paginación)
   getPrestadoresCartilla: async (page = 1, limit = 10) => {
     try {
