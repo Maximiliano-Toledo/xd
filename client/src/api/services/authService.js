@@ -19,6 +19,15 @@ const AuthService = {
     }
   },
 
+  changePassword: async (oldPassword, newPassword) => {
+    try {
+      const response = await api.post('/auth/change-password', { oldPassword, newPassword });
+      return response;
+    } catch (error) {
+      throw error.response?.data || error.message;
+    }
+  },
+
   createToken: async () => {
     try {
       const response = await api.post('/auth/create-token');

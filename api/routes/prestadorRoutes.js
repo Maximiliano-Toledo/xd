@@ -21,6 +21,15 @@ router.get('/prestadores/especialidad/:idEspecialidad/localidad/:idLocalidad/pro
 router.get('/prestadoresPorNombre/plan/:idPlan/categoria/:idCategoria/localidad/:idLocalidad/especialidad/:idEspecialidad/nombre/:nombre_prestador', PrestadorController.getPrestadoresByNombre);
 router.get('/prestadoresCartilla', PrestadorController.getPrestadoresCartilla);
 // Rutas protegidas que requieren autenticación
+router.get('/planesEdit/edit/:edit', authMiddleware(), PrestadorController.getPlanes);
+router.get('/provinciasEdit/plan/:idPlan/edit/:edit', authMiddleware(), PrestadorController.getProvincias);
+router.get('/localidadesEdit/plan/:idPlan/provincia/:idProvincia/edit/:edit', authMiddleware(), PrestadorController.getLocalidades);
+router.get('/categoriasEdit/plan/:idPlan/localidad/:idLocalidad/edit/:edit', authMiddleware(), PrestadorController.getCategorias);
+router.get('/especialidadesEdit/localidad/:idLocalidad/provincia/:idProvincia/categoria/:idCategoria/plan/:idPlan/edit/:edit', authMiddleware(), PrestadorController.getEspecialidades);
+router.get('/especialidadesPrestadorEdit/plan/:idPlan/provincia/:idProvincia/localidad/:idLocalidad/categoria/:idCategoria/nombre/:nombre_prestador/edit/:edit', authMiddleware(), PrestadorController.getEspecialesdesByNombrePrestador);
+router.get('/prestadoresEdit/especialidad/:idEspecialidad/localidad/:idLocalidad/provincia/:idProvincia/categoria/:idCategoria/plan/:idPlan/edit/:edit', authMiddleware(), PrestadorController.getPrestadores);
+router.get('/nombrePrestadoresEdit/plan/:idPlan/provincia/:idProvincia/localidad/:idLocalidad/categoria/:idCategoria/edit/:edit', authMiddleware(), PrestadorController.getNombrePrestadores);
+router.get('/prestadoresPorNombreEdit/plan/:idPlan/categoria/:idCategoria/localidad/:idLocalidad/especialidad/:idEspecialidad/nombre/:nombre_prestador/edit/:edit', authMiddleware(), PrestadorController.getPrestadoresByNombre);
 router.post('/subir-cartilla', authMiddleware(), PrestadorController.uploadCSV);
 router.get('/descargar-cartilla-pdf/plan/:idPlan/provincia/:idProvincia', authMiddleware(), PrestadorController.getCartillaPDF);
 router.get('/descargar-cartilla', authMiddleware(), PrestadorController.getCartilla);

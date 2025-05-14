@@ -23,9 +23,9 @@ const PrestadorService = {
    * @async
    * @returns {Promise<Array>} - Promesa que resuelve a un array con los planes
    */
-  getPlanes: async () => {
+  getPlanes: async (edit = false) => {
     try {
-      return await PrestadorRepository.getPlanes();
+      return await PrestadorRepository.getPlanes(edit);
     } catch (error) {
       console.error("Error al obtener planes:", error);
       throw error;
@@ -38,9 +38,9 @@ const PrestadorService = {
    * @param {number} idPlan - ID del plan
    * @returns {Promise<Array>} - Promesa que resuelve a un array con las provincias
    */
-  getProvincias: async (idPlan) => {
+  getProvincias: async (idPlan, edit = false) => {
     try {
-      return await PrestadorRepository.getProvincias(idPlan);
+      return await PrestadorRepository.getProvincias(idPlan, edit);
     } catch (error) {
       console.error("Error al obtener provincias:", error);
       throw error;
@@ -54,9 +54,9 @@ const PrestadorService = {
    * @param {number} idProvincia - ID de la provincia
    * @returns {Promise<Array>} - Promesa que resuelve a un array con las localidades
    */
-  getLocalidades: async (idPlan, idProvincia) => {
+  getLocalidades: async (idPlan, idProvincia, edit = false) => {
     try {
-      return await PrestadorRepository.getLocalidades(idPlan, idProvincia);
+      return await PrestadorRepository.getLocalidades(idPlan, idProvincia, edit);
     } catch (error) {
       console.error("Error al obtener localidades:", error);
       throw error;
@@ -70,9 +70,9 @@ const PrestadorService = {
    * @param {number} idLocalidad - ID de la localidad
    * @returns {Promise<Array>} - Promesa que resuelve a un array con las categorías
    */
-  getCategorias: async (idPlan, idLocalidad) => {
+  getCategorias: async (idPlan, idLocalidad, edit = false) => {
     try {
-      return await PrestadorRepository.getCategorias(idPlan, idLocalidad);
+      return await PrestadorRepository.getCategorias(idPlan, idLocalidad, edit);
     } catch (error) {
       console.error("Error al obtener categorías:", error);
       throw error;
@@ -88,13 +88,14 @@ const PrestadorService = {
    * @param {number} idLocalidad - ID de la localidad
    * @returns {Promise<Array>} - Promesa que resuelve a un array con las especialidades
    */
-  getEspecialidades: async (idPlan, idCategoria, idProvincia, idLocalidad) => {
+  getEspecialidades: async (idPlan, idCategoria, idProvincia, idLocalidad, edit = false) => {
     try {
       return await PrestadorRepository.getEspecialidades(
         idPlan,
         idCategoria,
         idProvincia,
-        idLocalidad
+        idLocalidad,
+        edit,
       );
     } catch (error) {
       console.error("Error al obtener especialidades:", error);
@@ -117,7 +118,8 @@ const PrestadorService = {
     idProvincia,
     idLocalidad,
     idCategoria,
-    nombre_prestador
+    nombre_prestador,
+    edit = false,
   ) => {
     try {
       return await PrestadorRepository.getEspecialidadesByNombrePrestador(
@@ -125,7 +127,8 @@ const PrestadorService = {
         idProvincia,
         idLocalidad,
         idCategoria,
-        nombre_prestador
+        nombre_prestador,
+        edit,
       );
     } catch (error) {
       console.error(
@@ -154,6 +157,7 @@ const PrestadorService = {
     idProvincia,
     idLocalidad,
     idEspecialidad,
+    edit = false,
     page = 1,
     limit = 10
   ) => {
@@ -164,6 +168,7 @@ const PrestadorService = {
         idProvincia,
         idLocalidad,
         idEspecialidad,
+        edit,
         page,
         limit
       );
@@ -191,6 +196,7 @@ const PrestadorService = {
     idLocalidad,
     idEspecialidad,
     nombre_prestador,
+    edit = false,
     page = 1,
     limit = 10
   ) => {
@@ -201,6 +207,7 @@ const PrestadorService = {
         idLocalidad,
         idEspecialidad,
         nombre_prestador,
+        edit,
         page,
         limit
       );
@@ -223,14 +230,16 @@ const PrestadorService = {
     idPlan,
     idProvincia,
     idLocalidad,
-    idCategoria
+    idCategoria,
+    edit = false,
   ) => {
     try {
       return await PrestadorRepository.getNombrePrestadores(
         idPlan,
         idProvincia,
         idLocalidad,
-        idCategoria
+        idCategoria,
+        edit,
       );
     } catch (error) {
       console.error("Error al obtener nombres de prestadores:", error);

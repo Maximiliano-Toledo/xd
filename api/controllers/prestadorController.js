@@ -40,7 +40,7 @@ const PrestadorController = {
    * @param {Object} res - Objeto de respuesta Express
    */
   async getPlanes(req, res) {
-    handleResponse(res, () => PrestadorService.getPlanes(), Entity.PLANES);
+    handleResponse(res, () => PrestadorService.getPlanes(req.params.edit || false), Entity.PLANES);
   },
 
   /**
@@ -52,7 +52,7 @@ const PrestadorController = {
   async getProvincias(req, res) {
     handleResponse(
       res,
-      () => PrestadorService.getProvincias(req.params.idPlan),
+      () => PrestadorService.getProvincias(req.params.idPlan, req.params.edit || false),
       Entity.PROVINCIAS
     );
   },
@@ -69,7 +69,8 @@ const PrestadorController = {
       () =>
         PrestadorService.getLocalidades(
           req.params.idPlan,
-          req.params.idProvincia
+          req.params.idProvincia,
+          req.params.edit || false,
         ),
       Entity.LOCALIDADES
     );
@@ -87,7 +88,8 @@ const PrestadorController = {
       () =>
         PrestadorService.getCategorias(
           req.params.idPlan,
-          req.params.idLocalidad
+          req.params.idLocalidad,
+          req.params.edit || false,
         ),
       Entity.CATEGORIAS
     );
@@ -107,7 +109,8 @@ const PrestadorController = {
           req.params.idPlan,
           req.params.idCategoria,
           req.params.idProvincia,
-          req.params.idLocalidad
+          req.params.idLocalidad,
+          req.params.edit || false,
         ),
       Entity.ESPECIALIDADES
     );
@@ -128,7 +131,8 @@ const PrestadorController = {
           req.params.idProvincia,
           req.params.idLocalidad,
           req.params.idCategoria,
-          req.params.nombre_prestador
+          req.params.nombre_prestador,
+          req.params.edit || false,
         ),
       Entity.ESPECIALIDADES
     );
@@ -153,6 +157,7 @@ const PrestadorController = {
           req.params.idProvincia,
           req.params.idLocalidad,
           req.params.idEspecialidad,
+          req.params.edit || false, 
           page,
           limit
         ),
@@ -179,6 +184,7 @@ const PrestadorController = {
           req.params.idLocalidad,
           req.params.idEspecialidad,
           req.params.nombre_prestador,
+          req.params.edit || false,
           page,
           limit
         ),
@@ -211,7 +217,8 @@ const PrestadorController = {
           req.params.idPlan,
           req.params.idProvincia,
           req.params.idLocalidad,
-          req.params.idCategoria
+          req.params.idCategoria,
+          req.params.edit || false,
         ),
       Entity.PRESTADORES
     );

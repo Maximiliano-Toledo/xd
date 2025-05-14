@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react"
 import { CartillaService } from "../api/services/cartillaService"
 
-export const useCartillaApi = () => {
+export const useCartillaApi = (edit = false) => {
   const initialState = {
     plan: "",
     provincia: "",
@@ -13,6 +13,13 @@ export const useCartillaApi = () => {
     nombrePrestador: "",
     searchMethod: "normal", // 'normal' o 'porNombre'
     especialidadesPrestador: [],
+  }
+
+  // Función auxiliar para determinar qué método usar según el modo edit
+  const getServiceMethod = (baseMethodName) => {
+    return edit ? 
+      CartillaService[`${baseMethodName}Edit`] || CartillaService[baseMethodName] : 
+      CartillaService[baseMethodName]
   }
 
   const [formData, setFormData] = useState(initialState)
@@ -86,41 +93,56 @@ export const useCartillaApi = () => {
 
   // Efectos para cargar datos
   useEffect(() => {
-    fetchData(CartillaService.getPlanes, "planes", "planes")
-  }, [])
+    fetchData(getServiceMethod('getPlanes'), "planes", "planes")
+  }, [edit])
 
   useEffect(() => {
     if (!formData.plan) return
-    fetchData(() => CartillaService.getProvincias(formData.plan), "provincias", "provincias", {
-      provincia: "",
-      localidad: "",
-      categoria: "",
-      especialidad: "",
-      nombrePrestador: "",
-      especialidadesPrestador: [],
-    })
-  }, [formData.plan])
+    fetchData(
+      () => getServiceMethod('getProvincias')(formData.plan), 
+      "provincias", 
+      "provincias", 
+      {
+        provincia: "",
+        localidad: "",
+        categoria: "",
+        especialidad: "",
+        nombrePrestador: "",
+        especialidadesPrestador: [],
+      }
+    )
+  }, [formData.plan, edit])
 
   useEffect(() => {
     if (!formData.plan || !formData.provincia) return
-    fetchData(() => CartillaService.getLocalidades(formData.plan, formData.provincia), "localidades", "localidades", {
-      localidad: "",
-      categoria: "",
-      especialidad: "",
-      nombrePrestador: "",
-      especialidadesPrestador: [],
-    })
-  }, [formData.provincia, formData.plan])
+    fetchData(
+      () => getServiceMethod('getLocalidades')(formData.plan, formData.provincia), 
+      "localidades", 
+      "localidades", 
+      {
+        localidad: "",
+        categoria: "",
+        especialidad: "",
+        nombrePrestador: "",
+        especialidadesPrestador: [],
+      }
+    )
+  }, [formData.provincia, formData.plan, edit])
 
   useEffect(() => {
     if (!formData.plan || !formData.localidad) return
-    fetchData(() => CartillaService.getCategorias(formData.plan, formData.localidad), "categorias", "categorias", {
-      categoria: "",
-      especialidad: "",
-      nombrePrestador: "",
-      especialidadesPrestador: [],
-    })
-  }, [formData.localidad, formData.plan])
+    fetchData(
+      () => getServiceMethod('getCategorias')(formData.plan, formData.localidad), 
+      "categorias", 
+      "categorias", 
+      {
+        categoria: "",
+        especialidad: "",
+        nombrePrestador: "",
+        especialidadesPrestador: [],
+      }
+    )
+  }, [formData.localidad, formData.plan, edit])
 
   // Efecto para cargar especialidades en búsqueda normal
   useEffect(() => {
@@ -132,17 +154,22 @@ export const useCartillaApi = () => {
       formData.searchMethod !== "normal"
     )
       return
-
+    
     fetchData(
       () =>
-        CartillaService.getEspecialidades(formData.plan, formData.categoria, formData.provincia, formData.localidad),
+        getServiceMethod('getEspecialidades')(
+          formData.plan, 
+          formData.categoria, 
+          formData.provincia, 
+          formData.localidad
+        ),
       "especialidades",
       "especialidades",
       {
         especialidad: "",
       },
     )
-  }, [formData.localidad, formData.provincia, formData.categoria, formData.plan, formData.searchMethod])
+  }, [formData.localidad, formData.provincia, formData.categoria, formData.plan, formData.searchMethod, edit])
 
   // Efecto para cargar nombres de prestadores en búsqueda por nombre
   useEffect(() => {
@@ -157,7 +184,12 @@ export const useCartillaApi = () => {
 
     fetchData(
       () =>
-        CartillaService.getNombrePrestadores(formData.plan, formData.provincia, formData.localidad, formData.categoria),
+        getServiceMethod('getNombrePrestadores')(
+          formData.plan, 
+          formData.provincia, 
+          formData.localidad, 
+          formData.categoria
+        ),
       "nombresPrestadores",
       "nombresPrestadores",
       {
@@ -166,7 +198,7 @@ export const useCartillaApi = () => {
         especialidadesPrestador: [],
       },
     )
-  }, [formData.plan, formData.provincia, formData.localidad, formData.categoria, formData.searchMethod])
+  }, [formData.plan, formData.provincia, formData.localidad, formData.categoria, formData.searchMethod, edit])
 
   // Efecto para cargar especialidades del prestador seleccionado
   useEffect(() => {
@@ -182,7 +214,7 @@ export const useCartillaApi = () => {
 
     fetchData(
       () =>
-        CartillaService.getEspecialidadesPrestador(
+        getServiceMethod('getEspecialidadesPrestador')(
           formData.plan,
           formData.provincia,
           formData.localidad,
@@ -202,6 +234,7 @@ export const useCartillaApi = () => {
     formData.localidad,
     formData.categoria,
     formData.searchMethod,
+    edit
   ])
 
   // Función para cargar prestadores con paginación (búsqueda normal)
@@ -224,7 +257,7 @@ export const useCartillaApi = () => {
       }
 
       try {
-        const response = await CartillaService.getPrestadores(
+        const response = await getServiceMethod('getPrestadores')(
           formData.plan,
           formData.categoria,
           formData.provincia,
@@ -319,7 +352,7 @@ export const useCartillaApi = () => {
         setLoading((prev) => ({ ...prev, prestadores: false }))
       }
     },
-    [formData, pagination.itemsPerPage],
+    [formData, pagination.itemsPerPage, edit],
   )
 
   // Función para cargar prestadores por nombre con paginación
@@ -342,7 +375,7 @@ export const useCartillaApi = () => {
       }
 
       try {
-        const response = await CartillaService.getPrestadoresPorNombre(
+        const response = await getServiceMethod('getPrestadoresPorNombre')(
           formData.plan,
           formData.categoria,
           formData.localidad,
@@ -437,7 +470,7 @@ export const useCartillaApi = () => {
         setLoading((prev) => ({ ...prev, prestadores: false }))
       }
     },
-    [formData, pagination.itemsPerPage],
+    [formData, pagination.itemsPerPage, edit],
   )
 
   // Manejador para cambiar de página

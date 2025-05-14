@@ -16,6 +16,25 @@ const useAuthStore = create((set, get) => ({
     }
   },
 
+  register: async (userData) => {
+    try {
+      const response = await AuthService.register(userData);
+      set({ user: response.data.user, isAuthenticated: true });
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  changePassword: async (oldPassword, newPassword) => {
+    try {
+      const response = await AuthService.changePassword(oldPassword, newPassword);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  },
+
   logout: async () => {
     try {
       await AuthService.logout();
@@ -28,7 +47,7 @@ const useAuthStore = create((set, get) => ({
   checkAuth: async () => {
     try {
       const response = await AuthService.verifySession();
-      set({ user: response.data.user, isAuthenticated: true, isLoading: false });
+      set({ user: response.data, isAuthenticated: true, isLoading: false });
       return response;
     } catch (error) {
       set({ user: null, isAuthenticated: false, isLoading: false });

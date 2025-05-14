@@ -23,11 +23,6 @@ const PLAN_MAPPING = {
 
 const PROVINCIA_MAPPING = {
   "C.A.B.A.": "CABA",
-  "Córdoba": "Cordoba",
-  "Tucumán": "Tucuman",
-  "Entre Ríos": "Entre Rios",
-  "Neuquén": "Neuquen",
-  "Río Negro": "Rio Negro",
 };
 
 /**
@@ -48,9 +43,13 @@ const PrestadorRepository = {
    * @async
    * @returns {Promise<Array>} - Promesa que resuelve a un array con los planes
    */
-  getPlanes: async () => {
+  getPlanes: async (edit = false) => {
+    const estado = edit ? 'Todos' : 'Activo';
     try {
-      return await pool.query("SELECT * FROM planes WHERE estado = 'Activo';");
+      if (estado === 'Todos') {
+        return await pool.query("SELECT * FROM planes;");
+      }
+      return await pool.query("SELECT * FROM planes WHERE estado = ?;", [estado]);
     } catch (error) {
       console.error("Error al obtener planes:", error);
       throw error;
@@ -63,9 +62,10 @@ const PrestadorRepository = {
    * @param {number} idPlan - ID del plan
    * @returns {Promise<Array>} - Promesa que resuelve a un array con las provincias
    */
-  getProvincias: async (idPlan) => {
+  getProvincias: async (idPlan, edit = false) => {
+    const estado = edit ? 'Todos' : 'Activo';
     try {
-      return await pool.query("CALL getProvinciasByPlan(?);", [idPlan]);
+      return await pool.query("CALL getProvinciasByPlan(?, ?);", [idPlan, estado]);
     } catch (error) {
       console.error("Error al obtener provincias:", error);
       throw error;
@@ -79,11 +79,13 @@ const PrestadorRepository = {
    * @param {number} idProvincia - ID de la provincia
    * @returns {Promise<Array>} - Promesa que resuelve a un array con las localidades
    */
-  getLocalidades: async (idPlan, idProvincia) => {
+  getLocalidades: async (idPlan, idProvincia, edit = false) => {
+    const estado = edit ? 'Todos' : 'Activo';
     try {
-      return await pool.query("CALL getLocalidadesByPlanAndProvincia(?, ?);", [
+      return await pool.query("CALL getLocalidadesByPlanAndProvincia(?, ?, ?);", [
         idPlan,
         idProvincia,
+        estado,
       ]);
     } catch (error) {
       console.error("Error al obtener localidades:", error);
@@ -98,11 +100,13 @@ const PrestadorRepository = {
    * @param {number} idLocalidad - ID de la localidad
    * @returns {Promise<Array>} - Promesa que resuelve a un array con las categorías
    */
-  getCategorias: async (idPlan, idLocalidad) => {
+  getCategorias: async (idPlan, idLocalidad, edit = false) => {
+    const estado = edit ? 'Todos' : 'Activo';
     try {
-      return await pool.query("CALL getCategoriasByPlanAndLocalidad(?, ?);", [
+      return await pool.query("CALL getCategoriasByPlanAndLocalidad(?, ?, ?);", [
         idPlan,
         idLocalidad,
+        estado,
       ]);
     } catch (error) {
       console.error("Error al obtener categorías:", error);
@@ -119,11 +123,12 @@ const PrestadorRepository = {
    * @param {number} idLocalidad - ID de la localidad
    * @returns {Promise<Array>} - Promesa que resuelve a un array con las especialidades
    */
-  getEspecialidades: async (idPlan, idCategoria, idProvincia, idLocalidad) => {
+  getEspecialidades: async (idPlan, idCategoria, idProvincia, idLocalidad, edit = false) => {
+    const estado = edit ? 'Todos' : 'Activo';
     try {
       return await pool.query(
-        "CALL getEspecialidadesByLocalidadAndProvinciaAndCategoriaAndPlan(?, ?, ?, ?);",
-        [idPlan, idCategoria, idProvincia, idLocalidad]
+        "CALL getEspecialidadesByLocalidadAndProvinciaAndCategoriaAndPlan(?, ?, ?, ?, ?);",
+        [idPlan, idCategoria, idProvincia, idLocalidad, estado]
       );
     } catch (error) {
       console.error("Error al obtener especialidades:", error);
@@ -146,12 +151,14 @@ const PrestadorRepository = {
     idProvincia,
     idLocalidad,
     idCategoria,
-    nombre_prestador
+    nombre_prestador,
+    edit = false,
   ) => {
+    const estado = edit ? 'Todos' : 'Activo';
     try {
       return await pool.query(
-        "CALL getEspecialidadesByNombrePrestador(?, ?, ?, ?, ?);",
-        [idPlan, idProvincia, idLocalidad, idCategoria, nombre_prestador]
+        "CALL getEspecialidadesByNombrePrestador(?, ?, ?, ?, ?, ?);",
+        [idPlan, idProvincia, idLocalidad, idCategoria, nombre_prestador, estado]
       );
     } catch (error) {
       console.error(
@@ -219,24 +226,26 @@ const PrestadorRepository = {
     idProvincia,
     idLocalidad,
     idEspecialidad,
+    edit = false,
     page = 1,
     limit = 10
   ) => {
     try {
       // Cálculo del offset para paginación
       const offset = (page - 1) * limit;
+      const estado = edit ? 'Todos' : 'Activo';
 
       // Obtener total de registros
       const [countResult] = await pool.query(
-        "CALL getCountPrestadores(?, ?, ?, ?, ?);",
-        [idPlan, idCategoria, idProvincia, idLocalidad, idEspecialidad]
+        "CALL getCountPrestadores(?, ?, ?, ?, ?, ?);",
+        [idPlan, idCategoria, idProvincia, idLocalidad, idEspecialidad, estado]
       );
 
       const totalItems = countResult[0][0].total || 0;
 
       // Obtener prestadores paginados
       const [rows] = await pool.query(
-        "CALL getPrestadoresPaginados(?, ?, ?, ?, ?, ?, ?);",
+        "CALL getPrestadoresPaginados(?, ?, ?, ?, ?, ?, ?, ?);",
         [
           idPlan,
           idCategoria,
@@ -245,6 +254,7 @@ const PrestadorRepository = {
           idEspecialidad,
           limit,
           offset,
+          estado,
         ]
       );
 
@@ -288,24 +298,26 @@ const PrestadorRepository = {
     idLocalidad,
     idEspecialidad,
     nombre_prestador,
+    edit = false,
     page = 1,
     limit = 10
   ) => {
     try {
       // Cálculo del offset para paginación
       const offset = (page - 1) * limit;
+      const estado = edit ? 'Todos' : 'Activo';
 
       // Obtener total de registros (necesitarás crear un SP para contar los resultados filtrados por nombre)
       const [countResult] = await pool.query(
-        "CALL getCountPrestadoresByNombre(?, ?, ?, ?, ?);",
-        [idPlan, idCategoria, idLocalidad, idEspecialidad, nombre_prestador]
+        "CALL getCountPrestadoresByNombre(?, ?, ?, ?, ?, ?);",
+        [idPlan, idCategoria, idLocalidad, idEspecialidad, nombre_prestador, estado]
       );
 
       const totalItems = countResult[0][0].total || 0;
 
       // Obtener prestadores paginados usando el nuevo SP
       const [rows] = await pool.query(
-        "CALL GetPrestadoresByNombrePaginados(?, ?, ?, ?, ?, ?, ?);",
+        "CALL GetPrestadoresByNombrePaginados(?, ?, ?, ?, ?, ?, ?, ?);",
         [
           idPlan,
           idCategoria,
@@ -314,6 +326,7 @@ const PrestadorRepository = {
           nombre_prestador,
           limit,
           offset,
+          estado,
         ]
       );
 
@@ -352,12 +365,14 @@ const PrestadorRepository = {
     idPlan,
     idProvincia,
     idLocalidad,
-    idCategoria
+    idCategoria,
+    edit = false
   ) => {
+    const estado = edit ? 'Todos' : 'Activo';
     try {
       return await pool.query(
-        "CALL GetPrestadoresByPlanAndProvinciaAndLocalidadAndCategoria(?, ?, ?, ?);",
-        [idPlan, idProvincia, idLocalidad, idCategoria]
+        "CALL GetPrestadoresByPlanAndProvinciaAndLocalidadAndCategoria(?, ?, ?, ?, ?);",
+        [idPlan, idProvincia, idLocalidad, idCategoria, estado]
       );
     } catch (error) {
       console.error("Error al obtener nombres de prestadores:", error);

@@ -254,9 +254,10 @@ const AuthService = {
       }
 
       const decoded = jwt.verify(accessToken, secret);
-      const username = decoded.username;
+      const userId = decoded.id;
 
-      const user = await userRepository.getUser(username);
+      const user = await userRepository.getUserById(userId, true);
+
       const isValidPassword = await bcrypt.compare(oldPassword, user.password);
       if (isValidPassword) {
         const hashedPassword = bcrypt.hashSync(newPassword, 12);

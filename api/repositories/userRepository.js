@@ -57,8 +57,15 @@ const userRepository = {
         }
     },
 
-    getUserById: async (id) => {
+    getUserById: async (id, change = false) => {
         try {
+            if(change) {
+                const [rows] = await pool.query(
+                    "SELECT id, username, role, email, estado, password FROM users WHERE id = ?",
+                    [id]
+                );
+                return rows.length > 0 ? rows[0] : null;
+            }
             const [rows] = await pool.query(
                 "SELECT id, username, role, email, estado FROM users WHERE id = ?",
                 [id]

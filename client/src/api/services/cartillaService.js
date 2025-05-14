@@ -5,28 +5,83 @@ const API_URL = 'http://localhost:3000/api'; // Ajusta esto según la URL de tu 
 export const CartillaService = {
   getPlanes: () => apiWrapper('get', '/cartilla/planes'),
 
+  getPlanesEdit: () => apiWrapper('get', '/cartilla/planesEdit/edit/true'),
+
   getProvincias: (planId) =>
     apiWrapper('get', `/cartilla/provincias/plan/${planId}`),
+
+  getProvinciasEdit: (planId) =>
+    apiWrapper('get', `/cartilla/provinciasEdit/plan/${planId}/edit/true`),
 
   getLocalidades: (planId, provinciaId) =>
     apiWrapper('get', `/cartilla/localidades/plan/${planId}/provincia/${provinciaId}`),
 
+  getLocalidadesEdit: (planId, provinciaId) =>
+    apiWrapper('get', `/cartilla/localidadesEdit/plan/${planId}/provincia/${provinciaId}/edit/true`),
+
   getCategorias: (planId, localidadId) =>
     apiWrapper('get', `/cartilla/categorias/plan/${planId}/localidad/${localidadId}`),
+
+  getCategoriasEdit: (planId, localidadId) =>
+    apiWrapper('get', `/cartilla/categoriasEdit/plan/${planId}/localidad/${localidadId}/edit/true`),
 
   getEspecialidades: (planId, categoriaId, provinciaId, localidadId) =>
     apiWrapper('get', `/cartilla/especialidades/localidad/${localidadId}/provincia/${provinciaId}/categoria/${categoriaId}/plan/${planId}`),
 
+  getEspecialidadesEdit: (planId, categoriaId, provinciaId, localidadId) =>
+    apiWrapper('get', `/cartilla/especialidadesEdit/localidad/${localidadId}/provincia/${provinciaId}/categoria/${categoriaId}/plan/${planId}/edit/true`),
+
   getEspecialidadesPrestador: (planId, provinciaId, localidadId, categoriaId, nombrePrestador) =>
     apiWrapper('get', `/cartilla/especialidadesPrestador/plan/${planId}/provincia/${provinciaId}/localidad/${localidadId}/categoria/${categoriaId}/nombre/${nombrePrestador}`),
 
+  getEspecialidadesPrestadorEdit: (planId, provinciaId, localidadId, categoriaId, nombrePrestador) =>
+    apiWrapper('get', `/cartilla/especialidadesPrestadorEdit/plan/${planId}/provincia/${provinciaId}/localidad/${localidadId}/categoria/${categoriaId}/nombre/${nombrePrestador}/edit/true`),
+
   getNombrePrestadores: (planId, provinciaId, localidadId, categoriaId) =>
     apiWrapper('get', `/cartilla/nombrePrestadores/plan/${planId}/provincia/${provinciaId}/localidad/${localidadId}/categoria/${categoriaId}`),
+
+  getNombrePrestadores: (planId, provinciaId, localidadId, categoriaId) =>
+    apiWrapper('get', `/cartilla/nombrePrestadoresEdit/plan/${planId}/provincia/${provinciaId}/localidad/${localidadId}/categoria/${categoriaId}/edit/true`),
 
   getPrestadoresPorNombre: async (planId, categoriaId, localidadId, especialidadId, nombrePrestador, page = 1, limit = 10) => {
     try {
       // Crear URL con parámetros de ruta y query
       const url = new URL(`${API_URL}/cartilla/prestadoresPorNombre/plan/${planId}/categoria/${categoriaId}/localidad/${localidadId}/especialidad/${especialidadId}/nombre/${encodeURIComponent(nombrePrestador)}`);
+
+      // Añadir parámetros de paginación
+      url.searchParams.append('page', page);
+      url.searchParams.append('limit', limit);
+
+      console.log("URL de solicitud para prestadores por nombre:", url.toString());
+
+      const response = await fetch(url.toString(), {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`Error HTTP ${response.status}: ${errorText}`);
+        throw new Error(`Error fetching prestadores por nombre: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      console.log("Datos recibidos de prestadores por nombre:", data);
+
+      return data;
+    } catch (error) {
+      console.error('Error in CartillaService.getPrestadoresPorNombre:', error);
+      throw error;
+    }
+  },
+
+  getPrestadoresPorNombreEdit: async (planId, categoriaId, localidadId, especialidadId, nombrePrestador, page = 1, limit = 10) => {
+    try {
+      // Crear URL con parámetros de ruta y query
+      const url = new URL(`${API_URL}/cartilla/prestadoresPorNombreEdit/plan/${planId}/categoria/${categoriaId}/localidad/${localidadId}/especialidad/${especialidadId}/nombre/${encodeURIComponent(nombrePrestador)}/edit/true`);
 
       // Añadir parámetros de paginación
       url.searchParams.append('page', page);
@@ -66,6 +121,41 @@ export const CartillaService = {
     try {
       // Crear URL con parámetros de paginación explícitos
       const url = new URL(`${API_URL}/cartilla/prestadores/especialidad/${idEspecialidad}/localidad/${idLocalidad}/provincia/${idProvincia}/categoria/${idCategoria}/plan/${idPlan}`);
+
+      // Añadir parámetros de paginación como query params
+      url.searchParams.append('page', page);
+      url.searchParams.append('limit', limit);
+
+      console.log("URL de solicitud:", url.toString());
+
+      const response = await fetch(url.toString(), {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`Error HTTP ${response.status}: ${errorText}`);
+        throw new Error(`Error fetching prestadores: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      console.log("Datos recibidos de la API:", data);
+
+      return data;
+    } catch (error) {
+      console.error('Error in CartillaService.getPrestadores:', error);
+      throw error;
+    }
+  },
+
+  getPrestadoresEdit: async (idPlan, idCategoria, idProvincia, idLocalidad, idEspecialidad, page = 1, limit = 10) => {
+    try {
+      // Crear URL con parámetros de paginación explícitos
+      const url = new URL(`${API_URL}/cartilla/prestadoresEdit/especialidad/${idEspecialidad}/localidad/${idLocalidad}/provincia/${idProvincia}/categoria/${idCategoria}/plan/${idPlan}/edit/true`);
 
       // Añadir parámetros de paginación como query params
       url.searchParams.append('page', page);

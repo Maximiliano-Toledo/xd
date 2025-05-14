@@ -24,6 +24,12 @@ const SearchResults = ({
                 options.provincias.find(p => String(p.id_provincia) === String(formData.provincia)))?.nombre || "Provincia"
             : "Provincia";
 
+        // Agregamos localidad al summary
+        const localidadName = options.localidades.length > 0 && formData.localidad
+            ? (options.localidades.find(p => p.id_localidad == formData.localidad) ||
+                options.localidades.find(p => String(p.id_localidad) === String(formData.localidad)))?.nombre || "Localidad"
+            : "Localidad";
+
         const especialidadName = options.especialidades.length > 0 && formData.especialidad
             ? (options.especialidades.find(e => e.id_especialidad == formData.especialidad) ||
                 options.especialidades.find(e => String(e.id_especialidad) === String(formData.especialidad)))?.nombre || "Especialidad"
@@ -32,10 +38,10 @@ const SearchResults = ({
                     options.especialidadesPrestador.find(e => String(e.id_especialidad) === String(formData.especialidad)))?.nombre || "Especialidad"
                 : "Especialidad");
 
-        return { planName, provinciaName, especialidadName };
+        return { planName, provinciaName, localidadName, especialidadName };
     };
 
-    const { planName, provinciaName, especialidadName } = getSearchSummary();
+    const { planName, provinciaName, localidadName, especialidadName } = getSearchSummary();
 
     if (loading.prestadores) {
         return (
@@ -86,6 +92,7 @@ const SearchResults = ({
                 <div className="search-summary">
                     <span className="search-tag">{planName}</span>
                     <span className="search-tag">{provinciaName}</span>
+                    <span className="search-tag">{localidadName}</span>
                     <span className="search-tag">{especialidadName}</span>
                 </div>
             </div>

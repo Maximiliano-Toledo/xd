@@ -10,6 +10,7 @@ const createEntityMethods = (entity) => ({
   [`delete${capitalizeFirstLetter(entity)}`]: (id) => apiWrapper('delete', `abm/${entity}/${id}`),
   [`toggle${capitalizeFirstLetter(entity)}Status`]: (id) => apiWrapper('patch', `abm/${entity}/${id}/toggle-status`),
   [`createPrestador`]: (data) => apiWrapper('post', `cartilla/crear-prestador`, data),
+  [`updatePrestador`]: (id, data) => apiWrapper('post', `cartilla/actualizar-prestador/${id}`, data),
   [`getLocalidadesByProvincia`]: (id) => apiWrapper('get', `abm/localidades/provincia/${id}`),
 });
 
