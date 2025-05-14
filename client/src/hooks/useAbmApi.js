@@ -7,7 +7,7 @@ export const useAbmApi = (entity) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-    // Helper para capitalizar
+  // Helper para capitalizar
   const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 
   // Métodos genéricos
@@ -58,6 +58,19 @@ export const useAbmApi = (entity) => {
       setLoading(true);
       const response = await ABMService.createPrestador(formData);
       // await getAll(); // Refrescar la lista
+      return response;
+    } catch (err) {
+      setError(err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updatePrestador = async (id, formData) => {
+    try {
+      setLoading(true);
+      const response = await ABMService.updatePrestador(id, formData);
       return response;
     } catch (err) {
       setError(err);
@@ -136,6 +149,7 @@ export const useAbmApi = (entity) => {
     remove,
     toggleStatus,
     createPrestador,
+    updatePrestador,
     getLocalidadesByProvincia,
   };
 };
