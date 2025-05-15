@@ -34,6 +34,9 @@ import {
   PiNumberSquareOneLight,
   PiNumberSquareTwoLight
 } from "react-icons/pi";
+import {
+  LuHistory
+} from "react-icons/lu";
 import Logo from "../components/utils/Logo";
 import "../styles/sidebar-nuevo.css";
 
@@ -188,6 +191,13 @@ export default function Sidebar({ children }) {
       icon: <FiUser />,
       label: "Panel de usuario",
       path: "/panel-usuario",
+      type: "link"
+    },
+    {
+      key: "historial",
+      icon: <LuHistory />,
+      label: "Historial de actividad",
+      path: "/historial-actividad",
       type: "link"
     },
     {
@@ -406,7 +416,7 @@ export default function Sidebar({ children }) {
               <h4 className="menu-section-title">Navegación Principal</h4>
             )}
             <div className="menu-items" role="menubar">
-              {menuItems.slice(0, -2).map(item => renderMenuItem(item, isCollapsed && !isMobile))}
+              {menuItems.slice(0, -3).map(item => renderMenuItem(item, isCollapsed && !isMobile))}
             </div>
           </div>
 
@@ -415,7 +425,7 @@ export default function Sidebar({ children }) {
               <h4 className="menu-section-title">Sistema</h4>
             )}
             <div className="menu-items" role="menubar">
-              {menuItems.slice(-2).map(item => renderMenuItem(item, isCollapsed && !isMobile))}
+              {menuItems.slice(-3).map(item => renderMenuItem(item, isCollapsed && !isMobile))}
             </div>
           </div>
         </nav>

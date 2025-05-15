@@ -1162,7 +1162,7 @@ const PrestadorRepository = {
         const availableWidth = pageWidth - margin.left - margin.right - pageNumWidth - 10;
         const dotsCount = Math.floor((availableWidth - especialidadWidth) / dotsWidth);
         const dots = ".".repeat(dotsCount > 0 ? dotsCount : 1);
-        
+
         // const entryText = `${especialidad}${dots}${pageCount}`;
         const entryText = `${especialidad}${dots}`;
 

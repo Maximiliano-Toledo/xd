@@ -7,9 +7,18 @@ export const useAuditApi = () => {
 
     // Función auxiliar para manejar errores
     const handleError = (err) => {
+        console.error('Audit API Error:', err);
         const errorMessage = err.response?.data?.error || err.message || 'Error desconocido';
         setError(errorMessage);
         throw new Error(errorMessage);
+    };
+
+    // Función auxiliar para procesar la respuesta
+    const processResponse = (response) => {
+        if (response.data.success) {
+            return response.data;
+        }
+        throw new Error(response.data.error || 'Error en la respuesta');
     };
 
     // Obtener logs generales con paginación
@@ -18,7 +27,7 @@ export const useAuditApi = () => {
         setError(null);
         try {
             const response = await api.get(`/audit/logs?limit=${limit}&offset=${(page - 1) * limit}`);
-            return response.data;
+            return processResponse(response);
         } catch (err) {
             return handleError(err);
         } finally {
@@ -26,13 +35,13 @@ export const useAuditApi = () => {
         }
     }, []);
 
-    // Obtener logs por acción
+    // Obtener logs por acción (create, update, delete, etc.)
     const getLogsByAction = useCallback(async (action, page = 1, limit = 10) => {
         setLoading(true);
         setError(null);
         try {
             const response = await api.get(`/audit/logs/action/${action}?limit=${limit}&offset=${(page - 1) * limit}`);
-            return response.data;
+            return processResponse(response);
         } catch (err) {
             return handleError(err);
         } finally {
@@ -40,13 +49,13 @@ export const useAuditApi = () => {
         }
     }, []);
 
-    // Obtener logs por tipo de entidad
+    // Obtener logs por tipo de entidad (planes, prestadores, etc.)
     const getLogsByEntity = useCallback(async (entityType, page = 1, limit = 10) => {
         setLoading(true);
         setError(null);
         try {
             const response = await api.get(`/audit/logs/entity/${entityType}?limit=${limit}&offset=${(page - 1) * limit}`);
-            return response.data;
+            return processResponse(response);
         } catch (err) {
             return handleError(err);
         } finally {
@@ -60,7 +69,7 @@ export const useAuditApi = () => {
         setError(null);
         try {
             const response = await api.get(`/audit/logs/user/${userId}?limit=${limit}&offset=${(page - 1) * limit}`);
-            return response.data;
+            return processResponse(response);
         } catch (err) {
             return handleError(err);
         } finally {
@@ -73,8 +82,30 @@ export const useAuditApi = () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await api.get(`/audit/logs/date-range?startDate=${startDate}&endDate=${endDate}&limit=${limit}&offset=${(page - 1) * limit}`);
-            return response.data;
+            // Formatear fechas para la API
+            const start = new Date(startDate).toISOString().split('T')[0];
+            const end = new Date(endDate).toISOString().split('T')[0];
+
+            const response = await api.get(
+                `/audit/logs/date-range?startDate=${start}&endDate=${end}&limit=${limit}&offset=${(page - 1) * limit}`
+            );
+            return processResponse(response);
+        } catch (err) {
+            return handleError(err);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    // Obtener logs por ID específico de entidad
+    const getLogsByEntityId = useCallback(async (entityType, entityId, page = 1, limit = 10) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await api.get(
+                `/audit/logs/entity/${entityType}/id/${entityId}?limit=${limit}&offset=${(page - 1) * limit}`
+            );
+            return processResponse(response);
         } catch (err) {
             return handleError(err);
         } finally {
@@ -88,21 +119,7 @@ export const useAuditApi = () => {
         setError(null);
         try {
             const response = await api.get('/audit/summary');
-            return response.data;
-        } catch (err) {
-            return handleError(err);
-        } finally {
-            setLoading(false);
-        }
-    }, []);
-
-    // Obtener logs por entidad específica (ID)
-    const getLogsByEntityId = useCallback(async (entityType, entityId, page = 1, limit = 10) => {
-        setLoading(true);
-        setError(null);
-        try {
-            const response = await api.get(`/audit/logs/entity/${entityType}/id/${entityId}?limit=${limit}&offset=${(page - 1) * limit}`);
-            return response.data;
+            return processResponse(response);
         } catch (err) {
             return handleError(err);
         } finally {
@@ -116,7 +133,7 @@ export const useAuditApi = () => {
         setError(null);
         try {
             const response = await api.get('/audit/health');
-            return response.data;
+            return processResponse(response);
         } catch (err) {
             return handleError(err);
         } finally {
@@ -124,12 +141,20 @@ export const useAuditApi = () => {
         }
     }, []);
 
-    // Exportar logs (para funcionalidad futura)
+    // Exportar logs en formato CSV
     const exportLogs = useCallback(async (filters = {}, format = 'csv') => {
         setLoading(true);
         setError(null);
         try {
-            const params = new URLSearchParams(filters);
+            const params = new URLSearchParams();
+
+            // Agregar filtros a los parámetros
+            Object.entries(filters).forEach(([key, value]) => {
+                if (value !== null && value !== undefined && value !== '') {
+                    params.append(key, value);
+                }
+            });
+
             params.append('format', format);
 
             const response = await api.get(`/audit/export?${params.toString()}`, {
@@ -137,15 +162,24 @@ export const useAuditApi = () => {
             });
 
             // Crear un enlace de descarga
-            const blob = new Blob([response.data], { type: 'text/csv' });
+            const blob = new Blob([response.data], {
+                type: format === 'csv' ? 'text/csv' : 'application/pdf'
+            });
             const url = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = `audit-logs-${new Date().toISOString().split('T')[0]}.${format}`;
+
+            // Generar nombre de archivo con timestamp
+            const timestamp = new Date().toISOString().split('T')[0];
+            link.download = `audit-logs-${timestamp}.${format}`;
+
+            // Agregar al DOM, hacer clic y limpiar
+            document.body.appendChild(link);
             link.click();
+            document.body.removeChild(link);
             window.URL.revokeObjectURL(url);
 
-            return { success: true };
+            return { success: true, message: 'Archivo descargado exitosamente' };
         } catch (err) {
             return handleError(err);
         } finally {
@@ -158,18 +192,68 @@ export const useAuditApi = () => {
         setError(null);
     }, []);
 
+    // Función para obtener estadísticas rápidas
+    const getQuickStats = useCallback(async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await api.get('/audit/quick-stats');
+            return processResponse(response);
+        } catch (err) {
+            return handleError(err);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    // Búsqueda de logs con filtros múltiples
+    const searchLogs = useCallback(async (searchParams, page = 1, limit = 10) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const params = new URLSearchParams();
+            params.append('page', page);
+            params.append('limit', limit);
+
+            // Agregar parámetros de búsqueda
+            Object.entries(searchParams).forEach(([key, value]) => {
+                if (value !== null && value !== undefined && value !== '') {
+                    params.append(key, value);
+                }
+            });
+
+            const response = await api.get(`/audit/search?${params.toString()}`);
+            return processResponse(response);
+        } catch (err) {
+            return handleError(err);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
     return {
+        // Estados
         loading,
         error,
+
+        // Métodos principales
         getLogs,
         getLogsByAction,
         getLogsByEntity,
         getLogsByUser,
         getLogsByDateRange,
-        getAuditSummary,
         getLogsByEntityId,
+        getAuditSummary,
+
+        // Métodos adicionales
         checkAuditHealth,
         exportLogs,
-        clearError
+        getQuickStats,
+        searchLogs,
+        clearError,
+
+        // Helpers
+        isLoading: loading,
+        hasError: !!error
     };
 };

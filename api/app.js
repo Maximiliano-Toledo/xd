@@ -58,6 +58,23 @@ app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 // Aplicar rate limiting global
 app.use(generalLimiter);
 
+// En app.js, antes de las rutas
+app.use((req, res, next) => {
+    // Capturar la IP real del cliente (sin usar connection deprecado)
+    req.ip = req.headers['x-forwarded-for']?.split(',')[0] ||
+        req.headers['x-real-ip'] ||
+        req.socket.remoteAddress ||
+        req.ip ||
+        '0.0.0.0';
+
+    // Limpiar la IP (remover prefijo IPv6 si existe)
+    if (req.ip.startsWith('::ffff:')) {
+        req.ip = req.ip.substring(7);
+    }
+
+    next();
+});
+
 // Rutas de la API
 app.use('/api/auth', authRoutes);
 app.use('/api/cartilla', prestadoresRoutes);

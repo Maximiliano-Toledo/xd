@@ -40,7 +40,27 @@ const PrestadorController = {
    * @param {Object} res - Objeto de respuesta Express
    */
   async getPlanes(req, res) {
-    handleResponse(res, () => PrestadorService.getPlanes(req.params.edit || false), Entity.PLANES);
+    try {
+      const result = await handleResponse(res, () => PrestadorService.getPlanes(req.params.edit || false), Entity.PLANES);
+
+      // Log para consultas de planes
+      await auditLogger.logAction(
+        req.user?.id || 0,
+        'query',
+        'planes',
+        'all',
+        {
+          endpoint: '/api/cartilla/planes',
+          edit_mode: req.params.edit || false,
+          ip: req.clientIP
+        }
+      );
+
+      return result;
+    } catch (error) {
+      console.error('Error en getPlanes:', error);
+      throw error;
+    }
   },
 
   /**
@@ -50,11 +70,32 @@ const PrestadorController = {
    * @param {Object} res - Objeto de respuesta Express
    */
   async getProvincias(req, res) {
-    handleResponse(
-      res,
-      () => PrestadorService.getProvincias(req.params.idPlan, req.params.edit || false),
-      Entity.PROVINCIAS
-    );
+    try {
+      const result = await handleResponse(
+        res,
+        () => PrestadorService.getProvincias(req.params.idPlan, req.params.edit || false),
+        Entity.PROVINCIAS
+      );
+
+      // Log para consultas de provincias
+      await auditLogger.logAction(
+        req.user?.id || 0,
+        'query',
+        'provincias',
+        'by_plan',
+        {
+          id_plan: req.params.idPlan,
+          edit_mode: req.params.edit || false,
+          endpoint: '/api/cartilla/provincias',
+          ip: req.clientIP
+        }
+      );
+
+      return result;
+    } catch (error) {
+      console.error('Error en getProvincias:', error);
+      throw error;
+    }
   },
 
   /**
@@ -64,16 +105,38 @@ const PrestadorController = {
    * @param {Object} res - Objeto de respuesta Express
    */
   async getLocalidades(req, res) {
-    handleResponse(
-      res,
-      () =>
-        PrestadorService.getLocalidades(
-          req.params.idPlan,
-          req.params.idProvincia,
-          req.params.edit || false,
-        ),
-      Entity.LOCALIDADES
-    );
+    try {
+      const result = await handleResponse(
+        res,
+        () =>
+          PrestadorService.getLocalidades(
+            req.params.idPlan,
+            req.params.idProvincia,
+            req.params.edit || false,
+          ),
+        Entity.LOCALIDADES
+      );
+
+      // Log para consultas de localidades
+      await auditLogger.logAction(
+        req.user?.id || 0,
+        'query',
+        'localidades',
+        'by_plan_provincia',
+        {
+          id_plan: req.params.idPlan,
+          id_provincia: req.params.idProvincia,
+          edit_mode: req.params.edit || false,
+          endpoint: '/api/cartilla/localidades',
+          ip: req.clientIP
+        }
+      );
+
+      return result;
+    } catch (error) {
+      console.error('Error en getLocalidades:', error);
+      throw error;
+    }
   },
 
   /**
@@ -83,16 +146,38 @@ const PrestadorController = {
    * @param {Object} res - Objeto de respuesta Express
    */
   async getCategorias(req, res) {
-    handleResponse(
-      res,
-      () =>
-        PrestadorService.getCategorias(
-          req.params.idPlan,
-          req.params.idLocalidad,
-          req.params.edit || false,
-        ),
-      Entity.CATEGORIAS
-    );
+    try {
+      const result = await handleResponse(
+        res,
+        () =>
+          PrestadorService.getCategorias(
+            req.params.idPlan,
+            req.params.idLocalidad,
+            req.params.edit || false,
+          ),
+        Entity.CATEGORIAS
+      );
+
+      // Log para consultas de categorías
+      await auditLogger.logAction(
+        req.user?.id || 0,
+        'query',
+        'categorias',
+        'by_plan_localidad',
+        {
+          id_plan: req.params.idPlan,
+          id_localidad: req.params.idLocalidad,
+          edit_mode: req.params.edit || false,
+          endpoint: '/api/cartilla/categorias',
+          ip: req.clientIP
+        }
+      );
+
+      return result;
+    } catch (error) {
+      console.error('Error en getCategorias:', error);
+      throw error;
+    }
   },
 
   /**
@@ -102,18 +187,42 @@ const PrestadorController = {
    * @param {Object} res - Objeto de respuesta Express
    */
   async getEspecialidades(req, res) {
-    handleResponse(
-      res,
-      () =>
-        PrestadorService.getEspecialidades(
-          req.params.idPlan,
-          req.params.idCategoria,
-          req.params.idProvincia,
-          req.params.idLocalidad,
-          req.params.edit || false,
-        ),
-      Entity.ESPECIALIDADES
-    );
+    try {
+      const result = await handleResponse(
+        res,
+        () =>
+          PrestadorService.getEspecialidades(
+            req.params.idPlan,
+            req.params.idCategoria,
+            req.params.idProvincia,
+            req.params.idLocalidad,
+            req.params.edit || false,
+          ),
+        Entity.ESPECIALIDADES
+      );
+
+      // Log para consultas de especialidades
+      await auditLogger.logAction(
+        req.user?.id || 0,
+        'query',
+        'especialidades',
+        'by_multiple_criteria',
+        {
+          id_plan: req.params.idPlan,
+          id_categoria: req.params.idCategoria,
+          id_provincia: req.params.idProvincia,
+          id_localidad: req.params.idLocalidad,
+          edit_mode: req.params.edit || false,
+          endpoint: '/api/cartilla/especialidades',
+          ip: req.clientIP
+        }
+      );
+
+      return result;
+    } catch (error) {
+      console.error('Error en getEspecialidades:', error);
+      throw error;
+    }
   },
 
   /**
@@ -123,19 +232,44 @@ const PrestadorController = {
    * @param {Object} res - Objeto de respuesta Express
    */
   async getEspecialesdesByNombrePrestador(req, res) {
-    handleResponse(
-      res,
-      () =>
-        PrestadorService.getEspecialidadesByNombrePrestador(
-          req.params.idPlan,
-          req.params.idProvincia,
-          req.params.idLocalidad,
-          req.params.idCategoria,
-          req.params.nombre_prestador,
-          req.params.edit || false,
-        ),
-      Entity.ESPECIALIDADES
-    );
+    try {
+      const result = await handleResponse(
+        res,
+        () =>
+          PrestadorService.getEspecialidadesByNombrePrestador(
+            req.params.idPlan,
+            req.params.idProvincia,
+            req.params.idLocalidad,
+            req.params.idCategoria,
+            req.params.nombre_prestador,
+            req.params.edit || false,
+          ),
+        Entity.ESPECIALIDADES
+      );
+
+      // Log para consultas de especialidades por prestador
+      await auditLogger.logAction(
+        req.user?.id || 0,
+        'query',
+        'especialidades',
+        'by_prestador_name',
+        {
+          id_plan: req.params.idPlan,
+          id_provincia: req.params.idProvincia,
+          id_localidad: req.params.idLocalidad,
+          id_categoria: req.params.idCategoria,
+          nombre_prestador: req.params.nombre_prestador,
+          edit_mode: req.params.edit || false,
+          endpoint: '/api/cartilla/especialidadesPrestador',
+          ip: req.clientIP
+        }
+      );
+
+      return result;
+    } catch (error) {
+      console.error('Error en getEspecialesdesByNombrePrestador:', error);
+      throw error;
+    }
   },
 
   /**
@@ -148,21 +282,48 @@ const PrestadorController = {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
 
-    handleResponse(
-      res,
-      () =>
-        PrestadorService.getPrestadores(
-          req.params.idPlan,
-          req.params.idCategoria,
-          req.params.idProvincia,
-          req.params.idLocalidad,
-          req.params.idEspecialidad,
-          req.params.edit || false, 
+    try {
+      const result = await handleResponse(
+        res,
+        () =>
+          PrestadorService.getPrestadores(
+            req.params.idPlan,
+            req.params.idCategoria,
+            req.params.idProvincia,
+            req.params.idLocalidad,
+            req.params.idEspecialidad,
+            req.params.edit || false,
+            page,
+            limit
+          ),
+        Entity.PRESTADORES
+      );
+
+      // Log para consultas de prestadores
+      await auditLogger.logAction(
+        req.user?.id || 0,
+        'query',
+        'prestadores',
+        'by_criteria',
+        {
+          id_plan: req.params.idPlan,
+          id_categoria: req.params.idCategoria,
+          id_provincia: req.params.idProvincia,
+          id_localidad: req.params.idLocalidad,
+          id_especialidad: req.params.idEspecialidad,
           page,
-          limit
-        ),
-      Entity.PRESTADORES
-    );
+          limit,
+          edit_mode: req.params.edit || false,
+          endpoint: '/api/cartilla/prestadores',
+          ip: req.clientIP
+        }
+      );
+
+      return result;
+    } catch (error) {
+      console.error('Error en getPrestadores:', error);
+      throw error;
+    }
   },
 
   /**
@@ -175,32 +336,80 @@ const PrestadorController = {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
 
-    handleResponse(
-      res,
-      () =>
-        PrestadorService.getPrestadoresByNombre(
-          req.params.idPlan,
-          req.params.idCategoria,
-          req.params.idLocalidad,
-          req.params.idEspecialidad,
-          req.params.nombre_prestador,
-          req.params.edit || false,
+    try {
+      const result = await handleResponse(
+        res,
+        () =>
+          PrestadorService.getPrestadoresByNombre(
+            req.params.idPlan,
+            req.params.idCategoria,
+            req.params.idLocalidad,
+            req.params.idEspecialidad,
+            req.params.nombre_prestador,
+            req.params.edit || false,
+            page,
+            limit
+          ),
+        Entity.PRESTADORES
+      );
+
+      // Log para consultas de prestadores por nombre
+      await auditLogger.logAction(
+        req.user?.id || 0,
+        'query',
+        'prestadores',
+        'by_name',
+        {
+          id_plan: req.params.idPlan,
+          id_categoria: req.params.idCategoria,
+          id_localidad: req.params.idLocalidad,
+          id_especialidad: req.params.idEspecialidad,
+          nombre_prestador: req.params.nombre_prestador,
           page,
-          limit
-        ),
-      Entity.PRESTADORES
-    );
+          limit,
+          edit_mode: req.params.edit || false,
+          endpoint: '/api/cartilla/prestadoresPorNombre',
+          ip: req.clientIP
+        }
+      );
+
+      return result;
+    } catch (error) {
+      console.error('Error en getPrestadoresByNombre:', error);
+      throw error;
+    }
   },
 
   async getPrestadoresCartilla(req, res) {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
 
-    handleResponse(
-      res,
-      () => PrestadorService.getPrestadoresCartilla(page, limit),
-      Entity.PRESTADORES
-    );
+    try {
+      const result = await handleResponse(
+        res,
+        () => PrestadorService.getPrestadoresCartilla(page, limit),
+        Entity.PRESTADORES
+      );
+
+      // Log para consultas de prestadores de cartilla
+      await auditLogger.logAction(
+        req.user?.id || 0,
+        'query',
+        'prestadores',
+        'cartilla',
+        {
+          page,
+          limit,
+          endpoint: '/api/cartilla/prestadoresCartilla',
+          ip: req.clientIP
+        }
+      );
+
+      return result;
+    } catch (error) {
+      console.error('Error en getPrestadoresCartilla:', error);
+      throw error;
+    }
   },
 
   /**
@@ -210,18 +419,42 @@ const PrestadorController = {
    * @param {Object} res - Objeto de respuesta Express
    */
   async getNombrePrestadores(req, res) {
-    handleResponse(
-      res,
-      () =>
-        PrestadorService.getNombrePrestadores(
-          req.params.idPlan,
-          req.params.idProvincia,
-          req.params.idLocalidad,
-          req.params.idCategoria,
-          req.params.edit || false,
-        ),
-      Entity.PRESTADORES
-    );
+    try {
+      const result = await handleResponse(
+        res,
+        () =>
+          PrestadorService.getNombrePrestadores(
+            req.params.idPlan,
+            req.params.idProvincia,
+            req.params.idLocalidad,
+            req.params.idCategoria,
+            req.params.edit || false,
+          ),
+        Entity.PRESTADORES
+      );
+
+      // Log para consultas de nombres de prestadores
+      await auditLogger.logAction(
+        req.user?.id || 0,
+        'query',
+        'prestadores',
+        'names_only',
+        {
+          id_plan: req.params.idPlan,
+          id_provincia: req.params.idProvincia,
+          id_localidad: req.params.idLocalidad,
+          id_categoria: req.params.idCategoria,
+          edit_mode: req.params.edit || false,
+          endpoint: '/api/cartilla/nombrePrestadores',
+          ip: req.clientIP
+        }
+      );
+
+      return result;
+    } catch (error) {
+      console.error('Error en getNombrePrestadores:', error);
+      throw error;
+    }
   },
 
   /**
@@ -235,14 +468,15 @@ const PrestadorController = {
       res,
       async () => {
         const result = await PrestadorService.postCrearPrestador(req.body);
-        // Registrar la acción en el sistema de auditoría
-        // await auditLogger.logAction(
-        //     req.user?.id || 0,
-        //     'create',
-        //     'prestadores',
-        //     result.id,
-        //     { requestData: req.body, result }
-        // );
+
+        // Log específico para creación individual de prestador
+        await auditLogger.logPrestadorCreation(
+          req.user?.id || 0,
+          result.registros_creados?.[0]?.id_prestador || 'multiple',
+          req.body,
+          req.clientIP
+        );
+
         return result;
       },
       "Prestador",
@@ -260,18 +494,28 @@ const PrestadorController = {
     await handlePostResponse(
       res,
       async () => {
-        const result = await PrestadorService.postActualizarPrestador(
-          req.params.id,
-          req.body
-        );
-        // Registrar la acción en el sistema de auditoría
-        await auditLogger.logAction(
+        // Primero obtenemos los datos actuales del prestador
+        let previousData = null;
+        try {
+          // Necesitamos crear un método en el servicio para obtener un prestador por ID
+          // O usar los datos del resultado que incluye los datos previos
+          const currentPrestador = await PrestadorService.getPrestadorById(req.params.id);
+          previousData = currentPrestador;
+        } catch (error) {
+          console.warn('No se pudieron obtener los datos previos del prestador:', error);
+        }
+
+        const result = await PrestadorService.postActualizarPrestador(req.params.id, req.body);
+
+        // Log específico para edición de prestador
+        await auditLogger.logPrestadorEdit(
           req.user?.id || 0,
-          "update",
-          "prestadores",
           req.params.id,
-          { requestData: req.body, result }
+          previousData || {},
+          req.body,
+          req.clientIP
         );
+
         return result;
       },
       "Prestador",
@@ -289,23 +533,27 @@ const PrestadorController = {
     await handlePostResponse(
       res,
       async () => {
-        const result =
-          await PrestadorService.postActualizarEstadoPrestadorPorNombre(
-            req.body.nombre,
-            req.body.estado
-          );
-        // Registrar la acción en el sistema de auditoría
+        const result = await PrestadorService.postActualizarEstadoPrestadorPorNombre(
+          req.body.nombre,
+          req.body.estado
+        );
+
+        // Log específico para cambio de estado por nombre
         await auditLogger.logAction(
           req.user?.id || 0,
-          "update",
+          "update_prestador_status",
           "prestadores",
-          "nombre-" + req.body.nombre,
+          `nombre-${req.body.nombre}`,
           {
+            actionType: req.body.estado === 'Activo' ? 'habilitacion' : 'deshabilitacion',
             nombre: req.body.nombre,
-            estado: req.body.estado,
+            estadoAnterior: req.body.estado === 'Activo' ? 'Inactivo' : 'Activo',
+            estadoNuevo: req.body.estado,
             result,
+            ip: req.clientIP
           }
         );
+
         return result;
       },
       "Prestador",
@@ -324,14 +572,22 @@ const PrestadorController = {
       res,
       async () => {
         const result = await PrestadorService.postBajaPrestador(req.params.id);
-        // Registrar la acción en el sistema de auditoría
+
+        // Log específico para baja de prestador
         await auditLogger.logAction(
           req.user?.id || 0,
-          "update",
+          "baja_prestador",
           "prestadores",
           req.params.id,
-          { action: "baja", result }
+          {
+            actionType: "baja",
+            estadoAnterior: "Activo",
+            estadoNuevo: "Inactivo",
+            result,
+            ip: req.clientIP
+          }
         );
+
         return result;
       },
       "Prestador",
@@ -356,13 +612,16 @@ const PrestadorController = {
 
       res.status(200).send(csvData);
 
-      // Registrar la acción en el sistema de auditoría
-      await auditLogger.logAction(
+      // Log específico para descarga de cartilla CSV
+      await auditLogger.logCartillaDownload(
         req.user?.id || 0,
-        "export",
-        "cartilla",
-        "all",
-        { format: "csv" }
+        'csv',
+        { all: true }, // Sin filtros específicos
+        req.clientIP,
+        {
+          filename: 'cartilla.csv',
+          endpoint: '/api/cartilla/descargar-cartilla'
+        }
       );
     } catch (error) {
       console.error("Error en exportCartillaToCSV:", error);
@@ -387,6 +646,21 @@ const PrestadorController = {
         "Access-Control-Expose-Headers": "Content-Disposition",
       });
       res.send(Buffer.from(pdfData.pdfBytes));
+
+      // Log específico para descarga de cartilla PDF
+      await auditLogger.logCartillaDownload(
+        req.user?.id || 0,
+        'pdf',
+        {
+          id_plan: req.params.idPlan,
+          id_provincia: req.params.idProvincia
+        },
+        req.clientIP,
+        {
+          filename: pdfData.nombreArchivo,
+          endpoint: '/api/cartilla/descargar-cartilla-pdf'
+        }
+      );
     } catch (error) {
       console.error("Error en exportCartillaToPDF:", error);
       res.status(500).json({
@@ -425,17 +699,18 @@ const PrestadorController = {
           };
 
           const result = await PrestadorService.handleCSVUpload(req.file, progressCallback);
-          
-          await auditLogger.logAction(
+
+          // Log específico para carga masiva
+          await auditLogger.logMassiveUpload(
             req.user?.id || 0,
-            "import",
-            "prestadores",
-            "csv-upload",
-            { 
+            {
               filename: req.file.originalname,
-              size: req.file.size,
-              records: result.totalProcessed
-            }
+              fileSize: req.file.size,
+              totalProcessed: result.totalProcessed,
+              successful: result.successful || 0,
+              failed: result.failed || 0
+            },
+            req.clientIP
           );
 
           resolve({
@@ -448,6 +723,21 @@ const PrestadorController = {
             }
           });
         } catch (error) {
+          // Log de error en la importación masiva
+          await auditLogger.logAction(
+            req.user?.id || 0,
+            "import_error",
+            "prestadores",
+            "csv-upload",
+            {
+              actionType: 'masiva',
+              filename: req.file?.originalname || 'unknown',
+              fileSize: req.file?.size || 0,
+              error: error.message,
+              endpoint: '/api/cartilla/subir-cartilla',
+              ip: req.clientIP
+            }
+          );
           reject(error);
         }
       });
@@ -458,8 +748,8 @@ const PrestadorController = {
       res,
       handleUpload,
       "CSV de Prestadores",
-      { 
-        action: "importar", 
+      {
+        action: "importar",
         successStatus: StatusCodes.OK,
         includeDataInResponse: true // Para incluir los detalles del procesamiento
       }
