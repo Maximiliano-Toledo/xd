@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { FaPlus } from "react-icons/fa6";
 import LiveAlert from "../utils/LiveAlert";
 import { useAbmApi } from '../../hooks/useAbmApi';
+import '../../styles/cargar-cartilla.css'
 
 const CrearEspecialidad = () => {
     const navigate = useNavigate();
@@ -71,7 +72,7 @@ const CrearEspecialidad = () => {
     return (
         <div>
             <HeaderStaff/>
-            <h1 className="w-25 fs-4 text-center pb-2 rounded-top rounded-bottom fw-bold text-white p-container mb-0 p-1">
+            <h1 className="w-50 fs-5 text-center pb-2 rounded-top rounded-bottom fw-bold text-white p-container mb-0 p-1">
                 Alta de especialidad
             </h1>
             <div className="d-flex justify-content-center align-items-start min-vh-25 mt-0">
@@ -89,11 +90,11 @@ const CrearEspecialidad = () => {
             </button>
 
             <div className="d-flex justify-content-center align-items-start min-vh-100">
-                <div className="w-50 d-flex flex-column border shadow-input p-5 rounded-3 shadow mt-5 ">
+                <div className="w-75 w-md-75 w-lg-50 d-flex flex-column border shadow-input p-3 p-md-4 p-lg-5 rounded-3 shadow mt-5">
                     
                     <form className="form-group mb-4 position-relative" onSubmit={onSubmit}>
                         <div className="d-flex align-items-center">
-                            <label htmlFor="especialidad" className="fw-bold m-1 fs-6 ms-3">
+                            <label htmlFor="especialidad" className="subtitle-dashboard fw-bold m-1 fs-6 pe-2">
                                 Nombre de la nueva especialidad:
                             </label>
                             <LiveAlert message={
@@ -130,7 +131,8 @@ const CrearEspecialidad = () => {
 
                         <div className="d-flex justify-content-center mt-4">
                             <button 
-                                className="btn btn-volver rounded-pill text-white text-center text-uppercase w-md-auto white-space-nowrap"
+                                className="btn btn-volver rounded-pill text-white fw-bolder text-center text-uppercase mt-4 ms-4 me-4 px-4"
+                            style={{ minWidth: '150px', whiteSpace: 'nowrap' }}
                                 type="submit"
                                 disabled={loadingCrearEspecialidad}
                             >

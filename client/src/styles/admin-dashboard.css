@@ -1,0 +1,33 @@
+.subtitulo-dashboard{
+    color: var(--color-green-2);
+}
+
+.backound-color{
+    background: #3a6613;
+    background: linear-gradient(2deg,rgba(58, 102, 19, 1) 0%, rgba(122, 179, 23, 1) 62%, rgba(90, 156, 18, 1) 100%);
+}
+
+
+.link-card {
+    padding: 0.2rem 2rem;
+    color: var(--color-green-2) !important;
+    background-color: rgba(255, 255, 255, 0.679);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 2rem; /* opcional si querés ese estilo pill */
+    text-align: center;
+    font-size: medium;
+}
+
+.link-card:hover{
+    background-color: var(--color-green-2);
+    color: aliceblue !important;  
+}
+
+
+.div-background{
+    background: #7AB317;
+    background: linear-gradient(2deg,rgba(122, 179, 23, 1) 45%, rgba(58, 102, 19, 1) 96%);
+}

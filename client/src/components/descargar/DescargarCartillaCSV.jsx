@@ -44,7 +44,7 @@ export const DescargarCartillaCSV = () => {
   return (
     <div>
          <HeaderStaff />
-          <h1 className="w-25 fs-4 text-center pb-2 pt-2 rounded-top rounded-bottom fw-bold text-white p-container mt-0 mb-0">
+          <h1 className="w-50 fs-4 text-center pb-2 pt-2 rounded-top rounded-bottom fw-bold text-white p-container mt-0 mb-0">
             Descargá en CSV
           </h1>
   
@@ -69,7 +69,7 @@ export const DescargarCartillaCSV = () => {
 
             <div className="d-flex justify-content-center mb-4">
               <button
-                className="btn btn-cargar rounded-pill text-white text-center text-uppercase fs-6"
+                className="btn btn-search rounded-pill text-white text-center text-uppercase fs-6"
                 onClick={handleDownload}
                 disabled={isDownloading}
               >

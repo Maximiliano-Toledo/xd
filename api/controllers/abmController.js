@@ -74,167 +74,47 @@ const ABMController = {
 
                     case 'create':
                         result = await ABMService.create(entityName, req.body);
-
-                        // Log detallado según el tipo de entidad
-                        if (entityName === 'planes') {
-                            await auditLogger.logPlanAction(
-                                req.user?.id || 0,
-                                'create',
-                                result.id,
-                                req.body,
-                                req.ip
-                            );
-                        } else if (entityName === 'especialidades') {
-                            await auditLogger.logEspecialidadAction(
-                                req.user?.id || 0,
-                                'create',
-                                result.id,
-                                req.body,
-                                req.ip
-                            );
-                        } else if (entityName === 'categorias') {
-                            await auditLogger.logCategoriaAction(
-                                req.user?.id || 0,
-                                'create',
-                                result.id,
-                                req.body,
-                                req.ip
-                            );
-                        } else {
-                            // Para otros tipos de entidad
-                            await auditLogger.logAction(
-                                req.user?.id || 0,
-                                'create',
-                                entityName,
-                                result.id,
-                                {
-                                    actionType: 'creacion',
-                                    requestData: req.body,
-                                    result,
-                                    ip: req.ip
-                                }
-                            );
-                        }
+                        // Registrar la acción
+                        await auditLogger.logAction(
+                            req.user?.id || 0,
+                            'create',
+                            entityName,
+                            result.id,
+                            { requestData: req.body, result }
+                        );
                         return res.status(201).json({ success: true, data: result });
 
                     case 'update':
-                        // Obtener datos previos para el log
-                        const previousData = await ABMService.getById(entityName, req.params.id);
                         result = await ABMService.update(entityName, req.params.id, req.body);
-
-                        // Log detallado según el tipo de entidad
-                        if (entityName === 'planes') {
-                            await auditLogger.logPlanAction(
-                                req.user?.id || 0,
-                                'update',
-                                req.params.id,
-                                req.body,
-                                req.ip,
-                                previousData
-                            );
-                        } else if (entityName === 'especialidades') {
-                            await auditLogger.logEspecialidadAction(
-                                req.user?.id || 0,
-                                'update',
-                                req.params.id,
-                                req.body,
-                                req.ip,
-                                previousData
-                            );
-                        } else if (entityName === 'categorias') {
-                            await auditLogger.logCategoriaAction(
-                                req.user?.id || 0,
-                                'update',
-                                req.params.id,
-                                req.body,
-                                req.ip,
-                                previousData
-                            );
-                        } else {
-                            // Para otros tipos de entidad, usar método genérico con detalles de cambios
-                            const changes = [];
-                            Object.keys(req.body).forEach(key => {
-                                if (previousData[key] !== req.body[key]) {
-                                    changes.push({
-                                        field: key,
-                                        oldValue: previousData[key],
-                                        newValue: req.body[key]
-                                    });
-                                }
-                            });
-
-                            await auditLogger.logAction(
-                                req.user?.id || 0,
-                                'update',
-                                entityName,
-                                req.params.id,
-                                {
-                                    actionType: 'edicion',
-                                    changes,
-                                    fieldsModified: changes.length,
-                                    requestData: req.body,
-                                    result,
-                                    ip: req.ip
-                                }
-                            );
-                        }
+                        // Registrar la acción
+                        await auditLogger.logAction(
+                            req.user?.id || 0,
+                            'update',
+                            entityName,
+                            req.params.id,
+                            { requestData: req.body, result }
+                        );
                         return res.status(200).json({ success: true, data: result });
 
                     case 'delete':
-                        // Obtener datos antes de eliminar
-                        const dataToDelete = await ABMService.getById(entityName, req.params.id);
                         await ABMService.delete(entityName, req.params.id);
-
-                        // Log detallado según el tipo de entidad
-                        if (entityName === 'planes') {
-                            await auditLogger.logPlanAction(
-                                req.user?.id || 0,
-                                'delete',
-                                req.params.id,
-                                dataToDelete,
-                                req.ip
-                            );
-                        } else if (entityName === 'especialidades') {
-                            await auditLogger.logEspecialidadAction(
-                                req.user?.id || 0,
-                                'delete',
-                                req.params.id,
-                                dataToDelete,
-                                req.ip
-                            );
-                        } else if (entityName === 'categorias') {
-                            await auditLogger.logCategoriaAction(
-                                req.user?.id || 0,
-                                'delete',
-                                req.params.id,
-                                dataToDelete,
-                                req.ip
-                            );
-                        } else {
-                            await auditLogger.logAction(
-                                req.user?.id || 0,
-                                'delete',
-                                entityName,
-                                req.params.id,
-                                {
-                                    actionType: 'eliminacion',
-                                    deletedData: dataToDelete,
-                                    ip: req.ip
-                                }
-                            );
-                        }
+                        // Registrar la acción
+                        await auditLogger.logAction(
+                            req.user?.id || 0,
+                            'delete',
+                            entityName,
+                            req.params.id,
+                            { requestData: req.body }
+                        );
                         return res.status(200).json({
                             success: true,
                             message: `${ABMService.getEntityConfig(entityName).displayName} eliminado correctamente`
                         });
-
                     case 'toggleStatus':
                         return this.toggleStatusHandler(entityName)(req, res);
-
                     case 'getLocalidadesByProvincia':
                         result = await ABMService.getLocalidadesByProvincia(req.params.id);
                         return res.status(200).json({ success: true, data: result });
-
                     default:
                         return res.status(400).json({ success: false, error: 'Operación no soportada' });
                 }
@@ -252,22 +132,17 @@ const ABMController = {
     toggleStatusHandler(entityName) {
         return async (req, res) => {
             try {
-                // Obtener estado actual
-                const currentData = await ABMService.getById(entityName, req.params.id);
-                const oldStatus = currentData.estado;
-
                 const result = await ABMService.toggleStatus(entityName, req.params.id);
-                const newStatus = result.newState;
 
-                // Log específico para cambio de estado
-                await auditLogger.logStatusChange(
+                await auditLogger.logAction(
                     req.user?.id || 0,
+                    'toggleStatus',
                     entityName,
                     req.params.id,
-                    oldStatus,
-                    newStatus,
-                    currentData,
-                    req.ip
+                    {
+                        previousStatus: result.newState === 'Activo' ? 'Inactivo' : 'Activo',
+                        newStatus: result.newState
+                    }
                 );
 
                 return res.status(200).json({

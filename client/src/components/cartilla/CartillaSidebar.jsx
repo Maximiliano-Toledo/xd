@@ -27,14 +27,14 @@ const CartillaSidebar = () => {
 
     return (
         <aside className="cartilla-sidebar">
-            <div className="cartilla-sidebar-header">
-                <h4 className="cartilla-sidebar-title">Servicios</h4>
+            <div className="sidebar-header">
+                <h4 className="sidebar-title">Servicios</h4>
             </div>
 
-            <div className="cartilla-sidebar-links">
+            <div className="sidebar-links">
                 {sidebarLinks.map((link, index) => (
-                    <a key={index} href={link.href} className="cartilla-sidebar-link">
-                        <div className="cartilla-sidebar-icon">
+                    <a key={index} href={link.href} className="sidebar-link">
+                        <div className="sidebar-icon">
                             {link.icon}
                         </div>
                         <span>{link.text}</span>

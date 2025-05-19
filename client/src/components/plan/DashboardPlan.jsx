@@ -38,12 +38,12 @@ const DashboardPlan = () => {
     return (
         <div>
              <HeaderStaff />
-             <h6 className=" w-25 fs-4 text-center pb-2 pt-2 rounded-top rounded-bottom fw-bold text-white p-container mt-0 mb-0 m-4 ">
+             <h6 className="w-50 fs-5 text-center pb-2 pt-2 rounded-top rounded-bottom fw-bold text-white p-container mt-0 mb-0 m-4 ">
                 Gestión de planes
              </h6>
             <div className="d-flex justify-content-center align-items-start min-vh-25 mt-0">
                 <div className="w-100 d-flex flex-column border shadow-input p-3 rounded-3 shadow ps-5 ms-4 me-4 ">
-                    <h1 className="fs-2 h1-titulo fw-bold ">Agregá, modificá o eliminá los planes disponibles</h1>
+                    <h1 className="fs-3 h1-titulo fw-bold ">Agregá, modificá o eliminá los planes disponibles</h1>
                 </div>
             </div>
 

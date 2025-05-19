@@ -10,6 +10,8 @@ import { useNavigate } from "react-router"
 import { Footer } from "../../layouts/Footer"
 import '../../styles/cargar-cartilla.css'
 import '../../styles/carga-individual.css'
+import { PiNumberSquareOneLight } from "react-icons/pi";
+import { PiNumberSquareTwoLight } from "react-icons/pi";
 
 export const DescargarCartillaPDF = () => {
   const [options, setOptions] = useState({
@@ -130,7 +132,7 @@ export const DescargarCartillaPDF = () => {
   return (
     <div>
          <HeaderStaff />
-          <h1 className="w-25 fs-4 text-center pb-2 pt-2 rounded-top rounded-bottom fw-bold text-white p-container mt-0 mb-0">
+          <h1 className="w-50 fs-4 text-center pb-2 pt-2 rounded-top rounded-bottom fw-bold text-white p-container mt-0 mb-0">
              Descargá en PDF
           </h1>
 
@@ -161,54 +163,60 @@ export const DescargarCartillaPDF = () => {
             {/**Formulario de descarga */}
             <form onSubmit={handleDownloadPdf}>
               <div className="d-flex flex-column gap-4 mb-4">
-
-                {/**Select de planes */}
-                <div className="form-group mx-auto w-50 p-3 border rounded shadow">
-                   <h6 className='fw-bold subtitle-dashboard'>Plan</h6>
-                  <CustomSelect
-                    options={adaptarOpciones(options.planes, "id_plan", "nombre")}
-                    value={formData.plan}
-                    onChange={handleChange}
-                    name="plan"
-                    placeholder="Seleccione su plan"
-                    disabled={loading.planes}
-                    loading={loading.planes}
-                    className="p-2"
-                  />
-                </div>
-
-                  {/**Select de provincia */}
-                <div className="form-group mx-auto w-50 p-3 border rounded shadow">
-                  <h6 className='fw-bold subtitle-dashboard'>Provincia</h6>
-                  <CustomSelect
-                    options={adaptarOpciones(options.provincias, "id_provincia", "nombre")}
-                    value={formData.provincia}
-                    onChange={handleChange}
-                    name="provincia"
-                    placeholder="Seleccione la provincia"
-                    disabled={!formData.plan || loading.provincias}
-                    loading={loading.provincias}
-                    className="p-2"
-                  />
-                </div>
-
-                <div className="form-group w-100">
-                  <button
-                    type="submit"
-                    className="btn btn-cargar rounded-pill text-white text-center text-uppercase fs-6 mx-auto"
-                    disabled={
-                      !formData.plan || !formData.provincia || loading.planes || loading.provincias || isDownloading
-                    }
-                  >
-                    {isDownloading ? (
-                      <>Descargando...</>
-                    ) : (
-                      <>
-                        <FiDownload className="fs-5 me-2" /> Descargar
-                      </>
-                    )}
-                  </button>
-                </div>
+                  {/**Select de planes */}
+                  <div className="form-group mx-auto w-75 w-md-50 p-3 border rounded shadow">
+                    <h6 className='fw-bold subtitle-dashboard text-break'>
+                      <PiNumberSquareOneLight className="fs-4 fw-bold"/> Seleccione su Plan
+                    </h6>
+                    <CustomSelect
+                      options={adaptarOpciones(options.planes, "id_plan", "nombre")}
+                      value={formData.plan}
+                      onChange={handleChange}
+                      name="plan"
+                      placeholder="Seleccione su plan"
+                      disabled={loading.planes}
+                      loading={loading.planes}
+                      className="p-2 mb-3"
+                    />
+                    
+                    {/**Select de provincia */}
+                    <h6 className='fw-bold subtitle-dashboard text-break'>
+                      <PiNumberSquareTwoLight className="fs-4 fw-bold me-1"/>
+                      Seleccione la provincia
+                    </h6>
+                    <CustomSelect
+                      options={adaptarOpciones(options.provincias, "id_provincia", "nombre")}
+                      value={formData.provincia}
+                      onChange={handleChange}
+                      name="provincia"
+                      placeholder="Seleccione la provincia"
+                      disabled={!formData.plan || loading.provincias}
+                      loading={loading.provincias}
+                      className="p-2"
+                    />
+                  </div>
+                  
+                  <div className="d-flex justify-content-center">
+                    <div className="form-group w-100 w-sm-50 w-md-25 d-flex">
+                      <button
+                        type="submit"
+                        className="btn btn-search rounded-pill text-white text-center text-uppercase fs-6 d-flex align-items-center flex-wrap mx-auto"
+                        
+                        disabled={
+                          !formData.plan || !formData.provincia || loading.planes || loading.provincias || isDownloading
+                        }
+                      >
+                        {isDownloading ? (
+                          <span className="text-truncate">Descargando...</span>
+                        ) : (
+                          <>
+                            <FiDownload className="fs-5 me-2" /> 
+                            <span className="text-truncate">Descargar</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
               </div>
             </form>
         </div>

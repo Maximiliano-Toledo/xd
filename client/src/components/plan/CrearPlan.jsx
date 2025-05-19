@@ -6,6 +6,7 @@ import LiveAlert from '../utils/LiveAlert';
 import Swal from 'sweetalert2';
 import { FaPlus } from 'react-icons/fa6';
 import { useAbmApi } from '../../hooks/useAbmApi';
+import '../../styles/cargar-cartilla.css'
 
 const CrearPlan = () => {
     const navigate = useNavigate();
@@ -72,7 +73,7 @@ const CrearPlan = () => {
     return (
         <div>
             <HeaderStaff/>
-            <h1 className="w-25 fs-4 text-center pb-2 rounded-top rounded-bottom fw-bold text-white p-container mb-0 ">
+            <h1 className="w-50 fs-5 text-center pb-2 pt-2 rounded-top rounded-bottom fw-bold text-white p-container mb-0 ">
                 Alta de plan
             </h1>
             <div className="d-flex justify-content-center align-items-start min-vh-25 mt-0 mb-0">
@@ -90,10 +91,10 @@ const CrearPlan = () => {
             </button>
 
             <div className="d-flex justify-content-center align-items-start min-vh-100">
-                <div className="w-50 d-flex flex-column border shadow-input p-5 rounded-3 shadow mt-5 ">
+                <div className="w-75 w-md-75 w-lg-50 d-flex flex-column border shadow-input p-3 p-md-4 p-lg-5 rounded-3 shadow mt-5 ">
                     <form className="form-group mb-4 position-relative" onSubmit={onSubmit}>
-                        <div className="d-flex align-items-center">
-                            <label htmlFor="plan" className="fw-bold m-1 pe-2 fs-6 ms-3">
+                        <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center">
+                            <label htmlFor="plan" className="fw-bold subtitle-dashboard m-1 pe-md-2 fs-6">
                                 Nombre del nuevo plan:
                             </label>
                             <LiveAlert message={
@@ -117,7 +118,7 @@ const CrearPlan = () => {
                             })}
                             className="form-control p-2 mt-2"
                             id="plan"
-                            placeholder="Ingresá el nuevo nombre del plan"
+                            placeholder="Ingresá el nuevo nombre"
                             disabled={loadingCrearPlan}
                         />
                         
@@ -130,7 +131,8 @@ const CrearPlan = () => {
                         
                         <div className="d-flex justify-content-center mt-4">
                             <button 
-                                className="btn btn-volver rounded-pill text-white text-center text-uppercase w-md-auto white-space-nowrap"
+                                className="btn btn-volver rounded-pill text-white fw-bolder text-center text-uppercase mt-4 ms-4 me-4 px-4"
+                            style={{ minWidth: '150px', whiteSpace: 'nowrap' }}
                                 type="submit"
                                 disabled={loadingCrearPlan}
                             >

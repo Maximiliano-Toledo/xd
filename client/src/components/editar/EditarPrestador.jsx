@@ -14,6 +14,7 @@ import { IoIosCheckmarkCircleOutline } from "react-icons/io";
 import LiveAlert from "../utils/LiveAlert";
 import { useCartillaApi } from "../../hooks/useCartillaApi";
 import { FiSearch } from "react-icons/fi";
+import SearchMethodTabs from "../cartilla/SearchMethodTabs";
 
 const EditarPrestador = () => {
   const edit = true;
@@ -24,6 +25,7 @@ const EditarPrestador = () => {
   const [currentStep, setCurrentStep] = useState(1); // 1: Búsqueda, 2: Resultados, 3: Edición
   const [selectedPrestador, setSelectedPrestador] = useState(null);
   const [originalData, setOriginalData] = useState(null);
+  const [mostrarOpcionesEstado, setMostrarOpcionesEstado] = useState(false);
 
   // Hook para la búsqueda de prestadores
   const {
@@ -80,6 +82,14 @@ const EditarPrestador = () => {
     e.preventDefault();
     await handleSearchSubmit(e);
     // Ya no necesitamos cambiar el paso aquí, el useEffect se encargará de ello
+  };
+
+  // Limpiar campo estado si se oculta con el botón "Ocultar opciones"
+  const handleOcultarOpciones = () => {
+    if (mostrarOpcionesEstado) {
+      setEditForm({ ...editForm, estado: selectedPrestador.estado });
+    }
+    setMostrarOpcionesEstado(!mostrarOpcionesEstado);
   };
 
   // Seleccionar prestador para editar
@@ -207,7 +217,7 @@ const EditarPrestador = () => {
   // Paso 1: Formulario de búsqueda
   const renderSearchStep = () => (
     <div>
-      <h1 className="w-25 fs-4 text-center p-2 rounded-top rounded-bottom fw-bold text-white p-container mt-0 mb-0 m-4">
+      <h1 className="w-50 fs-5 text-center pt-2 pb-2 rounded-top rounded-bottom fw-bold text-white p-container mt-0 mb-0">
         Edición individual
       </h1>
 
@@ -222,32 +232,10 @@ const EditarPrestador = () => {
       <div className="d-flex justify-content-center align-items-start min-vh-100">
         <div className="w-100 d-flex flex-column border shadow-input p-5 rounded-3 shadow mt-5 mb-3">
           <form onSubmit={handleSubmit}>
-            <div className="d-flex justify-content-center my-3">
-              <div className="btn-group">
-                <button
-                  type="button"
-                  className={`btn ${
-                    formData.searchMethod === "normal"
-                      ? "btn-success"
-                      : "btn-outline-success"
-                  }`}
-                  onClick={() => handleMethodChange("normal")}
-                >
-                  Búsqueda normal
-                </button>
-                <button
-                  type="button"
-                  className={`btn ${
-                    formData.searchMethod === "porNombre"
-                      ? "btn-success"
-                      : "btn-outline-success"
-                  }`}
-                  onClick={() => handleMethodChange("porNombre")}
-                >
-                  Búsqueda por nombre
-                </button>
-              </div>
-            </div>
+            <SearchMethodTabs
+                searchMethod={formData.searchMethod}
+                onSearchMethodChange={handleMethodChange}
+            />
 
             <div className="mb-4">
               <label
@@ -274,7 +262,6 @@ const EditarPrestador = () => {
                     }
                     disabled={loading.planes}
                     loading={loading.planes}
-                    className="border border-success rounded"
                   />
                 </div>
               </div>
@@ -304,7 +291,6 @@ const EditarPrestador = () => {
                   }
                   disabled={loading.provincias || !formData.plan}
                   loading={loading.provincias}
-                  className="border border-success rounded"
                 />
               </div>
               <div className="col-md-6">
@@ -330,7 +316,6 @@ const EditarPrestador = () => {
                   }
                   disabled={loading.localidades || !formData.provincia}
                   loading={loading.localidades}
-                  className="border border-success rounded"
                 />
               </div>
             </div>
@@ -360,7 +345,6 @@ const EditarPrestador = () => {
                     }
                     disabled={loading.categorias || !formData.localidad}
                     loading={loading.categorias}
-                    className="border border-success rounded"
                   />
                 </div>
                 <div className="col-md-6">
@@ -386,7 +370,6 @@ const EditarPrestador = () => {
                     }
                     disabled={loading.especialidades || !formData.categoria}
                     loading={loading.especialidades}
-                    className="border border-success rounded"
                   />
                 </div>
               </div>
@@ -416,7 +399,6 @@ const EditarPrestador = () => {
                       }
                       disabled={loading.categorias || !formData.localidad}
                       loading={loading.categorias}
-                      className="border border-success rounded"
                     />
                   </div>
                   <div className="col-md-6">
@@ -444,7 +426,6 @@ const EditarPrestador = () => {
                         loading.nombresPrestadores || !formData.categoria
                       }
                       loading={loading.nombresPrestadores}
-                      className="border border-success rounded"
                     />
                   </div>
                 </div>
@@ -475,7 +456,6 @@ const EditarPrestador = () => {
                         !formData.nombrePrestador
                       }
                       loading={loading.especialidadesPrestador}
-                      className="border border-success rounded"
                     />
                   </div>
                 </div>
@@ -529,7 +509,7 @@ const EditarPrestador = () => {
         {/* Resumen de búsqueda */}
         <div className="mb-4 p-3 bg-light rounded-3">
           <div className="d-flex flex-wrap gap-2">
-            <span className="badge bg-success rounded-pill px-3 py-2 me-2">
+            <span className="search-tag">
               Plan:{" "}
               {options.planes.length > 0 && formData.plan
                 ? (
@@ -541,7 +521,7 @@ const EditarPrestador = () => {
                 : "No especificado"}
             </span>
 
-            <span className="badge bg-success rounded-pill px-3 py-2 me-2">
+            <span className="search-tag">
               Provincia:{" "}
               {options.provincias.length > 0 && formData.provincia
                 ? (
@@ -556,7 +536,7 @@ const EditarPrestador = () => {
                 : "No especificado"}
             </span>
 
-            <span className="badge bg-success rounded-pill px-3 py-2 me-2">
+            <span className="search-tag">
               Localidad:{" "}
               {options.localidades.length > 0 && formData.localidad
                 ? (
@@ -571,7 +551,7 @@ const EditarPrestador = () => {
                 : "No especificado"}
             </span>
 
-            <span className="badge bg-success rounded-pill px-3 py-2 me-2">
+            <span className="search-tag">
               Categoria:{" "}
               {options.categorias.length > 0 && formData.categoria
                 ? (
@@ -586,7 +566,7 @@ const EditarPrestador = () => {
                 : "No especificado"}
             </span>
 
-            <span className="badge bg-success rounded-pill px-3 py-2 me-2">
+            <span className="search-tag">
               Especialidad:{" "}
               {options.especialidades.length > 0 && formData.especialidad
                 ? (
@@ -596,7 +576,7 @@ const EditarPrestador = () => {
                     options.especialidades.find(
                       (e) =>
                         String(e.id_especialidad) ===
-                        String(formData.especialidades)
+                        String(formData.especialidad)
                     )
                   )?.nombre || "Especialidad"
                 : options.especialidadesPrestador.length > 0 &&
@@ -608,7 +588,7 @@ const EditarPrestador = () => {
                     options.especialidadesPrestador.find(
                       (e) =>
                         String(e.id_especialidad) ===
-                        String(formData.especialidades)
+                        String(formData.especialidad)
                     )
                   )?.nombre || "Especialidad"
                 : "Especialidad"}
@@ -701,7 +681,7 @@ const EditarPrestador = () => {
                         style={{ padding: "12px", borderColor: "#dee2e6" }}
                       >
                         <button
-                          className="btn btn-sm btn-success"
+                          className="search-button p-1"
                           onClick={() => handleSelectPrestador(prestador)}
                         >
                           Seleccionar
@@ -751,7 +731,7 @@ const EditarPrestador = () => {
 
             <div className="d-flex justify-content-between mt-3">
               <button
-                className="btn btn-outline-secondary"
+                className="search-button p-2"
                 onClick={() => setCurrentStep(1)}
               >
                 Volver a búsqueda
@@ -759,7 +739,7 @@ const EditarPrestador = () => {
 
               <div className="pagination-controls">
                 <button
-                  className="btn btn-outline-success mx-1"
+                  className="search-button p-2"
                   onClick={() => handlePageChange(pagination.currentPage - 1)}
                   disabled={pagination.currentPage === 1}
                 >
@@ -769,7 +749,7 @@ const EditarPrestador = () => {
                   Página {pagination.currentPage} de {pagination.totalPages}
                 </span>
                 <button
-                  className="btn btn-outline-success mx-1"
+                  className="search-button p-2"
                   onClick={() => handlePageChange(pagination.currentPage + 1)}
                   disabled={pagination.currentPage === pagination.totalPages}
                 >
@@ -802,7 +782,7 @@ const EditarPrestador = () => {
         {/* Resumen de búsqueda */}
         <section className="mb-4 p-3 bg-light rounded-3">
           <div className="d-flex flex-wrap gap-2">
-            <span className="badge bg-success rounded-pill px-3 py-2 me-2">
+            <span className="search-tag">
               Plan:{" "}
               {options.planes.length > 0 && formData.plan
                 ? (
@@ -814,7 +794,7 @@ const EditarPrestador = () => {
                 : "No especificado"}
             </span>
 
-            <span className="badge bg-success rounded-pill px-3 py-2 me-2">
+            <span className="search-tag">
               Provincia:{" "}
               {options.provincias.length > 0 && formData.provincia
                 ? (
@@ -829,7 +809,7 @@ const EditarPrestador = () => {
                 : "No especificado"}
             </span>
 
-            <span className="badge bg-success rounded-pill px-3 py-2 me-2">
+            <span className="search-tag">
               Localidad:{" "}
               {options.localidades.length > 0 && formData.localidad
                 ? (
@@ -844,7 +824,7 @@ const EditarPrestador = () => {
                 : "No especificado"}
             </span>
 
-            <span className="badge bg-success rounded-pill px-3 py-2 me-2">
+            <span className="search-tag">
               Categoria:{" "}
               {options.categorias.length > 0 && formData.categoria
                 ? (
@@ -859,7 +839,7 @@ const EditarPrestador = () => {
                 : "No especificado"}
             </span>
 
-            <span className="badge bg-success rounded-pill px-3 py-2 me-2">
+            <span className="search-tag">
               Especialidad:{" "}
               {options.especialidades.length > 0 && formData.especialidad
                 ? (
@@ -885,6 +865,10 @@ const EditarPrestador = () => {
                     )
                   )?.nombre || "Especialidad"
                 : "Especialidad"}
+            </span>
+
+            <span className="search-tag">
+              Estado: {selectedPrestador.estado}
             </span>
           </div>
         </section>
@@ -970,46 +954,44 @@ const EditarPrestador = () => {
           </div>
         </section>
 
-        <div className="d-flex justify-content-center mt-0 mb-5">
-          <div className="w-50">
-            <LiveAlert message="Permite habilitar o deshabilitar al prestador. Solo modificá el estado si es necesario." />
-            <label
-              htmlFor="estado"
-              className="text-success-label fw-medium fs-6 p-1"
+        <div className="d-flex flex-column align-items-center text-center">
+            <button
+            className="search-button p-2"
+            onClick={() => handleOcultarOpciones()}
             >
-              Estado:
-            </label>
-            <div className="custom-select-container">
-              <select
-                className="form-select custom-select border border-success rounded"
+            {mostrarOpcionesEstado ? "Conservar estado" : "Modificar estado"}
+            </button>
+
+            {mostrarOpcionesEstado && (
+            <div className="custom-select-container w-50 text-center">
+                <select
+                className="form-select custom-select border border-success rounded mt-3"
                 id="estado"
                 name="estado"
                 value={editForm.estado}
                 onChange={handleEditChange}
-              >
-                <option selected hidden value="">
-                  Seleccione un estado
-                </option>
+                >
+                <option value="" selected hidden>Seleccionar un estado</option>
                 {originalData?.estado === "Activo" ? (
                   <option value="Inactivo">Deshabilitar</option>
                 ) : (
                   <option value="Activo">Habilitar</option>
                 )}
-              </select>
+                </select>
             </div>
-          </div>
+            )}
         </div>
 
         <div className="d-flex justify-content-between">
           <button
-            className="btn btn-outline-secondary"
+            className="search-button p-2"
             onClick={() => setCurrentStep(2)}
           >
             Volver a resultados
           </button>
 
           <button
-            className="btn btn-success"
+            className="search-button p-2"
             onClick={confirmarEdicion}
             disabled={!hasChanges()}
           >

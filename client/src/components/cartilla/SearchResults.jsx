@@ -24,7 +24,6 @@ const SearchResults = ({
                 options.provincias.find(p => String(p.id_provincia) === String(formData.provincia)))?.nombre || "Provincia"
             : "Provincia";
 
-        // Agregamos localidad al summary
         const localidadName = options.localidades.length > 0 && formData.localidad
             ? (options.localidades.find(p => p.id_localidad == formData.localidad) ||
                 options.localidades.find(p => String(p.id_localidad) === String(formData.localidad)))?.nombre || "Localidad"

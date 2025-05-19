@@ -136,8 +136,8 @@ export const useFormCartilla = (apiHook) => {
         setIsResultsView(false)
         setSelectedCategory(null)
 
-        // Resetear campos específicos - Incluyendo provincia y localidad
-        const fieldsToReset = ["plan", "provincia", "localidad", "categoria", "especialidad", "nombrePrestador"]
+        // Resetear campos específicos
+        const fieldsToReset = ["plan", "categoria", "especialidad", "nombrePrestador"]
         fieldsToReset.forEach(field => {
             handleChange({
                 target: { name: field, value: "" }

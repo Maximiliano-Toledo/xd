@@ -166,12 +166,20 @@ const resetAll = () => {
 
   return (
     <div>
-      <HeaderStaff title="Cargar cartilla" />
-      <p className="fs-3 font-p fw-bold">Desde aquí podés subir una cartilla.</p>
+      <HeaderStaff />
+    
+      <h1 className="w-50 fs-4 text-center pb-2 pt-2 rounded-top rounded-bottom fw-bold text-white p-container mt-0 mb-0 m-4 ">
+        Carga masiva
+      </h1>
+      <div className="d-flex justify-content-center align-items-start min-vh-25 mt-0">
+        <div className="w-100 d-flex flex-column border shadow-input p-3 rounded-3 shadow ps-5 ms-4 me-4 ">
+          <h6 className="fs-2 h1-titulo fw-bold ">Desde aquí podés subir una cartilla.</h6>
+        </div>
+      </div>
 
-      <div className="d-flex justify-content-center align-items-center min-vh-100">
-        <div className="w-75 d-flex border mb-4 shadow-input border p-3 custom-height">
-          <div className="border m-2 p-2 w-100">
+      <div className="d-flex justify-content-center align-items-center min-vh-100 mt-4">
+        <div className="w-75 d-flex border mb-4 shadow-input border rounded">
+          <div className="m-2 p-2 w-100">
             <h2 className="title-dashboard">
               <MdNotStarted className="me-3" /> Cargar
             </h2>
@@ -247,7 +255,7 @@ const resetAll = () => {
             </div>
 
             <button
-              className="mt-5 btn btn-subir text-white text-center text-uppercase d-block mx-auto my-4"
+              className="mt-5 btn btn-search text-white text-center text-uppercase d-block mx-auto my-4"
               type="button"
               onClick={handleSubmit}
               disabled={isUploading || !file}

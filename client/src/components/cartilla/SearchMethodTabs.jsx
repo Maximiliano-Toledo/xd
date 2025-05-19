@@ -1,4 +1,5 @@
 import { FiSearch } from "react-icons/fi";
+import { RxLetterCaseCapitalize } from "react-icons/rx";
 
 const SearchMethodTabs = ({ searchMethod, onSearchMethodChange }) => {
     const methods = [
@@ -10,7 +11,7 @@ const SearchMethodTabs = ({ searchMethod, onSearchMethodChange }) => {
         {
             key: "porNombre",
             label: "Búsqueda por nombre",
-            icon: <FiSearch />
+            icon: <RxLetterCaseCapitalize />
         }
     ];
 

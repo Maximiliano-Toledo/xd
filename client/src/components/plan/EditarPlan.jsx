@@ -3,7 +3,7 @@ import { MdSubdirectoryArrowLeft } from "react-icons/md";
 import { useNavigate } from "react-router";
 import CustomSelect from "../CustomSelect";
 import { useAbmApi } from "../../hooks/useAbmApi";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import LiveAlert from "../utils/LiveAlert";
 import "../../styles/cargar-cartilla.css";
 import Swal from "sweetalert2";
@@ -20,6 +20,13 @@ const EditarPlan = () => {
   const [planSeleccionado, setPlanSeleccionado] = useState(null);
   const [estadoSeleccionado, setEstadoSeleccionado] = useState(null);
   const [mostrarOpcionesEstado, setMostrarOpcionesEstado] = useState(false);
+
+  const handleOcultarOpciones = () => {
+    if (mostrarOpcionesEstado) {
+      setEstadoSeleccionado(null);
+    }
+    setMostrarOpcionesEstado(!mostrarOpcionesEstado);
+  };
 
   const {
     data: planes,
@@ -93,13 +100,27 @@ const EditarPlan = () => {
     }));
   };
 
+  // Determinar si hay cambios para habilitar/deshabilitar el botón de guardar
+  const hayCambios = useMemo(() => {
+    // No hay plan seleccionado
+    if (!planSeleccionado) return false;
+    
+    // Verificar si el nombre cambió
+    const nombreCambio = formData.nombre !== planSeleccionado.nombre && formData.nombre.trim() !== "";
+    
+    // Verificar si hay un cambio de estado seleccionado
+    const estadoCambio = !!estadoSeleccionado;
+    
+    return nombreCambio || estadoCambio;
+  }, [planSeleccionado, formData.nombre, estadoSeleccionado]);
+
   const confirmarEditar = async () => {
     try {
       const cambios = {};
       let necesitaActualizar = false;
 
       // Verificar si cambió el nombre
-      if (formData.nombre !== planSeleccionado.nombre) {
+      if (formData.nombre !== planSeleccionado.nombre && formData.nombre.trim() !== "") {
         cambios.nombre = formData.nombre;
         necesitaActualizar = true;
       }
@@ -142,6 +163,10 @@ const EditarPlan = () => {
       // Refrescar datos
       const planActualizado = await getPlanById(formData.plan);
       setPlanSeleccionado(planActualizado);
+      setFormData((prev) => ({
+        ...prev,
+        nombre: planActualizado.nombre,
+      }));
       setEstadoSeleccionado(null);
       setMostrarOpcionesEstado(false);
     } catch (error) {
@@ -173,24 +198,24 @@ const EditarPlan = () => {
       });
   });
 
-  // Verificar si hay una especialidad seleccionada
+  // Verificar si hay un plan seleccionado
   const hayPlanSeleccionado = !!planSeleccionado;
 
   return (
-    <div>
-      <HeaderStaff />
-      <h1 className="w-25 fs-4 text-center pb-2 rounded-top rounded-bottom fw-bold text-white p-container mb-0 ">
-        Editar plan
-      </h1>
-      <div className="d-flex justify-content-center align-items-start min-vh-25 mt-0">
-        <div className="w-100 d-flex flex-column border  shadow-input p-3 rounded-3 shadow ps-5">
-          <h6 className="fs-4 h1-titulo fw-bold ">
-            Visualización del plan seleccionado. Gestioná su estado
-            (habilitado/deshabilitado) y actualizá su nombre desde la sección
-            inferior.
-          </h6>
-        </div>
-      </div>
+      <div>
+          <HeaderStaff/>
+              <h1 className="w-50 fs-5 text-center pb-2 pt-2 rounded-top rounded-bottom fw-bold text-white p-container mb-0 ">
+                    Editar plan
+              </h1>
+             <div className="d-flex justify-content-center align-items-start mt-0 ">
+                <div className="w-100 d-flex flex-column border shadow-input p-3 p-md-4 rounded-3 shadow ps-2 ps-md-5">
+                  <h6 className="fs-5 fs-md-4 h1-titulo fw-bold text-wrap">
+                    Visualización del plan seleccionado. Gestioná su estado (habilitado/deshabilitado) y actualizá su
+                    nombre desde la sección inferior.
+                  </h6>
+                </div>
+              </div>
+
 
       <div className="d-flex justify-content-center align-items-start min-vh-75">
         <div className="w-100 d-flex flex-column border shadow-input p-5 rounded-3 shadow mt-5 ">
@@ -200,7 +225,7 @@ const EditarPlan = () => {
             <div className="form-group mb-4 w-50 mx-auto">
               <label
                 htmlFor="plan"
-                className="p-1 fs-6 text-uppercase text-success-label"
+                className="mt-3 fs-6 text-uppercase text-success-label"
               >
                 Plan:
               </label>
@@ -255,7 +280,7 @@ const EditarPlan = () => {
                           <td className="align-middle">
                             {planSeleccionado?.nombre || "Nombre de la especialidad seleccionada"}
                           </td>
-                          <td className="text-center align-middle">
+                          <td className={planSeleccionado?.estado ? (planSeleccionado.estado === "Activo" ? "text-center align-middle text-success" : "text-center align-middle text-danger") : "text-center align-middle"}>
                             {planSeleccionado?.estado ? (planSeleccionado.estado === "Activo" ? "Activo" : "Inactivo") : "-"}
                           </td>
                         </tr>
@@ -296,15 +321,15 @@ const EditarPlan = () => {
 
             <div className="d-flex flex-column align-items-center text-center">
               <button
-                className="btn btn-outline-success mb-3"
-                onClick={() => setMostrarOpcionesEstado(!mostrarOpcionesEstado)}
+                className="btn-search p-2"
+                onClick={() => handleOcultarOpciones()}
                 disabled={!hayPlanSeleccionado}
               >
-                {mostrarOpcionesEstado ? "Ocultar opciones" : "Cambiar estado"}
+                {mostrarOpcionesEstado ? "Conservar estado" : "Modificar estado"}
               </button>
 
               {mostrarOpcionesEstado && (
-                <div className="custom-select-container w-50">
+                <div className="custom-select-container w-50 mt-2">
                   <select
                     className="form-select custom-select border border-success rounded"
                     id="estado"
@@ -314,9 +339,9 @@ const EditarPlan = () => {
                   >
                     <option value="">Seleccionar acción...</option>
                     {planSeleccionado?.estado === "Activo" ? (
-                      <option value="deshabilitar">Deshabilitar</option>
+                      <option value="Inactivo">Deshabilitar</option>
                     ) : (
-                      <option value="habilitar">Habilitar</option>
+                      <option value="Activo">Habilitar</option>
                     )}
                   </select>
                 </div>
@@ -324,41 +349,34 @@ const EditarPlan = () => {
             </div>
           </div>
 
-          {/*Modificar el nombre */}
-          <div className="border m-1 rounded p-4">
-            <div className="d-flex align-items-center ms-5 w-75">
-              <h6 className="fw-bold fs-5 h1-titulo text-start mb-0 me-3">
+
+          {/*Modificar el nombre */}   
+          <div className="border m-1 rounded p-3 p-md-4">
+            <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center w-100 px-2 px-md-5">
+              <h6 className="fw-bold fs-5 fs-md-5 h1-titulo text-start mb-2 mb-md-0 me-0 me-md-3">
                 Modificar el nombre del plan.
               </h6>
-              <LiveAlert
-                message={
-                  <span
-                    style={{
-                      fontSize: "0.875rem",
-                      fontWeight: "normal",
-                      color: "#555",
-                    }}
-                  >
-                    Modificá el nombre solo si es necesario. <br />
-                    Si no querés hacer cambios, no es obligatorio completar este
-                    campo.
+              <LiveAlert message={
+                  <span style={{ fontSize: '0.875rem', fontWeight: 'normal', color: '#555' }}>
+                   Modificá el nombre solo si es
+                    necesario. <br/>Si no querés hacer
+                    cambios, no es obligatorio
+                    completar este campo.
                   </span>
                 }
               />
             </div>
 
-            <div className="d-flex flex-column align-items-center text-center">
-              <label
-                htmlFor="plan"
-                className="text-success-label fw-bold text-uppercase mb-2"
-              >
+            <div className="d-flex flex-column align-items-center text-center px-3">
+              <label htmlFor="nombre" className="text-success-label fw-bold text-uppercase mb-2">
                 Edición del nombre del plan
               </label>
-
               <input
                 type="text"
-                className="form-control w-50"
-                placeholder="Ingresá el nuevo nombre"
+                id="nombre"
+                name="nombre"
+                className="form-control w-50 w-md-50"
+                placeholder="Ingresá el nombre del plan"
                 value={formData.nombre}
                 onChange={handleNombreChange}
                 disabled={!hayPlanSeleccionado}
@@ -368,10 +386,10 @@ const EditarPlan = () => {
 
           <div className="d-flex justify-content-center mt-4">
             <button
-              className="btn btn-volver rounded-pill text-white text-center text-uppercase w-md-auto white-space-nowrap"
+              className="btn btn-search rounded-pill text-white text-center text-uppercase w-md-auto white-space-nowrap"
               type="submit"
               onClick={onSubmit}
-              disabled={!hayPlanSeleccionado}
+              disabled={!hayPlanSeleccionado || !hayCambios}
             >
               Guardar cambios
             </button>

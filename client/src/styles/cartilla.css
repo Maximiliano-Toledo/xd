@@ -44,29 +44,28 @@
     background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
     color: var(--color-white);
     padding: 25px 0;
-    /* border-radius: var(--border-radius-lg) 0 0 var(--border-radius-lg); */
-    border-radius: var(--border-radius-lg);
+    border-radius: var(--border-radius-lg) 0 0 var(--border-radius-lg);
 }
 
-.cartilla-sidebar-header {
+.sidebar-header {
     padding: 0 25px 20px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     margin-bottom: 25px;
 }
 
-.cartilla-sidebar-title {
+.sidebar-title {
     font-size: 1.3rem;
     font-weight: 600;
     margin: 0;
 }
 
-.cartilla-sidebar-links {
+.sidebar-links {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-.cartilla-sidebar-link {
+.sidebar-link {
     display: flex;
     align-items: center;
     padding: 12px 25px;
@@ -76,12 +75,12 @@
     border-left: 3px solid transparent;
 }
 
-.cartilla-sidebar-link:hover {
+.sidebar-link:hover {
     background-color: rgba(255, 255, 255, 0.1);
     border-left-color: var(--color-white);
 }
 
-.cartilla-sidebar-icon {
+.sidebar-icon {
     width: 40px;
     height: 40px;
     display: flex;

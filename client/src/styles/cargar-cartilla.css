@@ -48,10 +48,9 @@
 
 .cloud-icon{
     color: #64A70B;
-    font-size: 100px;
+    font-size: 80px;
     margin: 0 auto; /* Centra horizontalmente si el padre tiene text-align: center */
     display: block;
-  
 }
 
 .font-p {
@@ -133,5 +132,13 @@
 .letter-color{
   color:#3e6907 !important;
 }
+
+/*Para que sea responsive el icono de la nube*/
+@media (max-width: 768px) {
+  .cloud-icon {
+    font-size: 3rem;
+  }
+}
+
       
   
