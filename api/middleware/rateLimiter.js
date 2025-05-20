@@ -27,8 +27,8 @@ const createRateLimiter = (windowMs, max, message) => {
  * @type {Function}
  */
 const generalLimiter = createRateLimiter(
-    30 * 60 * 1000, // 30 minutos (aumentado de 15 a 30 minutos)
-    150, // 150 solicitudes (aumentado de 100 a 150)
+    30 * 60 * 1000, // 30 minutos
+    5000, // Aumentar a un número muy alto (ej: 5000 solicitudes)
     'Demasiadas solicitudes, por favor intente de nuevo más tarde'
 );
 
@@ -37,8 +37,8 @@ const generalLimiter = createRateLimiter(
  * @type {Function}
  */
 const writeLimiter = createRateLimiter(
-    30 * 60 * 1000, // 30 minutos (aumentado de 15 a 30 minutos)
-    50, // 50 solicitudes (aumentado de 30 a 50)
+    30 * 60 * 1000, // 30 minutos
+    2000, // Aumentar a un número muy alto
     'Demasiadas solicitudes de escritura, por favor intente de nuevo más tarde'
 );
 
@@ -47,8 +47,8 @@ const writeLimiter = createRateLimiter(
  * @type {Function}
  */
 const loginLimiter = createRateLimiter(
-    30 * 60 * 1000, // 30 minutos (aumentado de 15 a 30 minutos)
-    10, // 10 intentos (aumentado de 5 a 10)
+    30 * 60 * 1000, // 30 minutos
+    1000, // Aumentar a un número muy alto
     'Demasiados intentos de inicio de sesión, por favor intente de nuevo más tarde'
 );
 
