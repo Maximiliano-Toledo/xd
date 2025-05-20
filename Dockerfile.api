@@ -1,0 +1,22 @@
+# Dockerfile para la API
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copiar package.json y package-lock.json
+COPY api/package*.json ./
+
+# Instalar dependencias
+RUN npm install
+
+# Copiar el resto de los archivos de la API
+COPY api/ ./
+
+# Copiar el archivo .env específicamente (si no está incluido en la copia anterior)
+# COPY api/.env ./.env
+
+# Exponer el puerto en el que se ejecutará la API
+EXPOSE 3000
+
+# Comando para iniciar la API
+CMD ["node", "app.js"]

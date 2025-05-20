@@ -1214,7 +1214,7 @@ const PrestadorRepository = {
         const especialidadNum = especialidadNumeros[especialidad];
         const numeradaEspecialidad = `${especialidadNum}. ${especialidad}`;
         const especialidadWidth = font.widthOfTextAtSize(numeradaEspecialidad, 12);
-
+        
         // Dibujar texto alineado a la izquierda (usando margin.left)
         currentIndexPage.drawText(numeradaEspecialidad, {
           x: margin.left,

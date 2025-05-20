@@ -72,10 +72,10 @@ const Login = () => {
         // Manejar errores específicos del backend
         setError(response?.message || "Credenciales incorrectas");
       }
-    } catch (err) {
+    } catch (error) {
       // Manejar errores de red o del servidor
-      setError(err.message || "Error de conexión. Por favor intente nuevamente.");
-      console.error("Login error:", err);
+      setError(error.message || "Error de conexión. Por favor intente nuevamente.");
+      console.error("Login error:", error);
     } finally {
       setIsLoading(false);
     }

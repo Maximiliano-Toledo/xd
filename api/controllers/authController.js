@@ -24,7 +24,7 @@ const AuthController = {
     if (!username || !password) {
       return res
         .status(400)
-        .json({ error: "Username and password are required" });
+        .json({ message: "Usuario y contraseña requeridos" });
     }
 
     try {
@@ -63,7 +63,7 @@ const AuthController = {
       res.status(200).json({ user: response.user });
     } catch (error) {
       console.error("Error en login:", error);
-      res.status(401).json({ error: error.message });
+      res.status(401).json({ message: error.message });
     }
   },
 

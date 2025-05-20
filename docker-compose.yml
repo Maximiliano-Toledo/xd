@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  db:
+    image: mariadb:10.6
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: rootpassword
+      MARIADB_DATABASE: ossacra  # El nombre de tu base de datos
+      MARIADB_USER: ossacra_user
+      MARIADB_PASSWORD: ossacra_password
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "3307:3306"
+    networks:
+      - ossacra-network
+
+  # Servicio API
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    restart: always
+    depends_on:
+      - db
+    environment:
+      NODE_ENV: production
+      DB_HOST: db
+      DB_USER: ossacra_user
+      DB_NAME: ossacra
+      DB_PASSWORD: ossacra_password
+      JWT_SECRET: your_jwt_secret
+      JWT_REFRESH_SECRET: your_jwt_refresh_secret
+      JWT_EXPIRES_IN: 1h
+      JWT_REFRESH_EXPIRES_IN: 7d
+    ports:
+      - "3000:3000"
+    networks:
+      - ossacra-network
+
+  # Servicio Cliente
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+    restart: always
+    depends_on:
+      - api
+    ports:
+      - "8090:80"
+    networks:
+      - ossacra-network
+
+networks:
+  ossacra-network:
+    driver: bridge
+
+volumes:
+  mysql_data:

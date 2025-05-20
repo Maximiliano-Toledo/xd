@@ -14,7 +14,7 @@ const LiveAlert = ({ message = "Este es un mensaje por defecto" }) => {
 
   return (
     <div>
-      <button className="btn p-0 border-0" onClick={showAlert} type="button">
+      <button className="btn p-0 border-0 p-1" onClick={showAlert} type="button">
         <CiCircleInfo className="fs-5 fw-bold" />
       </button>
 
