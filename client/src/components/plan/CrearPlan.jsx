@@ -7,6 +7,7 @@ import Swal from 'sweetalert2';
 import { FaPlus } from 'react-icons/fa6';
 import { useAbmApi } from '../../hooks/useAbmApi';
 import '../../styles/cargar-cartilla.css'
+import '../../styles/panel-usuario-nuevo.css'
 
 const CrearPlan = () => {
     const navigate = useNavigate();
@@ -73,10 +74,10 @@ const CrearPlan = () => {
     return (
         <div>
             <HeaderStaff/>
-            <h1 className="w-50 fs-5 text-center pb-2 pt-2 rounded-top rounded-bottom fw-bold text-white p-container mb-0 ">
+            <h1 className="w-50 fs-5 text-center pb-2 pt-2 rounded-top rounded-bottom fw-bold text-white p-container mb-0 me-4 ms-4">
                 Alta de plan
             </h1>
-            <div className="d-flex justify-content-center align-items-start min-vh-25 mt-0 mb-0">
+            <div className="d-flex justify-content-center align-items-start min-vh-25 mt-0 mb-0 me-4 ms-4">
                 <div className="w-100 d-flex flex-column border shadow-input p-3 rounded-3 shadow ps-5">
                     <h6 className="fs-2 h1-titulo fw-bold ">
                         Añadí un plan, estará disponible para futuras ediciones y cargas.
@@ -84,13 +85,7 @@ const CrearPlan = () => {
                 </div>
             </div>
 
-            <button className="btn btn-volver rounded-pill text-white fw-bolder text-center text-uppercase mt-4 ms-4"
-                    type="button"
-                    onClick={handleVolver}>
-                    <MdSubdirectoryArrowLeft className="text-white" /> Volver
-            </button>
-
-            <div className="d-flex justify-content-center align-items-start min-vh-100">
+            <div className="d-flex justify-content-center align-items-start min-vh-25">
                 <div className="w-75 w-md-75 w-lg-50 d-flex flex-column border shadow-input p-3 p-md-4 p-lg-5 rounded-3 shadow mt-5 ">
                     <form className="form-group mb-4 position-relative" onSubmit={onSubmit}>
                         <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center">
@@ -130,9 +125,7 @@ const CrearPlan = () => {
                         (<span className='ms-3 text-danger fw-bold'>{errors.plan.message}</span>)}
                         
                         <div className="d-flex justify-content-center mt-4">
-                            <button 
-                                className="btn btn-volver rounded-pill text-white fw-bolder text-center text-uppercase mt-4 ms-4 me-4 px-4"
-                            style={{ minWidth: '150px', whiteSpace: 'nowrap' }}
+                            <button className="back-button"
                                 type="submit"
                                 disabled={loadingCrearPlan}
                             >
@@ -148,6 +141,14 @@ const CrearPlan = () => {
                     </form>
                 </div>
             </div>
+
+            <div className="back-button-container">
+                <button className="back-button" onClick={handleVolver}>
+                    <MdSubdirectoryArrowLeft />
+                    <span>Volver</span>
+                </button>
+            </div>
+
         </div>
     );
 }

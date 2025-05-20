@@ -34,6 +34,9 @@ import {
   PiNumberSquareOneLight,
   PiNumberSquareTwoLight
 } from "react-icons/pi";
+import {
+  LuLogOut
+} from "react-icons/lu";
 import Logo from "../components/utils/Logo";
 import "../styles/sidebar-nuevo.css";
 
@@ -192,8 +195,8 @@ export default function Sidebar({ children }) {
     },
     {
       key: "salir",
-      icon: <FaPowerOff />,
-      label: "Salir",
+      icon: <LuLogOut />,
+      label: "Cerrar sesión",
       path: "/logout",
       type: "link",
       className: "logout-item"

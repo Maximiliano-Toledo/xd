@@ -1,5 +1,6 @@
 const AuditRepository = require('../repositories/auditRepository');
 const userRepository = require('../repositories/userRepository');
+const auditLogger = require('../utils/auditLogger');
 
 const AuditController = {
     async getLogs(req, res) {
@@ -7,15 +8,39 @@ const AuditController = {
             const limit = parseInt(req.query.limit) || 100;
             const offset = parseInt(req.query.offset) || 0;
 
-            const logs = await AuditRepository.getLogs(limit, offset);
-            const totalCount = await AuditRepository.getLogCount();
+            // Obtener filtros de la consulta
+            const { startDate, endDate, action, entityType } = req.query;
+
+            // Determinar qué método de repositorio usar según los filtros
+            let logs;
+            let totalCount;
+
+            if (startDate && endDate) {
+                logs = await AuditRepository.getLogsByDateRange(startDate, endDate, limit, offset);
+                // Falta implementar conteo para filtro de fecha
+                totalCount = logs.length; // Temporal
+            } else if (action) {
+                logs = await AuditRepository.getLogsByAction(action, limit, offset);
+                totalCount = await AuditRepository.getLogCountByAction(action);
+            } else if (entityType) {
+                logs = await AuditRepository.getLogsByEntity(entityType, limit, offset);
+                totalCount = await AuditRepository.getLogCountByEntity(entityType);
+            } else {
+                logs = await AuditRepository.getLogs(limit, offset);
+                totalCount = await AuditRepository.getLogCount();
+            }
 
             // Enriquecer los datos con información de usuario si es posible
             const enrichedLogs = await enrichLogsWithUserInfo(logs);
 
+            // Formatear los detalles para respuesta API - USANDO EL NUEVO FORMATO OPTIMIZADO
+            const formattedLogs = enrichedLogs.map(log =>
+                auditLogger.formatAuditDetailsOptimized(log)
+            );
+
             res.status(200).json({
                 success: true,
-                data: enrichedLogs,
+                data: formattedLogs,
                 pagination: {
                     total: totalCount,
                     limit,
@@ -44,9 +69,14 @@ const AuditController = {
             // Enriquecer los datos con información de usuario si es posible
             const enrichedLogs = await enrichLogsWithUserInfo(logs);
 
+            // Formatear los detalles para respuesta API - USANDO EL NUEVO FORMATO OPTIMIZADO
+            const formattedLogs = enrichedLogs.map(log =>
+                auditLogger.formatAuditDetailsOptimized(log)
+            );
+
             res.status(200).json({
                 success: true,
-                data: enrichedLogs,
+                data: formattedLogs,
                 pagination: {
                     total: totalCount,
                     limit,
@@ -70,10 +100,12 @@ const AuditController = {
             const offset = parseInt(req.query.offset) || 0;
 
             // Validar que la acción sea válida
-            if (!['create', 'update', 'delete'].includes(action)) {
+            const validActions = Object.values(auditLogger.OPERATION_TYPES);
+
+            if (!validActions.includes(action)) {
                 return res.status(400).json({
                     success: false,
-                    error: 'Acción no válida. Las acciones permitidas son: create, update, delete'
+                    error: `Acción no válida. Las acciones permitidas son: ${validActions.join(', ')}`
                 });
             }
 
@@ -83,9 +115,14 @@ const AuditController = {
             // Enriquecer los datos con información de usuario si es posible
             const enrichedLogs = await enrichLogsWithUserInfo(logs);
 
+            // Formatear los detalles para respuesta API - USANDO EL NUEVO FORMATO OPTIMIZADO
+            const formattedLogs = enrichedLogs.map(log =>
+                auditLogger.formatAuditDetailsOptimized(log)
+            );
+
             res.status(200).json({
                 success: true,
-                data: enrichedLogs,
+                data: formattedLogs,
                 pagination: {
                     total: totalCount,
                     limit,
@@ -134,9 +171,14 @@ const AuditController = {
                 console.error('Error al obtener información del usuario:', error);
             }
 
+            // Formatear los detalles para respuesta API - USANDO EL NUEVO FORMATO OPTIMIZADO
+            const formattedLogs = logs.map(log =>
+                auditLogger.formatAuditDetailsOptimized(log)
+            );
+
             res.status(200).json({
                 success: true,
-                data: logs,
+                data: formattedLogs,
                 user: userInfo,
                 pagination: {
                     limit,
@@ -173,9 +215,14 @@ const AuditController = {
             // Enriquecer los datos con información de usuario si es posible
             const enrichedLogs = await enrichLogsWithUserInfo(logs);
 
+            // Formatear los detalles para respuesta API - USANDO EL NUEVO FORMATO OPTIMIZADO
+            const formattedLogs = enrichedLogs.map(log =>
+                auditLogger.formatAuditDetailsOptimized(log)
+            );
+
             res.status(200).json({
                 success: true,
-                data: enrichedLogs,
+                data: formattedLogs,
                 pagination: {
                     limit,
                     offset,
@@ -229,9 +276,14 @@ const AuditController = {
             // Enriquecer los datos con información de usuario si es posible
             const enrichedLogs = await enrichLogsWithUserInfo(logs);
 
+            // Formatear los detalles para respuesta API - USANDO EL NUEVO FORMATO OPTIMIZADO
+            const formattedLogs = enrichedLogs.map(log =>
+                auditLogger.formatAuditDetailsOptimized(log)
+            );
+
             res.status(200).json({
                 success: true,
-                data: enrichedLogs,
+                data: formattedLogs,
                 pagination: {
                     limit,
                     offset,
@@ -256,14 +308,23 @@ const AuditController = {
             // Obtener conteos generales
             const totalLogs = await AuditRepository.getLogCount();
 
-            // Obtener conteos por acción
-            const createCount = await AuditRepository.getLogCountByAction('create');
-            const updateCount = await AuditRepository.getLogCountByAction('update');
-            const deleteCount = await AuditRepository.getLogCountByAction('delete');
+            // Obtener conteos por tipo de operación
+            const createCount = await AuditRepository.getLogCountByAction(auditLogger.OPERATION_TYPES.CREATE);
+            const updateCount = await AuditRepository.getLogCountByAction(auditLogger.OPERATION_TYPES.UPDATE);
+            const deleteCount = await AuditRepository.getLogCountByAction(auditLogger.OPERATION_TYPES.DELETE);
+            const individualUploadCount = await AuditRepository.getLogCountByAction(auditLogger.OPERATION_TYPES.INDIVIDUAL_UPLOAD);
+            const bulkUploadCount = await AuditRepository.getLogCountByAction(auditLogger.OPERATION_TYPES.BULK_UPLOAD);
+            const downloadCsvCount = await AuditRepository.getLogCountByAction(auditLogger.OPERATION_TYPES.DOWNLOAD_CSV);
+            const downloadPdfCount = await AuditRepository.getLogCountByAction(auditLogger.OPERATION_TYPES.DOWNLOAD_PDF);
 
             // Obtener los últimos 5 registros
             const recentLogs = await AuditRepository.getLogs(5, 0);
             const enrichedRecentLogs = await enrichLogsWithUserInfo(recentLogs);
+
+            // Formatear los detalles para respuesta API - USANDO EL NUEVO FORMATO OPTIMIZADO
+            const formattedRecentLogs = enrichedRecentLogs.map(log =>
+                auditLogger.formatAuditDetailsOptimized(log)
+            );
 
             res.status(200).json({
                 success: true,
@@ -272,9 +333,13 @@ const AuditController = {
                     actionCounts: {
                         create: createCount,
                         update: updateCount,
-                        delete: deleteCount
+                        delete: deleteCount,
+                        individualUpload: individualUploadCount,
+                        bulkUpload: bulkUploadCount,
+                        downloadCsv: downloadCsvCount,
+                        downloadPdf: downloadPdfCount
                     },
-                    recentLogs: enrichedRecentLogs
+                    recentLogs: formattedRecentLogs
                 }
             });
         } catch (error) {
@@ -282,6 +347,152 @@ const AuditController = {
             res.status(500).json({
                 success: false,
                 error: 'Error al obtener resumen de auditoría'
+            });
+        }
+    },
+
+    /**
+     * Exporta registros de auditoría a un archivo CSV
+     * @async
+     * @param {Object} req - Objeto de solicitud Express
+     * @param {Object} res - Objeto de respuesta Express
+     */
+    async exportLogsToCSV(req, res) {
+        try {
+            // Obtener filtros
+            const { startDate, endDate, action, entityType } = req.query;
+            const limit = parseInt(req.query.limit) || 1000; // Permitir exportar más registros
+
+            // Determinar qué registros exportar
+            let logs;
+            if (startDate && endDate) {
+                const startDateObj = new Date(startDate);
+                const endDateObj = new Date(endDate);
+                endDateObj.setHours(23, 59, 59, 999);
+
+                logs = await AuditRepository.getLogsByDateRange(
+                    startDateObj.toISOString(),
+                    endDateObj.toISOString(),
+                    limit,
+                    0
+                );
+            } else if (action) {
+                logs = await AuditRepository.getLogsByAction(action, limit, 0);
+            } else if (entityType) {
+                logs = await AuditRepository.getLogsByEntity(entityType, limit, 0);
+            } else {
+                logs = await AuditRepository.getLogs(limit, 0);
+            }
+
+            // Enriquecer los datos con información de usuario
+            const enrichedLogs = await enrichLogsWithUserInfo(logs);
+
+            // Formatear los logs para la exportación usando el formato optimizado
+            const formattedLogs = enrichedLogs.map(log =>
+                auditLogger.formatAuditDetailsOptimized(log)
+            );
+
+            // Generar CSV
+            const csvData = generateCsvData(formattedLogs);
+
+            // Configurar cabeceras
+            res.setHeader('Content-Type', 'text/csv');
+            res.setHeader('Content-Disposition', 'attachment; filename=audit-logs.csv');
+
+            // Enviar datos
+            res.status(200).send(csvData);
+
+            // Registrar la exportación
+            await auditLogger.logAction(
+                req.user?.id || 0,
+                auditLogger.OPERATION_TYPES.DOWNLOAD_CSV,
+                'audit_logs',
+                'export',
+                {
+                    filters: { startDate, endDate, action, entityType },
+                    count: logs.length,
+                    format: 'CSV',
+                    customDescription: 'Exportación de registros de auditoría a CSV'
+                },
+                req.ip,
+                req.get('User-Agent')
+            );
+        } catch (error) {
+            console.error('Error al exportar logs a CSV:', error);
+            res.status(500).json({
+                success: false,
+                error: 'Error al exportar registros de auditoría'
+            });
+        }
+    },
+
+    /**
+     * Borra registros de auditoría más antiguos que cierta fecha
+     * Solo disponible para administradores
+     * @async
+     * @param {Object} req - Objeto de solicitud Express
+     * @param {Object} res - Objeto de respuesta Express
+     */
+    async purgeOldLogs(req, res) {
+        try {
+            // Verificar si el usuario tiene permisos de administrador
+            if (req.user.role !== 'admin') {
+                return res.status(403).json({
+                    success: false,
+                    error: 'No tiene permisos para realizar esta acción'
+                });
+            }
+
+            const { olderThanDays } = req.body;
+
+            // Validar que se proporcione un número válido de días
+            if (!olderThanDays || !Number.isInteger(Number(olderThanDays)) || olderThanDays < 30) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'Debe proporcionar un número válido de días (mínimo 30)'
+                });
+            }
+
+            const cutoffDate = new Date();
+            cutoffDate.setDate(cutoffDate.getDate() - olderThanDays);
+
+            // Ejecutar la purga
+            const [result] = await pool.query(
+                'DELETE FROM audit_logs WHERE timestamp < ?',
+                [cutoffDate.toISOString()]
+            );
+
+            const deletedCount = result.affectedRows;
+
+            // Registrar la acción
+            await auditLogger.logAction(
+                req.user.id,
+                'purge',
+                'audit_logs',
+                'system',
+                {
+                    olderThanDays,
+                    cutoffDate: cutoffDate.toISOString(),
+                    deletedCount,
+                    customDescription: `Purga de ${deletedCount} registros de auditoría más antiguos que ${olderThanDays} días`
+                },
+                req.ip,
+                req.get('User-Agent')
+            );
+
+            res.status(200).json({
+                success: true,
+                message: `Se han eliminado ${deletedCount} registros de auditoría`,
+                data: {
+                    deletedCount,
+                    cutoffDate: cutoffDate.toISOString()
+                }
+            });
+        } catch (error) {
+            console.error('Error al purgar registros antiguos:', error);
+            res.status(500).json({
+                success: false,
+                error: 'Error al purgar registros de auditoría'
             });
         }
     }
@@ -321,6 +532,62 @@ async function enrichLogsWithUserInfo(logs) {
             user: userInfo
         };
     });
+}
+
+/**
+ * Genera datos CSV a partir de registros de auditoría optimizados
+ * @param {Array} logs - Registros de auditoría en formato optimizado
+ * @returns {string} - Datos CSV
+ */
+function generateCsvData(logs) {
+    // Definir cabeceras
+    const headers = [
+        'ID',
+        'Fecha',
+        'Usuario',
+        'Rol',
+        'Acción',
+        'Descripción',
+        'Entidad',
+        'ID Entidad',
+        'Campos Modificados',
+        'Detalles'
+    ];
+
+    // Convertir registros a filas CSV
+    const rows = logs.map(log => {
+        // Formatear cambios para CSV
+        let changesStr = '';
+        if (log.changes && log.changes.length > 0) {
+            changesStr = log.changes.map(change =>
+                `${change.label}: ${change.oldValue || ''} → ${change.newValue || ''}`
+            ).join('; ');
+        }
+
+        return [
+            log.id,
+            new Date(log.timestamp).toISOString(),
+            log.user.username || 'Usuario desconocido',
+            log.user.role || 'No especificado',
+            log.action,
+            log.description,
+            log.entity.type,
+            log.entity.id,
+            changesStr,
+            log.technical ? `IP: ${log.technical.ipAddress || 'No registrada'}` : ''
+        ];
+    });
+
+    // Unir todo en un string CSV
+    const csvContent = [
+        headers.join(','),
+        ...rows.map(row => row.map(cell =>
+            // Encerrar en comillas y escapar comillas internas
+            `"${String(cell || '').replace(/"/g, '""')}"`
+        ).join(','))
+    ].join('\n');
+
+    return csvContent;
 }
 
 module.exports = AuditController;

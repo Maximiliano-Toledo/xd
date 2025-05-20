@@ -375,7 +375,10 @@
 .action-card-red::before {
     background-color: var(--color-red);
 }
-
+/*ESTE ES EL NUEVO QUE ES VERDE*/
+.action-card-green::before {
+    background-color: var(--color-primary);
+}
 .action-icon {
     width: 50px;
     height: 50px;
@@ -387,6 +390,12 @@
     margin-right: 20px;
     flex-shrink: 0;
     transition: var(--transition);
+}
+
+/*ESTE ES EL NUEVO QUE ES VERDE*/
+.action-card-green .action-icon {
+    background-color: var(--color-primary-lighter);
+    color: var(--color-primary-dark);
 }
 
 .action-card-blue .action-icon {

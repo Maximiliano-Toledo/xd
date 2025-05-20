@@ -13,6 +13,7 @@ import { useForm } from "react-hook-form"
 import LiveAlert from "../utils/LiveAlert"
 import { useAbmApi } from "../../hooks/useAbmApi"
 import CustomSelect from "../CustomSelect"
+import '../../styles/panel-usuario-nuevo.css'
 
 export const CargaIndividual = () => {
   /**Validación para asegurarme que cargue todos los datos o no se activa el botón */
@@ -229,17 +230,17 @@ export const CargaIndividual = () => {
   return (
     <div>
       <HeaderStaff />
-      <h1 className="w-50 fs-4 text-center pb-2 pt-2 rounded-top rounded-bottom fw-bold text-white p-container mt-0 mb-0 m-4 ">
+      <h1 className="w-50 fs-5 text-center pb-2 pt-2 rounded-top rounded-bottom fw-bold text-white p-container mt-0 mb-0 ms-4 me-4 ">
         Carga individual
       </h1>
       <div className="d-flex justify-content-center align-items-start min-vh-25 mt-0">
-        <div className="w-100 d-flex flex-column border shadow-input p-3 rounded-3 shadow ps-5 ms-4 me-4 ">
-          <h6 className="fs-2 h1-titulo fw-bold ">Cargar un prestador.</h6>
+        <div className="w-100 d-flex flex-column border shadow-input p-3 rounded-3 shadow ps-5 ms-4 me-4">
+          <h6 className="fs-3 h1-titulo fw-bold ">Cargar un prestador.</h6>
         </div>
       </div>
 
-      <form className="d-flex justify-content-center align-items-start min-vh-75 mt-4" onSubmit={onSubmit}>
-        <div className="w-100 d-flex flex-column border shadow-input p-3 rounded-3 shadow m-5 ">
+      <form className="d-flex justify-content-center align-items-start min-vh-75 mt-5 ms-4 me-4" onSubmit={onSubmit}>
+        <div className="w-100 d-flex flex-column border shadow-input p-2 rounded-3 shadow">
           <h6 className="text-center fw-bold p-1 fs-5">
             {" "}
             <FaCheckCircle className="check-style" /> {FormTitles[formStep]}
@@ -499,7 +500,7 @@ export const CargaIndividual = () => {
           <div className="d-flex justify-content-between mt-4">
             {formStep === 1 && (
               <button
-                className="btn btn-search rounded-pill text-white text-center text-uppercase"
+                className="back-button"
                 type="button"
                 onClick={backFormStep}
               >
@@ -510,7 +511,7 @@ export const CargaIndividual = () => {
             {formStep === 0 && (
               <div className="ms-auto">
                 <button
-                  className="btn btn-search rounded-pill text-white text-center text-uppercase"
+                  className="back-button"
                   type="button"
                   onClick={completeFormStep}
                 >
@@ -521,7 +522,7 @@ export const CargaIndividual = () => {
 
             {formStep === 1 && (
               <button
-                className="btn btn-search rounded-pill text-white text-center text-uppercase"
+                className="btn btn-search text-white text-center text-uppercase"
                 type="submit"
                 disabled={!camposObligatoriosCompletos() || loadingCrearPrestador}
               >
@@ -537,13 +538,12 @@ export const CargaIndividual = () => {
         </div>
       </form>
 
-      <button
-        className="btn btn-search rounded-pill text-white text-center text-uppercase mt-2"
-        type="button"
-        onClick={handleVolver}
-      >
-        <MdSubdirectoryArrowLeft className="text-white" /> Volver
-      </button>
+           <div className="back-button-container">
+                <button className="back-button" onClick={handleVolver}>
+                    <MdSubdirectoryArrowLeft />
+                    <span>Volver</span>
+                </button>
+            </div>
 
       <Footer />
     </div>

@@ -10,6 +10,7 @@ const AdminDashboardPage = lazy(() => import('../containers/pages/AdminDashboard
 const CargaMasivaPage = lazy(() => import('../containers/pages/CargaMasivaPage'));
 const CargaIndividualPage = lazy(() => import('../containers/pages/CargaIndividualPage'));
 const InfoPage = lazy(() => import('../containers/pages/InfoPage'));
+const ManualUsuario = lazy(() => import('../components/info/ManualUsuario'));
 const EspecialidadPage = lazy(() => import('../containers/pages/EspecialidadPage'));
 const GestionPlanPage = lazy(() => import('../containers/pages/GestionPlanPage'));
 const EditarPlan = lazy(() => import('../components/plan/EditarPlan'));
@@ -83,7 +84,8 @@ const routesConfig = [
   { path: '/descargar-cartilla-csv', component: DescargarCartillaCSVPage, title: 'Descargar CSV' },
 
   // Información
-  { path: '/info', component: InfoPage, title: 'Información' }
+  { path: '/info', component: InfoPage, title: 'Información' },
+  { path: '/manual-de-usuario', component: ManualUsuario, title: 'Manual de Usuario' },
 ];
 
 // Componente envolvente que detecta el estado del sidebar

@@ -13,6 +13,7 @@ import {
     LuSettings,
     LuChevronRight
 } from "react-icons/lu";
+import useAuthStore from "../../stores/authStore";
 import '../../styles/panel-usuario-nuevo.css'
 
 const PanelUsuario = () => {
@@ -20,15 +21,19 @@ const PanelUsuario = () => {
     const handleVolver = () => {
         navigate(-1);
     };
+    const {user} = useAuthStore();
+    const lastLogin = (user.last_login).slice(0, 10).split('-').reverse().join('/')
+    console.log(user);
 
     // Datos del usuario (en un caso real vendrían del store/contexto)
     const userData = {
-        username: "usuario@empresa.com",
-        role: "Administrador",
-        lastLogin: "Hoy, 14:30",
-        totalActions: 127,
-        lastAction: "Carga individual - Prestador",
-        actionDate: "Hace 2 horas"
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        lastLogin,
+        totalActions: user.total_actions, 
+        lastAction: "Carga individual - Prestador", // aca iria user.last_action
+        actionDate: "Hace 2 horas" // Verificar si es necesario
     };
 
     const menuItems = [
@@ -38,7 +43,7 @@ const PanelUsuario = () => {
             description: 'Actualiza tu contraseña de acceso',
             icon: <LuKey />,
             link: '/cambiar-contraseña',
-            color: 'blue'
+            color: 'green'
         },
         {
             id: 'activity-history',
@@ -46,15 +51,7 @@ const PanelUsuario = () => {
             description: 'Revisa tus acciones recientes',
             icon: <LuHistory />,
             link: '/historial-actividad',
-            color: 'purple'
-        },
-        {
-            id: 'account-settings',
-            title: 'Configuración de cuenta',
-            description: 'Personaliza tu experiencia',
-            icon: <LuSettings />,
-            link: '/configuracion-cuenta',
-            color: 'orange'
+            color: 'green'
         },
         {
             id: 'logout',
@@ -77,14 +74,14 @@ const PanelUsuario = () => {
             title: 'Último acceso',
             value: userData.lastLogin,
             icon: <LuShield />,
-            color: 'blue'
+            color: 'green'
         },
         {
             title: 'Última acción',
             value: userData.lastAction,
             subtitle: userData.actionDate,
             icon: <LuBell />,
-            color: 'purple'
+            color: 'green'
         }
     ];
 
@@ -92,15 +89,15 @@ const PanelUsuario = () => {
         <div className="panel-usuario-container">
             <HeaderStaff />
 
-            {/* Header mejorado */}
-            <div className="panel-header">
-                <div className="container">
-                    <h1 className="panel-title">Panel Usuario</h1>
-                    <p className="panel-subtitle">
-                        Gestiona tu cuenta, revisa tu actividad y configura tus preferencias
-                    </p>
+            <h1 className="w-50 fs-4 text-center pb-2 pt-2 rounded-top rounded-bottom fw-bold text-white p-container mt-0 mb-0 m-4">
+               Panel de usuario
+            </h1>
+            <div className="d-flex justify-content-center align-items-start min-vh-25 mt-0">
+                <div className="w-100 d-flex flex-column border shadow-input p-3 rounded-3 shadow ps-5 ms-4 me-4">
+                <h6 className="fs-3 h1-titulo fw-bold">Gestiona tu cuenta, revisa tu actividad y configura tus preferencias.</h6>
                 </div>
             </div>
+          
 
             {/* Contenido principal */}
             <div className="panel-content">
@@ -115,14 +112,14 @@ const PanelUsuario = () => {
                                 </div>
                                 <div className="profile-info">
                                     <h2 className="profile-name">{userData.username}</h2>
-                                    <span className="profile-role">{userData.role}</span>
+                                    <span className="profile-role text-white">{userData.role}</span>
                                 </div>
                             </div>
 
                             <div className="profile-details">
                                 <div className="detail-item">
                                     <span className="detail-label">Email:</span>
-                                    <span className="detail-value">{userData.username}</span>
+                                    <span className="detail-value">{userData.email}</span>
                                 </div>
                                 <div className="detail-item">
                                     <span className="detail-label">Rol:</span>
@@ -139,7 +136,7 @@ const PanelUsuario = () => {
                         <div className="stats-grid">
                             {statsCards.map((stat, index) => (
                                 <div key={index} className={`stat-card stat-card-${stat.color}`}>
-                                    <div className="stat-icon">
+                                    <div className="stat-icon ">
                                         {stat.icon}
                                     </div>
                                     <div className="stat-content">

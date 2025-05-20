@@ -4,7 +4,7 @@ const userRepository = {
     getUser: async (username) => {
         try {
             const [rows] = await pool.query(
-                "SELECT id, username, role, email, password FROM users WHERE username = ?",
+                "SELECT id, username, role, email, password, estado, last_login, last_action, total_actions FROM users WHERE username = ?",
                 [username]
             );
             return rows[0] || null;
@@ -61,19 +61,32 @@ const userRepository = {
         try {
             if(change) {
                 const [rows] = await pool.query(
-                    "SELECT id, username, role, email, estado, password FROM users WHERE id = ?",
+                    "SELECT id, username, role, email, estado, password, last_login, last_action, total_actions FROM users WHERE id = ?",
                     [id]
                 );
                 return rows.length > 0 ? rows[0] : null;
             }
             const [rows] = await pool.query(
-                "SELECT id, username, role, email, estado FROM users WHERE id = ?",
+                "SELECT id, username, role, email, estado, last_login, last_action, total_actions FROM users WHERE id = ?",
                 [id]
             );
             return rows.length > 0 ? rows[0] : null;
         } catch (error) {
             console.error("Error in getUserById:", error);
             throw error;
+        }
+    },
+
+    updateLastLogin: async (userId) => {
+        try {
+            await pool.query(
+                "UPDATE users SET last_login = NOW() WHERE id = ?",
+                [userId]
+            );
+            return { success: true };
+        } catch (error) {
+            console.error('Error in updateLastLogin:', error);
+            throw new Error('Error update time login');
         }
     },
 

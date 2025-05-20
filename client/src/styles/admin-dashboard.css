@@ -31,3 +31,34 @@
     background: #7AB317;
     background: linear-gradient(2deg,rgba(122, 179, 23, 1) 45%, rgba(58, 102, 19, 1) 96%);
 }
+
+/* Card con tamaño fijo para pantallas medianas y grandes */
+@media (min-width: 768px) {
+  .card-fixed-width {
+    width: 23rem;
+  }
+}
+
+/* Para asegurar que en pantallas pequeñas se ajuste correctamente */
+@media (max-width: 767px) {
+  .card-fixed-width {
+    width: 100%;
+  }
+}
+
+/* Para que las cards estén una al lado de la otra */
+.cards-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: space-around;
+}
+
+/* En móviles, mantener una por línea */
+@media (max-width: 767px) {
+  .cards-row {
+    flex-direction: column;
+    align-items: center;
+  }
+}

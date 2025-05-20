@@ -64,17 +64,24 @@ const AuthService = {
       throw new Error("Usuario o contraseña incorrectos");
     }
 
+    if (user.estado !== "Activo") {
+      throw new Error("El usuario esta deshabilitado");
+    }
+
     const isValidPassword = await bcrypt.compare(password, user.password);
     if (!isValidPassword) {
       throw new Error("Usuario o contraseña incorrectos");
     }
+
+    await userRepository.updateLastLogin(user.id);
 
     // Generar access token con información clara
     const accessToken = jwt.sign(
       {
         id: user.id,
         role: user.role,
-        username: user.username
+        username: user.username,
+        last_login: user.last_login
       },
       secret,
       { expiresIn }
@@ -98,7 +105,10 @@ const AuthService = {
         id: user.id,
         username: user.username,
         email: user.email,
-        role: user.role
+        role: user.role,
+        last_login: user.last_login,
+        last_action: user.last_action,
+        total_actions: user.total_actions,
       }
     };
   },
@@ -152,7 +162,10 @@ const AuthService = {
         id: user.id,
         username: user.username,
         email: user.email,
-        role: user.role
+        role: user.role,
+        last_login: user.last_login,
+        last_action: user.last_action,
+        total_actions: user.total_actions,
       };
     } catch (err) {
       throw new Error("Token inválido o expirado");
@@ -204,6 +217,9 @@ const AuthService = {
           username: user.username,
           email: user.email,
           role: user.role,
+          last_login: user.last_login,
+          last_action: user.last_action,
+          total_actions: user.total_actions,
         },
       };
     } catch (err) {
@@ -237,7 +253,10 @@ const AuthService = {
           id: user.id,
           username: user.username,
           email: user.email,
-          role: user.role
+          role: user.role,
+          last_login: user.last_login,
+          last_action: user.last_action,
+          total_actions: user.total_actions,
         },
         isValid: true
       };
@@ -282,9 +301,14 @@ const AuthService = {
    * Cierra la sesión de un usuario
    * @returns {boolean} - true si la operación fue exitosa
    */
-  logout: () => {
-    // Implementar la lógica para cerrar la sesión
-    return true;
+  async logout(refreshToken) {
+    try {
+      await authRepository.revokeRefreshToken(refreshToken);
+      return true;
+    } catch (error) {
+      console.error('Error in logout:', error);
+      throw new Error('Error revoking refresh token');
+    }
   },
 };
 

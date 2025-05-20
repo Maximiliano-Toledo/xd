@@ -6,15 +6,16 @@ import HeaderStaff from "../../layouts/HeaderStaff";
 import { MdSubdirectoryArrowLeft } from "react-icons/md";
 import "../../styles/cargar-cartilla.css";
 import "../../styles/dashboard.css";
+import '../../styles/carga-individual.css'
 import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
 import CustomSelect from "../CustomSelect";
 import { useAbmApi } from "../../hooks/useAbmApi";
 import { IoIosCheckmarkCircleOutline } from "react-icons/io";
-import LiveAlert from "../utils/LiveAlert";
 import { useCartillaApi } from "../../hooks/useCartillaApi";
 import { FiSearch } from "react-icons/fi";
 import SearchMethodTabs from "../cartilla/SearchMethodTabs";
+import '../../styles/panel-usuario-nuevo.css'
 
 const EditarPrestador = () => {
   const edit = true;
@@ -217,11 +218,11 @@ const EditarPrestador = () => {
   // Paso 1: Formulario de búsqueda
   const renderSearchStep = () => (
     <div>
-      <h1 className="w-50 fs-5 text-center pt-2 pb-2 rounded-top rounded-bottom fw-bold text-white p-container mt-0 mb-0">
+      <h1 className="w-50 fs-5 text-center pt-2 pb-2 rounded-top rounded-bottom fw-bold text-white p-container mt-0 mb-0 ms-4 me-4">
         Edición individual
       </h1>
 
-      <div className="d-flex justify-content-center align-items-start min-vh-25 mt-0">
+      <div className="d-flex justify-content-center align-items-start min-vh-25 mt-0 ms-4 me-4">
         <div className="w-100 d-flex flex-column border shadow-input p-3 rounded-3 shadow ps-5">
           <h6 className="fs-2 h1-titulo fw-bold">
             Buscá el prestador que deseas editar
@@ -229,7 +230,7 @@ const EditarPrestador = () => {
         </div>
       </div>
 
-      <div className="d-flex justify-content-center align-items-start min-vh-100">
+      <div className="d-flex justify-content-center align-items-start min-vh-100 ms-4 me-4">
         <div className="w-100 d-flex flex-column border shadow-input p-5 rounded-3 shadow mt-5 mb-3">
           <form onSubmit={handleSubmit}>
             <SearchMethodTabs
@@ -502,94 +503,66 @@ const EditarPrestador = () => {
 
   // Paso 2: Resultados de búsqueda
   const renderResultsStep = () => (
-    <div className="d-flex justify-content-center align-items-start min-vh-100">
-      <div className="w-100 d-flex flex-column border shadow-input p-5 rounded-3 shadow mt-5 mb-3">
+    <div className="container-fluid px-2 px-md-4">
+  <div className="row justify-content-center">
+    <div className="col-12">
+      <div className="border shadow-input p-3 p-md-5 rounded-3 shadow my-3 my-md-5">
         <h4 className="mb-4">Resultados de búsqueda</h4>
 
-        {/* Resumen de búsqueda */}
-        <div className="mb-4 p-3 bg-light rounded-3">
+        {/* Resumen de búsqueda - Mejorado para móviles */}
+        <div className="mb-4 p-2 p-md-3 bg-light rounded-3">
           <div className="d-flex flex-wrap gap-2">
-            <span className="search-tag">
+            <span className="search-tag small">
               Plan:{" "}
               {options.planes.length > 0 && formData.plan
                 ? (
                     options.planes.find((p) => p.id_plan == formData.plan) ||
-                    options.planes.find(
-                      (p) => String(p.id_plan) === String(formData.plan)
-                    )
+                    options.planes.find((p) => String(p.id_plan) === String(formData.plan))
                   )?.nombre || "No especificado"
                 : "No especificado"}
             </span>
 
-            <span className="search-tag">
+            <span className="search-tag small">
               Provincia:{" "}
               {options.provincias.length > 0 && formData.provincia
                 ? (
-                    options.provincias.find(
-                      (p) => p.id_provincia == formData.provincia
-                    ) ||
-                    options.provincias.find(
-                      (p) =>
-                        String(p.id_provincia) === String(formData.provincia)
-                    )
+                    options.provincias.find((p) => p.id_provincia == formData.provincia) ||
+                    options.provincias.find((p) => String(p.id_provincia) === String(formData.provincia))
                   )?.nombre || "No especificado"
                 : "No especificado"}
             </span>
 
-            <span className="search-tag">
+            <span className="search-tag small">
               Localidad:{" "}
               {options.localidades.length > 0 && formData.localidad
                 ? (
-                    options.localidades.find(
-                      (l) => l.id_localidad == formData.localidad
-                    ) ||
-                    options.localidades.find(
-                      (l) =>
-                        String(l.id_localidad) === String(formData.localidad)
-                    )
+                    options.localidades.find((l) => l.id_localidad == formData.localidad) ||
+                    options.localidades.find((l) => String(l.id_localidad) === String(formData.localidad))
                   )?.nombre || "No especificado"
                 : "No especificado"}
             </span>
 
-            <span className="search-tag">
+            <span className="search-tag small">
               Categoria:{" "}
               {options.categorias.length > 0 && formData.categoria
                 ? (
-                    options.categorias.find(
-                      (l) => l.id_categoria == formData.categoria
-                    ) ||
-                    options.categorias.find(
-                      (l) =>
-                        String(l.id_categoria) === String(formData.categoria)
-                    )
+                    options.categorias.find((l) => l.id_categoria == formData.categoria) ||
+                    options.categorias.find((l) => String(l.id_categoria) === String(formData.categoria))
                   )?.nombre || "No especificado"
                 : "No especificado"}
             </span>
 
-            <span className="search-tag">
+            <span className="search-tag small">
               Especialidad:{" "}
               {options.especialidades.length > 0 && formData.especialidad
                 ? (
-                    options.especialidades.find(
-                      (e) => e.id_especialidad == formData.especialidad
-                    ) ||
-                    options.especialidades.find(
-                      (e) =>
-                        String(e.id_especialidad) ===
-                        String(formData.especialidad)
-                    )
+                    options.especialidades.find((e) => e.id_especialidad == formData.especialidad) ||
+                    options.especialidades.find((e) => String(e.id_especialidad) === String(formData.especialidad))
                   )?.nombre || "Especialidad"
-                : options.especialidadesPrestador.length > 0 &&
-                  formData.especialidad
+                : options.especialidadesPrestador.length > 0 && formData.especialidad
                 ? (
-                    options.especialidadesPrestador.find(
-                      (e) => e.id_especialidad == formData.especialidad
-                    ) ||
-                    options.especialidadesPrestador.find(
-                      (e) =>
-                        String(e.id_especialidad) ===
-                        String(formData.especialidad)
-                    )
+                    options.especialidadesPrestador.find((e) => e.id_especialidad == formData.especialidad) ||
+                    options.especialidadesPrestador.find((e) => String(e.id_especialidad) === String(formData.especialidad))
                   )?.nombre || "Especialidad"
                 : "Especialidad"}
             </span>
@@ -605,156 +578,199 @@ const EditarPrestador = () => {
           </div>
         ) : prestadores.length > 0 ? (
           <>
-            <div className="table-responsive">
-              <table
-                className="table table-hover shadow"
-                style={{
-                  borderCollapse: "separate",
-                  borderSpacing: "0",
-                  borderRadius: "8px",
-                  overflow: "hidden",
-                }}
-              >
-                <thead>
-                  <tr>
-                    <th
-                      className="text-center fw-medium letter-color bg-color-icon"
-                      style={{
-                        backgroundColor: "#f8f9fa",
-                        borderBottom: "2px solid #dee2e6",
-                      }}
-                    >
-                      Seleccionar
-                    </th>
-                    <th
-                      className="text-center fw-medium letter-color bg-color-icon"
-                      style={{
-                        backgroundColor: "#f8f9fa",
-                        borderBottom: "2px solid #dee2e6",
-                      }}
-                    >
-                      Nombre
-                    </th>
-                    <th
-                      className="text-center fw-medium letter-color bg-color-icon"
-                      style={{
-                        backgroundColor: "#f8f9fa",
-                        borderBottom: "2px solid #dee2e6",
-                      }}
-                    >
-                      Dirección
-                    </th>
-                    <th
-                      className="text-center fw-medium letter-color bg-color-icon"
-                      style={{
-                        backgroundColor: "#f8f9fa",
-                        borderBottom: "2px solid #dee2e6",
-                      }}
-                    >
-                      Teléfono
-                    </th>
-                    <th
-                      className="text-center fw-medium letter-color bg-color-icon"
-                      style={{
-                        backgroundColor: "#f8f9fa",
-                        borderBottom: "2px solid #dee2e6",
-                      }}
-                    >
-                      Email
-                    </th>
-                    <th
-                      className="text-center fw-medium letter-color bg-color-icon"
-                      style={{
-                        backgroundColor: "#f8f9fa",
-                        borderBottom: "2px solid #dee2e6",
-                      }}
-                    >
-                      Estado
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {prestadores.map((prestador) => (
-                    <tr key={prestador.id_prestador}>
-                      <td
-                        className="text-center"
-                        style={{ padding: "12px", borderColor: "#dee2e6" }}
+            {/* Vista de tabla para pantallas medianas y grandes */}
+            <div className="d-none d-md-block">
+              <div className="table-responsive">
+                <table
+                  className="table table-hover shadow"
+                  style={{
+                    borderCollapse: "separate",
+                    borderSpacing: "0",
+                    borderRadius: "8px",
+                    overflow: "hidden",
+                  }}
+                >
+                  <thead>
+                    <tr>
+                      <th
+                        className="text-center fw-medium letter-color bg-color-icon"
+                        style={{
+                          backgroundColor: "#f8f9fa",
+                          borderBottom: "2px solid #dee2e6",
+                        }}
                       >
-                        <button
-                          className="search-button p-1"
-                          onClick={() => handleSelectPrestador(prestador)}
-                        >
-                          Seleccionar
-                        </button>
-                      </td>
-                      <td
-                        className="text-center"
-                        style={{ padding: "12px", borderColor: "#dee2e6" }}
+                        Seleccionar
+                      </th>
+                      <th
+                        className="text-center fw-medium letter-color bg-color-icon"
+                        style={{
+                          backgroundColor: "#f8f9fa",
+                          borderBottom: "2px solid #dee2e6",
+                        }}
                       >
-                        {prestador.nombre}
-                      </td>
-                      <td
-                        className="text-center"
-                        style={{ padding: "12px", borderColor: "#dee2e6" }}
+                        Nombre
+                      </th>
+                      <th
+                        className="text-center fw-medium letter-color bg-color-icon"
+                        style={{
+                          backgroundColor: "#f8f9fa",
+                          borderBottom: "2px solid #dee2e6",
+                        }}
                       >
-                        {prestador.direccion}
-                      </td>
-                      <td
-                        className="text-center"
-                        style={{ padding: "12px", borderColor: "#dee2e6" }}
+                        Dirección
+                      </th>
+                      <th
+                        className="text-center fw-medium letter-color bg-color-icon"
+                        style={{
+                          backgroundColor: "#f8f9fa",
+                          borderBottom: "2px solid #dee2e6",
+                        }}
                       >
-                        {prestador.telefonos}
-                      </td>
-                      <td
-                        className="text-center"
-                        style={{ padding: "12px", borderColor: "#dee2e6" }}
+                        Teléfono
+                      </th>
+                      <th
+                        className="text-center fw-medium letter-color bg-color-icon"
+                        style={{
+                          backgroundColor: "#f8f9fa",
+                          borderBottom: "2px solid #dee2e6",
+                        }}
                       >
-                        {prestador.email}
-                      </td>
-                      <td
-                        style={{ padding: "12px", borderColor: "#dee2e6" }}
-                        className={
-                          prestador.estado === "Activo"
-                            ? "text-center text-success"
-                            : "text-center text-danger"
-                        }
+                        Email
+                      </th>
+                      <th
+                        className="text-center fw-medium letter-color bg-color-icon"
+                        style={{
+                          backgroundColor: "#f8f9fa",
+                          borderBottom: "2px solid #dee2e6",
+                        }}
                       >
-                        {prestador.estado === "Activo"
-                          ? "Habilitado"
-                          : "Deshabilitado"}
-                      </td>
+                        Estado
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {prestadores.map((prestador) => (
+                      <tr key={prestador.id_prestador}>
+                        <td
+                          className="text-center"
+                          style={{ padding: "12px", borderColor: "#dee2e6" }}
+                        >
+                          <button
+                            className="search-button p-1"
+                            onClick={() => handleSelectPrestador(prestador)}
+                          >
+                            Seleccionar
+                          </button>
+                        </td>
+                        <td
+                          className="text-center"
+                          style={{ padding: "12px", borderColor: "#dee2e6" }}
+                        >
+                          {prestador.nombre}
+                        </td>
+                        <td
+                          className="text-center"
+                          style={{ padding: "12px", borderColor: "#dee2e6" }}
+                        >
+                          {prestador.direccion}
+                        </td>
+                        <td
+                          className="text-center"
+                          style={{ padding: "12px", borderColor: "#dee2e6" }}
+                        >
+                          {prestador.telefonos}
+                        </td>
+                        <td
+                          className="text-center"
+                          style={{ padding: "12px", borderColor: "#dee2e6" }}
+                        >
+                          {prestador.email}
+                        </td>
+                        <td
+                          style={{ padding: "12px", borderColor: "#dee2e6" }}
+                          className={
+                            prestador.estado === "Activo"
+                              ? "text-center text-success"
+                              : "text-center text-danger"
+                          }
+                        >
+                          {prestador.estado === "Activo" ? "Habilitado" : "Deshabilitado"}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
 
-            <div className="d-flex justify-content-between mt-3">
-              <button
-                className="search-button p-2"
-                onClick={() => setCurrentStep(1)}
-              >
-                Volver a búsqueda
-              </button>
+            {/* Vista de tarjetas para móviles */}
+            <div className="d-md-none">
+              {prestadores.map((prestador) => (
+                <div 
+                  key={prestador.id_prestador}
+                  className="card mb-3 shadow-sm"
+                >
+                  <div className="card-body">
+                    <h5 className="card-title">{prestador.nombre}</h5>
+                    <div className="card-text mb-2">
+                      <strong>Dirección:</strong> {prestador.direccion}
+                    </div>
+                    <div className="card-text mb-2">
+                      <strong>Teléfono:</strong> {prestador.telefonos}
+                    </div>
+                    <div className="card-text mb-2">
+                      <strong>Email:</strong> {prestador.email}
+                    </div>
+                    <div className="card-text mb-3">
+                      <strong>Estado:</strong>{" "}
+                      <span className={prestador.estado === "Activo" ? "text-success" : "text-danger"}>
+                        {prestador.estado === "Activo" ? "Habilitado" : "Deshabilitado"}
+                      </span>
+                    </div>
+                    <button
+                      className="search-button p-2 w-100"
+                      onClick={() => handleSelectPrestador(prestador)}
+                    >
+                      Seleccionar
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
 
-              <div className="pagination-controls">
+            {/* Controles de navegación responsivos */}
+            <div className="row mt-3">
+              <div className="col-6 col-md-4">
                 <button
-                  className="search-button p-2"
-                  onClick={() => handlePageChange(pagination.currentPage - 1)}
-                  disabled={pagination.currentPage === 1}
+                  className="search-button p-2 w-100"
+                  onClick={() => setCurrentStep(1)}
                 >
-                  Anterior
+                  <i className="bi bi-arrow-left d-inline d-md-none"></i>
+                  <span className="d-none d-md-inline">Volver a búsqueda</span>
+                  <span className="d-inline d-md-none"> Volver</span>
                 </button>
-                <span className="mx-2">
-                  Página {pagination.currentPage} de {pagination.totalPages}
-                </span>
-                <button
-                  className="search-button p-2"
-                  onClick={() => handlePageChange(pagination.currentPage + 1)}
-                  disabled={pagination.currentPage === pagination.totalPages}
-                >
-                  Siguiente
-                </button>
+              </div>
+
+              <div className="col-6 col-md-8">
+                <div className="pagination-controls d-flex justify-content-end align-items-center">
+                  <button
+                    className="search-button p-2"
+                    onClick={() => handlePageChange(pagination.currentPage - 1)}
+                    disabled={pagination.currentPage === 1}
+                  >
+                    <i className="bi bi-chevron-left"></i>
+                  </button>
+                  <span className="mx-2 text-nowrap">
+                    {pagination.currentPage}/{pagination.totalPages}
+                  </span>
+                  <button
+                    className="search-button p-2"
+                    onClick={() => handlePageChange(pagination.currentPage + 1)}
+                    disabled={pagination.currentPage === pagination.totalPages}
+                  >
+                    <i className="bi bi-chevron-right"></i>
+                  </button>
+                </div>
               </div>
             </div>
           </>
@@ -773,6 +789,8 @@ const EditarPrestador = () => {
         )}
       </div>
     </div>
+  </div>
+</div>
   );
 
   // Paso 3: Formulario de edición
@@ -878,7 +896,7 @@ const EditarPrestador = () => {
         </h4>
 
         <section className="d-flex flex-column flex-md-row justify-content-between w-100 gap-4 mb-0">
-          <div className="w-100 w-md-50 m-5">
+          <div className="w-100 w-md-50">
             <div className="form-group mb-5">
               <label
                 htmlFor="direccion"
@@ -915,7 +933,7 @@ const EditarPrestador = () => {
             </div>
           </div>
 
-          <div className="w-100 w-md-50 m-5">
+          <div className="w-100 w-md-50">
             <div className="form-group mb-5 position-relative">
               <label
                 htmlFor="telefono"
@@ -954,7 +972,7 @@ const EditarPrestador = () => {
           </div>
         </section>
 
-        <div className="d-flex flex-column align-items-center text-center">
+        <div className="d-flex flex-column align-items-center text-center mt-5">
             <button
             className="search-button p-2"
             onClick={() => handleOcultarOpciones()}
@@ -982,7 +1000,7 @@ const EditarPrestador = () => {
             )}
         </div>
 
-        <div className="d-flex justify-content-between">
+        <div className="d-flex justify-content-between mt-3">
           <button
             className="search-button p-2"
             onClick={() => setCurrentStep(2)}
@@ -1011,14 +1029,12 @@ const EditarPrestador = () => {
       {currentStep === 2 && renderResultsStep()}
       {currentStep === 3 && renderEditStep()}
 
-      <button
-        className="btn btn-volver rounded-pill text-white text-center text-uppercase mt-2"
-        type="button"
-        onClick={handleVolver}
-      >
-        <MdSubdirectoryArrowLeft className="text-white pe-1 arrow-style" />
-        Volver
-      </button>
+      <div className="back-button-container">
+            <button className="back-button" onClick={handleVolver}>
+                    <MdSubdirectoryArrowLeft />
+                    <span>Volver</span>
+            </button>
+      </div>
 
       <Footer />
     </div>

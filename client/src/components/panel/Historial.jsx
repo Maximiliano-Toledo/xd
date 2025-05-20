@@ -1,73 +1,171 @@
-import { MdOutlineKeyboardDoubleArrowRight, MdSubdirectoryArrowLeft } from 'react-icons/md';
+import React, { useState, useEffect } from 'react';
+import { MdSubdirectoryArrowLeft } from 'react-icons/md';
+import { useNavigate } from 'react-router-dom';
+import { useAuditApi } from '../../hooks/useAuditApi';
 import HeaderStaff from '../../layouts/HeaderStaff';
-import '../../styles/panel-usuario.css'
-import { useNavigate } from 'react-router';
+import HistorialHeader from './historial/HistorialHeader';
+import HistorialFilter from './historial/HistorialFilter';
+import HistorialTimeline from './historial/HistorialTimeline';
+import Pagination from '../Pagination';
+import '../../styles/panel-usuario.css';
+import '../../styles/historial.css';
 
+/**
+ * Componente principal del historial de actividad, actualizado para trabajar
+ * con el nuevo formato optimizado de logs de auditoría
+ */
 const Historial = () => {
-
     const navigate = useNavigate();
+    const { getLogs, loading, error, clearError } = useAuditApi();
+    const [logs, setLogs] = useState([]);
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(10);
+    const [totalItems, setTotalItems] = useState(0);
+    const [filter, setFilter] = useState({
+        dateFrom: '',
+        dateTo: '',
+        action: '',
+        entityType: ''
+    });
+
+    // Función para cargar los registros de auditoría
+    const fetchLogs = async (pageNumber = page, pageSize = itemsPerPage, filters = filter) => {
+        try {
+            clearError && clearError();
+
+            // Construir los parámetros de la consulta según los filtros
+            let queryParams = {};
+
+            if (filters.dateFrom) queryParams.startDate = filters.dateFrom;
+            if (filters.dateTo) queryParams.endDate = filters.dateTo;
+            if (filters.action) queryParams.action = filters.action;
+            if (filters.entityType) queryParams.entityType = filters.entityType;
+
+            const result = await getLogs(pageNumber, pageSize, queryParams);
+
+            if (result && result.success) {
+                // Los datos ahora vienen directamente en el formato optimizado
+                setLogs(result.data || []);
+
+                if (result.pagination && typeof result.pagination.total !== 'undefined') {
+                    setTotalItems(result.pagination.total);
+                    setTotalPages(Math.ceil(result.pagination.total / result.pagination.limit));
+                } else {
+                    setTotalItems(0);
+                    setTotalPages(1);
+                }
+            } else {
+                setLogs([]);
+                setTotalItems(0);
+                setTotalPages(1);
+            }
+        } catch (err) {
+            console.error('Error al obtener historial:', err);
+            setLogs([]);
+            setTotalItems(0);
+            setTotalPages(1);
+        }
+    };
+
+    // Cargar logs al inicio o cuando cambia la página o la cantidad de ítems por página
+    useEffect(() => {
+        fetchLogs(page, itemsPerPage);
+    }, [page, itemsPerPage]);
+
+    // Manejar cambio en la cantidad de ítems por página
+    const handleItemsPerPageChange = (newItemsPerPage) => {
+        setItemsPerPage(newItemsPerPage);
+        setPage(1); // Resetear a primera página cuando cambia la cantidad de ítems por página
+    };
+
+    // Manejar filtrado de registros
+    const handleFilter = async () => {
+        try {
+            setPage(1); // Resetear a primera página al filtrar
+            await fetchLogs(1, itemsPerPage, filter);
+        } catch (err) {
+            console.error('Error al aplicar filtros:', err);
+        }
+    };
+
+    // Volver a la página anterior
     const handleVolver = () => {
         navigate(-1);
     };
 
     return (
-        <div>
+        <div className="historial-container">
             <HeaderStaff />
-            <h1 className=" w-25 fs-3 text-center pb-2 pt-2 rounded-top rounded-bottom fw-bold text-white p-container mt-0 mb-0 m-4 ">
-                Panel usuario
-            </h1>
-            <div className="d-flex justify-content-center align-items-start min-vh-25 mt-0">
-                <div className="w-100 d-flex flex-column border shadow-input p-3 rounded-3 shadow ps-5 ms-4 me-4 ">
-                    <h6 className="fs-2 h1-titulo fw-bold border p-2 d-flex align-items-center">
-                        <div className='rounded-color d-flex justify-content-center align-items-center me-4'>
-                            <MdOutlineKeyboardDoubleArrowRight className="fs-1 text-white  " />
+
+            {/* Encabezado */}
+            <HistorialHeader />
+
+            {/* Filtros */}
+            <HistorialFilter
+                filter={filter}
+                setFilter={setFilter}
+                handleFilter={handleFilter}
+                loading={loading}
+            />
+
+            {/* Timeline de actividad */}
+            <div className="d-flex justify-content-center align-items-start">
+                <div className="w-100 d-flex flex-column border shadow-input p-3 rounded-3 shadow m-4">
+                    {loading ? (
+                        <div className="text-center py-5">
+                            <div className="spinner-border text-primary" role="status">
+                                <span className="visually-hidden">Cargando...</span>
+                            </div>
+                            <p className="mt-3">Cargando historial de actividad...</p>
                         </div>
-                        Historial actividad
-                    </h6>
-                    <h2 className="fs-2 h1-titulo p-2 fw-normal">
-                        Visualizá las últimas acciones realizadas en el sistema.
-                    </h2>
+                    ) : error ? (
+                        <div className="alert alert-danger" role="alert">
+                            <p className="mb-0">Error al cargar el historial: {error}</p>
+                            <button
+                                className="btn btn-outline-danger mt-2"
+                                onClick={() => {
+                                    setPage(1);
+                                    clearError && clearError();
+                                    fetchLogs(1, itemsPerPage);
+                                }}
+                            >
+                                Reintentar
+                            </button>
+                        </div>
+                    ) : (
+                        <>
+                            {/* Pasar los logs en su nuevo formato */}
+                            <HistorialTimeline logs={logs || []} />
+
+                            {/* Paginación utilizando el nuevo componente */}
+                            {totalPages > 0 && (
+                                <Pagination
+                                    currentPage={page}
+                                    totalPages={totalPages}
+                                    onPageChange={setPage}
+                                    itemsPerPage={itemsPerPage}
+                                    onItemsPerPageChange={handleItemsPerPageChange}
+                                    totalItems={totalItems}
+                                />
+                            )}
+                        </>
+                    )}
                 </div>
             </div>
 
-            <div className="d-flex justify-content-center align-items-start min-vh-75">
-                <div className="w-100 d-flex flex-column border  shadow-input p-3 rounded-3 shadow m-4">
-                    <div className="border m-3  p-3 rounded-3 shadow">
-                        <div className="card-body ms-5">
-
-
-                            <div className="mb-4">
-                                <h5 className="title-style fs-3 mb-0 mt-1">Fecha:</h5>
-                                <p className="dato-style mb-0 fs-5">Ingresar fecha</p>
-                            </div>
-
-                            <div className="mb-4">
-                                <h5 className="title-style fs-6 mb-0 mt-1 text-uppercase fw-normal">Acción:</h5>
-                                <p className="dato-style mb-0 fs-5 text-uppercase">Carga individual</p>
-                            </div>
-
-                            <div className="mb-4">
-                                <h5 className="title-style fs-6 mb-0 mt-1 text-uppercase fw-normal">Descripción:</h5>
-                                <p className="dato-style mb-0 fs-5 text-uppercase">descripción</p>
-                            </div>
-                            <div className="mb-2">
-                                <h5 className="title-style fs-6 mb-0 mt-1 text-uppercase fw-normal">Usuario/user:</h5>
-                                <p className="dato-style mb-0 fs-5 text-uppercase">ingresar usuario</p>
-                            </div>
-
-                        </div>
-                    </div>
-
-                </div>
+            {/* Botón volver */}
+            <div className="d-flex justify-content-center mb-4">
+                <button
+                    className="btn btn-volver rounded-pill text-white text-center text-uppercase"
+                    type="button"
+                    onClick={handleVolver}
+                >
+                    <MdSubdirectoryArrowLeft className="text-white" /> Volver
+                </button>
             </div>
-
-            <button className='btn btn-volver rounded-pill text-white text-center text-uppercase'
-                type='submit' onClick={handleVolver}>
-                <MdSubdirectoryArrowLeft className='text-white' /> Volver
-            </button>
-
         </div>
     );
-}
+};
 
 export default Historial;

@@ -120,6 +120,8 @@ const AuthController = {
    */
   logout: async (req, res) => {
     try {
+      refreshToken = req.cookies.refreshToken;
+      await AuthService.logout(refreshToken);
       // Registrar el evento de cierre de sesión
       if (req.user) {
         await auditLogger.logAction(

@@ -6,6 +6,7 @@ import Swal from "sweetalert2"
 import HeaderStaff from "../../layouts/HeaderStaff"
 import { useNavigate } from "react-router"
 import { Footer } from "../../layouts/Footer"
+import '../../styles/panel-usuario-nuevo.css'
 
 export const DescargarCartillaCSV = () => {
   const { downloadCSV, downloadStatus, downloadError, isDownloading, hasDownloadError, resetDownloadStatus } =
@@ -44,26 +45,20 @@ export const DescargarCartillaCSV = () => {
   return (
     <div>
          <HeaderStaff />
-          <h1 className="w-50 fs-4 text-center pb-2 pt-2 rounded-top rounded-bottom fw-bold text-white p-container mt-0 mb-0">
+          <h1 className="w-50 fs-4 text-center pb-2 pt-2 rounded-top rounded-bottom fw-bold text-white p-container mt-0 mb-0 ms-4 me-4">
             Descargá en CSV
           </h1>
   
         <div className="d-flex justify-content-center align-items-start min-vh-25 mt-0">
-          <div className="w-100 d-flex flex-column border shadow-input p-3 rounded-3 shadow ps-5">
+          <div className="w-100 d-flex flex-column border shadow-input p-3 rounded-3 shadow ps-5 ms-4 me-4">
             <h6 className="fs-3 h1-titulo fw-bold">
               Descargue la cartilla completa en formato CSV
             </h6>
           </div>
         </div>
 
-        <button className="btn btn-volver rounded-pill text-white fw-bolder text-center text-uppercase mt-4 ms-4"
-                type="submit"
-                onClick={handleVolver}>
-                <MdSubdirectoryArrowLeft className="text-white"/> Volver
-        </button>
-
-        <div className="d-flex justify-content-center align-items-start min-vh-100">
-          <div className="w-75 d-flex flex-column border shadow-input p-4 rounded-3 shadow mt-5">
+        <div className="d-flex justify-content-center align-items-start min-vh-25">
+          <div className="w-100 d-flex flex-column border shadow-input p-4 rounded-3 shadow mt-5 ms-4 me-4">
             <h6 className="fs-4 text-center subtitle-dashboard mb-4">Descargar cartilla completa</h6>
             
 
@@ -90,6 +85,14 @@ export const DescargarCartillaCSV = () => {
             {hasDownloadError && <div className="alert alert-danger mt-3">{downloadError}</div>}
           </div>
         </div>
+
+        <div className="back-button-container">
+                <button className="back-button" onClick={handleVolver}>
+                    <MdSubdirectoryArrowLeft />
+                    <span>Volver</span>
+                </button>
+        </div>
+
       <Footer/>
     </div>
   )

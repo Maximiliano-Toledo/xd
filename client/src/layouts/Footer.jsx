@@ -4,7 +4,7 @@ const year = new Date().getFullYear();
 export const Footer = () => {
     return (
         <footer className="text-center mt-3">
-            &copy; OSSACRA {year}. Todos los derechos reservados.
+            &copy; Fourdynam {year}. Todos los derechos reservados.
         </footer>
     )
 }

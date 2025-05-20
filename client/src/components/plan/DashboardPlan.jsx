@@ -1,4 +1,3 @@
-import React from 'react';
 import HeaderStaff from '../../layouts/HeaderStaff';
 import { Footer } from '../../layouts/Footer';
 import { MdSubdirectoryArrowLeft } from 'react-icons/md';
@@ -7,9 +6,8 @@ import "../../styles/cargar-cartilla.css";
 import '../../styles/dashboard.css'
 import { GoPencil } from "react-icons/go";
 import { FaPlus } from "react-icons/fa6";
-import { AiOutlineDelete } from "react-icons/ai";
-import { FaRegArrowAltCircleRight } from 'react-icons/fa';
 import Card from './Card';
+import '../../styles/panel-usuario-nuevo.css'
 
 const DashboardPlan = () => {
 
@@ -47,11 +45,7 @@ const DashboardPlan = () => {
                 </div>
             </div>
 
-             <button className='btn btn-volver rounded-pill text-white fw-bolder text-center text-uppercase m-4' type='submit' onClick={handleVolver}>            
-                <MdSubdirectoryArrowLeft className='text-white' /> Volver
-            </button>
-
-             <div className="d-flex justify-content-center align-items-start min-vh-74">
+             <div className="d-flex justify-content-center align-items-start min-vh-74 mt-5">
                 <div className="w-75 d-flex flex-column border mb-4 shadow-input border p-4 custom-height shadow rounded-3">
                     <h4 className='mb-4 subtitle-dashboard'>Configuración de planes</h4>
                         <Card {...cardEditarPlan} />
@@ -60,6 +54,13 @@ const DashboardPlan = () => {
                         <Card {...cardCrearPlan} />
                   </div>
             </div>
+
+                 <div className="back-button-container">
+                    <button className="back-button" onClick={handleVolver}>
+                        <MdSubdirectoryArrowLeft />
+                        <span>Volver</span>
+                    </button>
+                </div> 
 
              <Footer/>
                            

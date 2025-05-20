@@ -1,4 +1,4 @@
-import { Info } from "../../components/Info";
+import { Info } from "../../components/info/Info";
 
 const InfoPage = () => {
   return (

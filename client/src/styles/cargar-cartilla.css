@@ -81,7 +81,7 @@
 
 
 .btn-volver{
-  background-color: var(--color-green);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
   max-width: 200px;
   width: 80%;
   height: 40px;
@@ -140,5 +140,11 @@
   }
 }
 
-      
+@media (max-width: 576px) {
+  .btn-volver {
+    font-size: 0.8rem;
+    padding: 0.5rem 0.75rem;
+  }
+}
+
   

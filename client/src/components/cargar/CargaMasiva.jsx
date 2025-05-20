@@ -9,6 +9,7 @@ import HeaderStaff from '../../layouts/HeaderStaff';
 import { useCallback, useState, useRef } from 'react';
 import useCartillaCSV from '../../hooks/useCartillaCSV';
 import Swal from 'sweetalert2';
+import '../../styles/panel-usuario-nuevo.css'
 
 export default function CargaMasiva() {
   const navigate = useNavigate();
@@ -270,13 +271,12 @@ const resetAll = () => {
         </div>
       </div>
 
-      <button 
-        className='btn btn-volver rounded-pill text-white text-center text-uppercase' 
-        type='button' 
-        onClick={handleVolver}
-      >            
-        <MdSubdirectoryArrowLeft className='text-white' /> Volver
-      </button>
+              <div className="back-button-container">
+                <button className="back-button" onClick={handleVolver}>
+                    <MdSubdirectoryArrowLeft />
+                    <span>Volver</span>
+                </button>
+            </div>
 
       <Footer/>
     </div>

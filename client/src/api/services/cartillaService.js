@@ -240,7 +240,6 @@ export const CartillaService = {
       
       return { success: true, message: 'Archivo descargado correctamente' };
     } catch (error) {
-      console.error('Error in CartillaService.descargarCartilla:', error);
       throw error;
     }
   },
@@ -283,7 +282,6 @@ export const CartillaService = {
 
     return { blob, filename };
   } catch (error) {
-    console.error('Error al descargar cartilla PDF:', error);
     throw error;
   }
 },

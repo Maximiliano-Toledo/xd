@@ -181,7 +181,7 @@
 }
 
 .btn-search {
-    background-color: var(--color-primary);
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
     color: var(--color-white);
     border: none;
     border-radius: 25px;
@@ -1072,7 +1072,7 @@
 }
 
 .search-button {
-    background-color: #64A70B;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
     color: white;
     border: none;
     border-radius: 30px;

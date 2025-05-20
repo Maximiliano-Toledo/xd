@@ -29,7 +29,6 @@ const Login = () => {
           }
         } catch (error) {
           navigate('/login', { replace: true });
-          // console.error("Error verificando autenticación:", error);
         } finally {
           setIsCheckingAuth(false);
         }

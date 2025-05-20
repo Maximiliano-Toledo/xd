@@ -3,6 +3,7 @@
  * @description Controlador para operaciones relacionadas con prestadores médicos
  */
 
+const ABMRepository = require("../repositories/abmRepository");
 const PrestadorService = require("../services/prestadorService");
 const handleResponse = require("../utils/responseHandler");
 const handlePostResponse = require("../utils/responsePostHandler");
@@ -157,7 +158,7 @@ const PrestadorController = {
           req.params.idProvincia,
           req.params.idLocalidad,
           req.params.idEspecialidad,
-          req.params.edit || false, 
+          req.params.edit || false,
           page,
           limit
         ),
@@ -235,14 +236,16 @@ const PrestadorController = {
       res,
       async () => {
         const result = await PrestadorService.postCrearPrestador(req.body);
-        // Registrar la acción en el sistema de auditoría
-        // await auditLogger.logAction(
-        //     req.user?.id || 0,
-        //     'create',
-        //     'prestadores',
-        //     result.id,
-        //     { requestData: req.body, result }
-        // );
+
+        // Registrar la acción en el sistema de auditoría con formato mejorado
+        await auditLogger.logIndividualUpload(
+          req.user?.id || 0,
+          result.id,
+          result,
+          req.ip,
+          req.get('User-Agent')
+        );
+
         return result;
       },
       "Prestador",
@@ -250,28 +253,27 @@ const PrestadorController = {
     );
   },
 
-  /**
-   * Actualiza un prestador existente
-   * @async
-   * @param {Object} req - Objeto de solicitud Express
-   * @param {Object} res - Objeto de respuesta Express
-   */
   async postActualizarPrestador(req, res) {
     await handlePostResponse(
       res,
       async () => {
+        // Obtener datos originales para comparar cambios
+        const originalData = await PrestadorService.getPrestadorById(req.params.id);
         const result = await PrestadorService.postActualizarPrestador(
           req.params.id,
           req.body
         );
-        // Registrar la acción en el sistema de auditoría
-        await auditLogger.logAction(
+
+        // Registrar la edición con detalles de cambios
+        await auditLogger.logProviderEdit(
           req.user?.id || 0,
-          "update",
-          "prestadores",
           req.params.id,
-          { requestData: req.body, result }
+          originalData,
+          result,
+          req.ip,
+          req.get('User-Agent')
         );
+
         return result;
       },
       "Prestador",
@@ -289,23 +291,27 @@ const PrestadorController = {
     await handlePostResponse(
       res,
       async () => {
-        const result =
-          await PrestadorService.postActualizarEstadoPrestadorPorNombre(
-            req.body.nombre,
-            req.body.estado
-          );
-        // Registrar la acción en el sistema de auditoría
+        const result = await PrestadorService.postActualizarEstadoPrestadorPorNombre(
+          req.body.nombre,
+          req.body.estado
+        );
+
+        // Registrar con detalles específicos de cambio de estado
         await auditLogger.logAction(
           req.user?.id || 0,
-          "update",
-          "prestadores",
+          auditLogger.OPERATION_TYPES.TOGGLE_STATUS,
+          auditLogger.ENTITY_TYPES.PROVIDER,
           "nombre-" + req.body.nombre,
           {
             nombre: req.body.nombre,
-            estado: req.body.estado,
-            result,
-          }
+            previousStatus: result.previousStatus || 'Desconocido',
+            newStatus: req.body.estado,
+            customDescription: `Cambio de estado de prestador "${req.body.nombre}" a "${req.body.estado}"`
+          },
+          req.ip,
+          req.get('User-Agent')
         );
+
         return result;
       },
       "Prestador",
@@ -324,14 +330,22 @@ const PrestadorController = {
       res,
       async () => {
         const result = await PrestadorService.postBajaPrestador(req.params.id);
-        // Registrar la acción en el sistema de auditoría
+
+        // Registrar con descripción específica
         await auditLogger.logAction(
           req.user?.id || 0,
-          "update",
-          "prestadores",
+          auditLogger.OPERATION_TYPES.DELETE,
+          auditLogger.ENTITY_TYPES.PROVIDER,
           req.params.id,
-          { action: "baja", result }
+          {
+            action: "baja",
+            result,
+            customDescription: `Baja de prestador #${req.params.id}`
+          },
+          req.ip,
+          req.get('User-Agent')
         );
+
         return result;
       },
       "Prestador",
@@ -356,13 +370,12 @@ const PrestadorController = {
 
       res.status(200).send(csvData);
 
-      // Registrar la acción en el sistema de auditoría
-      await auditLogger.logAction(
+      // Registrar descarga CSV con método específico
+      await auditLogger.logCartillaCSVDownload(
         req.user?.id || 0,
-        "export",
-        "cartilla",
-        "all",
-        { format: "csv" }
+        { format: 'CSV' },
+        req.ip,
+        req.get('User-Agent')
       );
     } catch (error) {
       console.error("Error en exportCartillaToCSV:", error);
@@ -373,6 +386,12 @@ const PrestadorController = {
     }
   },
 
+  /**
+   * Descarga la cartilla en formato PDF
+   * @async
+   * @param {Object} req - Objeto de solicitud Express
+   * @param {Object} res - Objeto de respuesta Express
+   */
   async getCartillaPDF(req, res) {
     try {
       const pdfData = await PrestadorService.getCartillaPDF(
@@ -387,6 +406,18 @@ const PrestadorController = {
         "Access-Control-Expose-Headers": "Content-Disposition",
       });
       res.send(Buffer.from(pdfData.pdfBytes));
+
+      // Registrar descarga PDF con método específico
+      await auditLogger.logCartillaPDFDownload(
+        req.user?.id || 0,
+        {
+          idPlan: req.params.idPlan,
+          idProvincia: req.params.idProvincia,
+          format: 'PDF'
+        },
+        req.ip,
+        req.get('User-Agent')
+      );
     } catch (error) {
       console.error("Error en exportCartillaToPDF:", error);
       res.status(500).json({
@@ -425,17 +456,20 @@ const PrestadorController = {
           };
 
           const result = await PrestadorService.handleCSVUpload(req.file, progressCallback);
-          
-          await auditLogger.logAction(
+
+          // Registrar carga masiva con método específico
+          await auditLogger.logBulkUpload(
             req.user?.id || 0,
-            "import",
-            "prestadores",
-            "csv-upload",
-            { 
+            {
               filename: req.file.originalname,
               size: req.file.size,
-              records: result.totalProcessed
-            }
+              totalProcessed: result.totalProcessed,
+              successful: result.successful,
+              failed: result.failed,
+              warnings: result.warnings || []
+            },
+            req.ip,
+            req.get('User-Agent')
           );
 
           resolve({
@@ -458,8 +492,8 @@ const PrestadorController = {
       res,
       handleUpload,
       "CSV de Prestadores",
-      { 
-        action: "importar", 
+      {
+        action: "importar",
         successStatus: StatusCodes.OK,
         includeDataInResponse: true // Para incluir los detalles del procesamiento
       }

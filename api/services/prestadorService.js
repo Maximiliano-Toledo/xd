@@ -179,6 +179,35 @@ const PrestadorService = {
   },
 
   /**
+ * Obtiene un prestador por su ID
+ * @async
+ * @param {number} id - ID del prestador a buscar
+ * @returns {Promise<Object>} - Promesa que resuelve a un objeto con los datos del prestador
+ */
+  getPrestadorById: async (id) => {
+    try {
+      // Validar que el ID sea un número
+      const prestadorId = parseInt(id);
+      if (isNaN(prestadorId)) {
+        throw new Error("ID inválido");
+      }
+
+      // Llamar al repositorio para obtener el prestador
+      const prestador = await PrestadorRepository.getPrestadorById(prestadorId);
+
+      // Si no se encuentra el prestador, lanzar un error
+      if (!prestador) {
+        throw new Error(`Prestador con ID ${id} no encontrado`);
+      }
+
+      return prestador;
+    } catch (error) {
+      console.error(`Error al obtener prestador ID ${id}:`, error);
+      throw error;
+    }
+  },
+
+  /**
    * Obtiene prestadores filtrados por nombre y otros criterios con paginación
    * @async
    * @param {number} idPlan - ID del plan

@@ -12,6 +12,8 @@ import '../../styles/cargar-cartilla.css'
 import '../../styles/carga-individual.css'
 import { PiNumberSquareOneLight } from "react-icons/pi";
 import { PiNumberSquareTwoLight } from "react-icons/pi";
+import Swal from "sweetalert2"
+import '../../styles/panel-usuario-nuevo.css'
 
 export const DescargarCartillaPDF = () => {
   const [options, setOptions] = useState({
@@ -110,14 +112,27 @@ export const DescargarCartillaPDF = () => {
       document.body.appendChild(link)
       link.click()
 
+      Swal.fire({
+        icon: "success",
+        title: "Descarga exitosa",
+        text: "Cartilla descargada exitosamente",
+        confirmButtonColor: "#64A70B",
+      })
+
       // Limpieza
       setTimeout(() => {
         document.body.removeChild(link)
         window.URL.revokeObjectURL(url)
       }, 100)
     } catch (error) {
-      console.error("Error al descargar PDF:", error)
-      alert(error.message || "No se pudo descargar el PDF. Intente nuevamente.")
+      // console.error("Error al descargar PDF:", error)
+      // alert(error.message || "No se pudo descargar el PDF. Intente nuevamente.")
+      Swal.fire({
+        icon: "error",
+        title: "Error en la descarga",
+        text: "Ocurrió un error al descargar la cartilla en PDF",
+        confirmButtonColor: "#64A70B",
+      })
     } finally {
       setIsDownloading(false)
     }
@@ -132,26 +147,17 @@ export const DescargarCartillaPDF = () => {
   return (
     <div>
          <HeaderStaff />
-          <h1 className="w-50 fs-4 text-center pb-2 pt-2 rounded-top rounded-bottom fw-bold text-white p-container mt-0 mb-0">
+          <h1 className="w-50 fs-4 text-center pb-2 pt-2 rounded-top rounded-bottom fw-bold text-white p-container mt-0 mb-0 ms-4 me-4">
              Descargá en PDF
           </h1>
-
-
-          
+    
         <div className="d-flex justify-content-center align-items-start min-vh-25 mt-0">
-          <div className="w-100 d-flex flex-column border shadow-input p-3 rounded-3 shadow ps-5">
+          <div className="w-100 d-flex flex-column border shadow-input p-3 rounded-3 shadow ps-5 ms-4 me-4">
             <h6 className="fs-3 h1-titulo fw-bold">
               Seleccione su plan y provincia para descargar la cartilla en PDF.
             </h6>
           </div>
         </div>
-
-        <button className="btn btn-volver rounded-pill text-white fw-bolder text-center text-uppercase mt-4 ms-4"
-                type="submit"
-                onClick={handleVolver}>
-                <MdSubdirectoryArrowLeft className="text-white"/> Volver
-        </button>
-
 
        {/**div que envuelve al formulario */}
       <div className="d-flex justify-content-center align-items-start min-vh-50">
@@ -221,6 +227,13 @@ export const DescargarCartillaPDF = () => {
             </form>
         </div>
       </div>
+
+      <div className="back-button-container">
+                <button className="back-button" onClick={handleVolver}>
+                    <MdSubdirectoryArrowLeft />
+                    <span>Volver</span>
+                </button>
+            </div>
        <Footer/>
 
     </div>

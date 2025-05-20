@@ -15,10 +15,10 @@ const { PDFDocument, rgb, StandardFonts } = require("pdf-lib");
 const fontkit = require("@pdf-lib/fontkit");
 
 const PLAN_MAPPING = {
-  Clásico: "clasico",
-  Social: "social",
-  Total: "total",
-  "Total Profesional": "total-profesional",
+  "Plan Clásico": "clasico",
+  "Plan Social": "social",
+  "Plan Total": "total",
+  "Plan Total Profesional": "total-profesional",
 };
 
 const PROVINCIA_MAPPING = {
@@ -132,6 +132,49 @@ const PrestadorRepository = {
       );
     } catch (error) {
       console.error("Error al obtener especialidades:", error);
+      throw error;
+    }
+  },
+
+  /**
+ * Obtiene un prestador por su ID utilizando el procedimiento almacenado
+ * @async
+ * @param {number} id - ID del prestador a buscar
+ * @returns {Promise<Object>} - Promesa que resuelve a un objeto con los datos del prestador y sus relaciones
+ */
+  getPrestadorById: async (id) => {
+    try {
+      // Validar que el ID sea un número
+      const prestadorId = parseInt(id);
+      if (isNaN(prestadorId)) {
+        throw new Error("ID inválido");
+      }
+
+      // Llamar al procedimiento almacenado
+      const [results] = await pool.query('CALL GetPrestadorById(?)', [prestadorId]);
+
+      // El procedimiento devuelve varios conjuntos de resultados
+      // - results[0] contiene los datos básicos del prestador
+      // - results[1] contiene los planes asociados
+      // - results[2] contiene las especialidades asociadas
+      // - results[3] contiene las categorías asociadas
+
+      // Verificar si se encontró el prestador
+      if (!results[0] || results[0].length === 0) {
+        throw new Error(`Prestador con ID ${id} no encontrado`);
+      }
+
+      // Construir el objeto de respuesta
+      const prestador = {
+        ...results[0][0], // Datos básicos del prestador
+        planes: results[1] || [],
+        especialidades: results[2] || [],
+        categorias: results[3] || []
+      };
+
+      return prestador;
+    } catch (error) {
+      console.error(`Error al obtener prestador ID ${id}:`, error);
       throw error;
     }
   },
@@ -1074,6 +1117,13 @@ const PrestadorRepository = {
         prestadoresPorEspecialidad
       ).sort();
 
+      // Ordenar prestadores por localidad dentro de cada especialidad
+      for (const especialidad of especialidadesOrdenadas) {
+        prestadoresPorEspecialidad[especialidad].sort((a, b) => {
+          return a.localidad.localeCompare(b.localidad);
+        });
+      }
+
       // 5. Cargar la portada del PDF
       const portadaPath = path.join(
         __dirname,
@@ -1103,7 +1153,7 @@ const PrestadorRepository = {
       let font;
       try {
         const fontBytes = await fsPromises.readFile(
-          path.join(__dirname, "..", "/fonts", "Montserrat-Regular.ttf")
+          path.join(__dirname, "..", "/fonts", "WorkSans-Regular.ttf")
         );
         font = await pdfDoc.embedFont(fontBytes);
       } catch (e) {
@@ -1147,6 +1197,12 @@ const PrestadorRepository = {
         yPosition = pageHeight - margin.top;
       };
 
+      // Crear un mapa de especialidad -> número
+      const especialidadNumeros = {};
+      especialidadesOrdenadas.forEach((especialidad, index) => {
+        especialidadNumeros[especialidad] = index + 1;
+      });
+
       for (const especialidad of especialidadesOrdenadas) {
         // Verificar si necesitamos nueva página de índice
         if (yPosition < margin.bottom + 30) {
@@ -1154,20 +1210,13 @@ const PrestadorRepository = {
           addNewIndexPage();
         }
 
-        const pageNumText = `${pageCount}`;
-        const pageNumWidth = font.widthOfTextAtSize(pageNumText, 12);
-
-        const especialidadWidth = font.widthOfTextAtSize(especialidad, 12);
-        const dotsWidth = font.widthOfTextAtSize(".", 12);
-        const availableWidth = pageWidth - margin.left - margin.right - pageNumWidth - 10;
-        const dotsCount = Math.floor((availableWidth - especialidadWidth) / dotsWidth);
-        const dots = ".".repeat(dotsCount > 0 ? dotsCount : 1);
-        
-        // const entryText = `${especialidad}${dots}${pageCount}`;
-        const entryText = `${especialidad}${dots}`;
+        // Número de especialidad y texto completo
+        const especialidadNum = especialidadNumeros[especialidad];
+        const numeradaEspecialidad = `${especialidadNum}. ${especialidad}`;
+        const especialidadWidth = font.widthOfTextAtSize(numeradaEspecialidad, 12);
 
         // Dibujar texto alineado a la izquierda (usando margin.left)
-        currentIndexPage.drawText(entryText, {
+        currentIndexPage.drawText(numeradaEspecialidad, {
           x: margin.left,
           y: yPosition,
           size: 12,
@@ -1175,7 +1224,7 @@ const PrestadorRepository = {
         });
 
         // Guardar posición y destino del enlace
-        const entryWidth = font.widthOfTextAtSize(entryText, 12);
+        const entryWidth = font.widthOfTextAtSize(numeradaEspecialidad, 12);
         indexEntries.push({
           bounds: {
             x: margin.left,
@@ -1241,9 +1290,12 @@ const PrestadorRepository = {
             pageRefs[especialidad] = pageRefs[especialidad] || [];
             pageRefs[especialidad].push(pageIndex);
 
-            // Título de la especialidad centrado
-            const titleWidth = font.widthOfTextAtSize(especialidad, 18);
-            currentPage.drawText(especialidad, {
+            // Obtener el número de la especialidad
+            const especialidadNum = especialidadNumeros[especialidad];
+            // Título de la especialidad centrado con número
+            const tituloNumerado = `${especialidadNum}. ${especialidad}`;
+            const titleWidth = font.widthOfTextAtSize(tituloNumerado, 18);
+            currentPage.drawText(tituloNumerado, {
               x: (pageWidth - titleWidth) / 2,
               y: currentY,
               size: 18,
@@ -1341,6 +1393,20 @@ const PrestadorRepository = {
             currentY = pageHeight - margin.top;
             prestadoresInPage = 0;
 
+            // Título de la especialidad en la nueva página con número
+            // const especialidadNum = especialidadNumeros[especialidad];
+            // const tituloNumerado = `${especialidadNum}. ${especialidad}`;
+            // const titleWidth = font.widthOfTextAtSize(tituloNumerado, 18);
+            // currentPage.drawText(tituloNumerado, {
+            //   x: (pageWidth - titleWidth) / 2,
+            //   y: currentY,
+            //   size: 18,
+            //   font,
+            //   color: rgb(0, 0, 0),
+            // });
+
+            currentY -= 30;
+
             // Encabezados de columna
             currentPage.drawText("PRESTADOR", {
               x: tableStartX,
@@ -1432,7 +1498,7 @@ const PrestadorRepository = {
       const pdfBytes = await pdfDoc.save();
       await connection.commit();
 
-      const nombreArchivo = `Plan ${planNombre} - ${provinciaArchivo}.pdf`;
+      const nombreArchivo = `${planNombre} - ${provinciaArchivo}.pdf`;
 
       // 9. Devolver el PDF y el nombre del archivo
       return {

@@ -6,6 +6,7 @@ import { FaPlus } from 'react-icons/fa6';
 import { MdSubdirectoryArrowLeft } from 'react-icons/md';
 import { GoPencil } from 'react-icons/go';
 import Card from '../plan/Card';
+import '../../styles/panel-usuario-nuevo.css'
 
 const EspecialidadDashboard = () => {
 
@@ -43,11 +44,8 @@ const EspecialidadDashboard = () => {
                 </div>
             </div>
 
-           <button className='btn btn-volver rounded-pill text-white text-center fw-bolder text-uppercase m-4' type='submit' onClick={handleVolver}>            
-                <MdSubdirectoryArrowLeft className='text-white' /> Volver
-            </button>
                
-           <div className="d-flex justify-content-center align-items-start min-vh-75">
+           <div className="d-flex justify-content-center align-items-start min-vh-75 mt-5">
                 <div className="w-75 d-flex flex-column border mb-4 shadow-input p-4 custom-height shadow rounded-3">
                     
                     <h4 className='mb-4 subtitle-dashboard'>Configuración de especialidades</h4>
@@ -60,6 +58,12 @@ const EspecialidadDashboard = () => {
                 </div>
             </div>
 
+                 <div className="back-button-container">
+                    <button className="back-button" onClick={handleVolver}>
+                        <MdSubdirectoryArrowLeft />
+                        <span>Volver</span>
+                    </button>
+                </div>
                 
             <Footer/>
         </div>

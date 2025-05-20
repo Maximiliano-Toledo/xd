@@ -5,7 +5,7 @@ const authRepository = {
     revokeRefreshToken: async (refreshToken) => {
         try {
             const [result] = await pool.query(
-                `INSERT INTO revoked_tokens (token_hash) 
+                `INSERT IGNORE INTO revoked_tokens (token_hash) 
                  VALUES (SHA2(?, 256))`, // Hashear el token para almacenamiento seguro
                 [refreshToken]
             );
