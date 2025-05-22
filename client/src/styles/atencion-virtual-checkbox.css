@@ -1,0 +1,110 @@
+/* Estilos para el checkbox de Atención Virtual */
+.atencion-virtual-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    background-color: var(--color-primary-lighter, #DCEDC8);
+    border-radius: var(--border-radius-md, 12px);
+    padding: 1rem;
+    border-left: 4px solid var(--color-primary, #64A70B);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.12));
+    transition: var(--transition, all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1));
+}
+
+.atencion-virtual-container:hover {
+    box-shadow: var(--shadow-md, 0 3px 6px rgba(0, 0, 0, 0.16));
+    transform: translateY(-2px);
+}
+
+/* Ocultar el checkbox original */
+.atencion-virtual-checkbox {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+/* Crear el checkbox personalizado */
+.atencion-virtual-checkmark {
+    position: relative;
+    display: inline-block;
+    height: 25px;
+    width: 25px;
+    background-color: #fff;
+    border: 2px solid var(--color-primary, #64A70B);
+    border-radius: 5px;
+    margin-right: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+/* Crear la marca de verificación */
+.atencion-virtual-checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+    left: 8px;
+    top: 4px;
+    width: 6px;
+    height: 12px;
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    transform: rotate(45deg);
+}
+
+/* Mostrar la marca de verificación cuando se selecciona el checkbox */
+.atencion-virtual-checkbox:checked ~ .atencion-virtual-checkmark {
+    background-color: var(--color-primary, #64A70B);
+}
+
+.atencion-virtual-checkbox:checked ~ .atencion-virtual-checkmark:after {
+    display: block;
+}
+
+/* Estilos para la etiqueta */
+.atencion-virtual-label {
+    font-weight: 600;
+    color: var(--color-primary-dark, #3e6907);
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+}
+
+/* Ícono opcional */
+.atencion-virtual-icon {
+    font-size: 1.2rem;
+    color: var(--color-primary, #64A70B);
+    margin-right: 8px;
+}
+
+/* Estilo para el texto informativo */
+.atencion-virtual-info {
+    margin-left: auto;
+    font-size: 0.85rem;
+    color: var(--color-text-light, #757575);
+    max-width: 60%;
+}
+
+/* Estilo para cambiar el aspecto del contenedor cuando está checked */
+.atencion-virtual-checkbox:checked ~ .atencion-virtual-container {
+    background-color: var(--color-primary-lighter, #DCEDC8);
+    border-color: var(--color-primary-dark, #3e6907);
+}
+
+/* Estado focus para accesibilidad */
+.atencion-virtual-checkbox:focus ~ .atencion-virtual-checkmark {
+    box-shadow: 0 0 0 3px rgba(100, 167, 11, 0.3);
+}
+
+/* Estado disabled */
+.atencion-virtual-checkbox:disabled ~ .atencion-virtual-checkmark {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.atencion-virtual-checkbox:disabled ~ .atencion-virtual-label {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

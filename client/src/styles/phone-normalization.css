@@ -1,0 +1,36 @@
+/* Estilos para la normalización de teléfonos */
+.phone-normalization-alert {
+    border-left: 4px solid #f0ad4e;
+    background-color: #fcf8e3;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+}
+
+.phone-format-display {
+    background-color: #f8f9fa;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-family: monospace;
+    margin: 10px 0;
+}
+
+.normalization-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+/* Animación para cuando se completa la normalización */
+.normalization-success {
+    animation: fadeInGreen 0.5s ease-out;
+}
+
+@keyframes fadeInGreen {
+    from {
+        background-color: rgba(40, 167, 69, 0.2);
+    }
+    to {
+        background-color: transparent;
+    }
+}

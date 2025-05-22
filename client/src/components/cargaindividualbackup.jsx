@@ -9,9 +9,6 @@ import {
   LuLaptop
 } from 'react-icons/lu';
 
-// En las importaciones, agregar:
-import PhoneInput from "../../utils/PhoneInput";
-
 import { MdSubdirectoryArrowLeft } from "react-icons/md"
 import { Footer } from "../../layouts/Footer"
 import HeaderStaff from "../../layouts/HeaderStaff"
@@ -37,7 +34,7 @@ export const CargaIndividual = () => {
     localidad: "",
     direccion: "",
     nombre: "",
-    telefono: JSON.stringify([]), // Inicializar como un array JSON vacío
+    telefono: "",
     email: "",
     informacion: "",
     atencionVirtual: false, // Nuevo campo para atención virtual
@@ -196,23 +193,11 @@ export const CargaIndividual = () => {
     // Verificar si es un profesional
     const profesional = esProfesional();
 
-    // Parsear los teléfonos desde el formato JSON
-    let telefonos = "";
-    try {
-      // Asegurarse de que el valor de teléfono sea un string JSON válido
-      if (data.telefono && typeof data.telefono === 'string') {
-        telefonos = data.telefono; // Ya es un string JSON
-      }
-    } catch (error) {
-      console.error("Error al procesar teléfonos:", error);
-      telefonos = JSON.stringify([]); // Valor por defecto si hay error
-    }
-
     // Formatear los datos para enviar al servidor según el formato requerido
     const datosFormateados = {
       nombre: data.nombre,
       direccion: (profesional && data.atencionVirtual) ? "Atención Virtual" : data.direccion || "",
-      telefonos: telefonos, // Usar el valor JSON de teléfonos
+      telefonos: data.telefono || "",
       email: data.email || "",
       informacion_adicional: (profesional && data.atencionVirtual)
         ? (data.informacion ? `Atención Virtual. ${data.informacion}` : "Atención Virtual")
@@ -220,14 +205,15 @@ export const CargaIndividual = () => {
       estado: "Activo",
       id_localidad: Number.parseInt(formData.localidad),
       categorias: [Number.parseInt(formData.categoria)],
-      especialidades: formData.especialidad.map((id) => Number.parseInt(id)),
-      planes: formData.plan.map((id) => Number.parseInt(id)),
-      atencionVirtual: profesional ? data.atencionVirtual : false,
+      especialidades: formData.especialidad.map((id) => Number.parseInt(id)), // Convertir array de strings a array de números
+      planes: formData.plan.map((id) => Number.parseInt(id)), // Convertir array de strings a array de números
+      atencionVirtual: profesional ? data.atencionVirtual : false, // Añadimos este dato solo si es profesional
     }
 
-    console.log("Datos a enviar:", datosFormateados);
-    confirmarCarga(datosFormateados);
+    console.log("Datos a enviar:", datosFormateados)
+    confirmarCarga(datosFormateados)
   })
+
   // Manejar cambios en los inputs, incluyendo los selects múltiples
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -264,7 +250,6 @@ export const CargaIndividual = () => {
   };
 
   // Verificar si los campos obligatorios están completos
-// Verificar si los campos obligatorios están completos
   const camposObligatoriosCompletos = () => {
     const camposRequeridos = {
       plan: (value) => Array.isArray(value) && value.length > 0,
@@ -277,18 +262,6 @@ export const CargaIndividual = () => {
         // Si es profesional y tiene atención virtual marcada, no se requiere dirección
         if (esProfesional() && formData.atencionVirtual) return true;
         return value && value.toString().trim() !== "";
-      },
-      telefono: (value) => {
-        // Validación correcta para teléfonos en formato JSON
-        if (!value) return false;
-
-        try {
-          const phones = JSON.parse(value);
-          return Array.isArray(phones) && phones.length > 0;
-        } catch (e) {
-          console.error("Error al parsear teléfonos:", e);
-          return false;
-        }
       }
     }
 
@@ -544,16 +517,14 @@ export const CargaIndividual = () => {
                     Teléfono:
                   </label>
 
-                  <PhoneInput
-                    value={formData.telefono} // Aquí está usando telefono, no telefonos
-                    onChange={(value) => {
-                      // Asegurarse de que el valor sea un string JSON
-                      const phoneValue = typeof value === 'string' ? value : JSON.stringify([]);
-                      setFormData(prev => ({ ...prev, telefono: phoneValue }));
-                      setValue("telefono", phoneValue); // Establecer el valor en el formulario
-                    }}
-                    disabled={false}
-                    required={true}
+                  <input
+                    type="text"
+                    {...register("telefono", {
+                      onChange: (e) => handleChange(e),
+                    })}
+                    className="form-control p-2 mt-1"
+                    id="telefono"
+                    placeholder="Ingrese el número de teléfono (ej: 011 12345678)"
                   />
                 </div>
 
