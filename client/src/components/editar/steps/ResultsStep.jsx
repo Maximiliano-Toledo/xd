@@ -1,5 +1,6 @@
 import React from "react";
 import { FiSearch } from "react-icons/fi";
+import { formatPhonesForDisplay } from "../../../utils/phoneFormatter.js";
 
 const ResultsStep = ({
                        prestadores,
@@ -9,6 +10,23 @@ const ResultsStep = ({
                        handleSelectPrestador,
                        goToSearch
                      }) => {
+
+  // Función para mostrar teléfonos formateados
+  const displayPhones = (phones) => {
+    try {
+      // Si ya es un string formateado, devolverlo
+      if (typeof phones === 'string' && !phones.startsWith('[')) {
+        return phones;
+      }
+
+      // Si es JSON, formatearlo
+      return formatPhonesForDisplay(phones);
+    } catch (error) {
+      console.error('Error formatting phones:', error);
+      return phones || 'No disponible';
+    }
+  };
+
   return (
     <div className="container-fluid px-2 px-md-4">
       <div className="row justify-content-center">
@@ -128,7 +146,18 @@ const ResultsStep = ({
                               borderColor: "#dee2e6",
                             }}
                           >
-                            {prestador.direccion}
+                            {prestador.direccion || 'No disponible'}
+                          </td>
+                          <td
+                            className="text-center"
+                            style={{
+                              padding: "12px",
+                              borderColor: "#dee2e6",
+                              fontSize: "14px",
+                              fontFamily: "monospace"
+                            }}
+                          >
+                            {displayPhones(prestador.telefonos)}
                           </td>
                           <td
                             className="text-center"
@@ -137,16 +166,7 @@ const ResultsStep = ({
                               borderColor: "#dee2e6",
                             }}
                           >
-                            {prestador.telefonos}
-                          </td>
-                          <td
-                            className="text-center"
-                            style={{
-                              padding: "12px",
-                              borderColor: "#dee2e6",
-                            }}
-                          >
-                            {prestador.email}
+                            {prestador.email || 'No disponible'}
                           </td>
                           <td
                             style={{
@@ -180,13 +200,16 @@ const ResultsStep = ({
                       <div className="card-body">
                         <h5 className="card-title">{prestador.nombre}</h5>
                         <div className="card-text mb-2">
-                          <strong>Dirección:</strong> {prestador.direccion}
+                          <strong>Dirección:</strong> {prestador.direccion || 'No disponible'}
                         </div>
                         <div className="card-text mb-2">
-                          <strong>Teléfono:</strong> {prestador.telefonos}
+                          <strong>Teléfono:</strong>
+                          <span style={{ fontFamily: 'monospace', fontSize: '13px' }}>
+                            {displayPhones(prestador.telefonos)}
+                          </span>
                         </div>
                         <div className="card-text mb-2">
-                          <strong>Email:</strong> {prestador.email}
+                          <strong>Email:</strong> {prestador.email || 'No disponible'}
                         </div>
                         <div className="card-text mb-3">
                           <strong>Estado:</strong>{" "}
@@ -269,7 +292,7 @@ const ResultsStep = ({
                   Nueva búsqueda
                 </button>
               </div>
-              )}
+            )}
           </div>
         </div>
       </div>

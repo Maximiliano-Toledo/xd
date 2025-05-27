@@ -1,0 +1,38 @@
+/* Estilos para el input de archivo */
+.file-input-container {
+  margin-top: 1rem;
+}
+
+.file-input-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.file-input {
+  display: none;
+}
+
+.file-input-button {
+  background-color: #64A70B;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s;
+}
+
+.file-input-button:hover {
+  background-color: #4d8500;
+}
+
+.file-preview {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  word-break: break-all;
+}

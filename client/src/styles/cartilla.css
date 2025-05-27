@@ -1219,7 +1219,7 @@ main {
 .search-method-tab.active svg,
 .search-method-tab.active * {
     color: #ffffff !important;
-    fill: #ffffff !important;
+    /* fill: #ffffff !important; */
     /* Para SVGs que usan fill */
 }
 

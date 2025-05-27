@@ -25,6 +25,20 @@ export const useAbmApi = (entity) => {
     }
   };
 
+  const getAllPrestadores = async () => {
+    try {
+      setLoading(true);
+      const response = await ABMService.getAllPrestadores();
+      setData(response);
+      return response;
+    } catch (err) {
+      setError(err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const getById = async (id) => {
     try {
       setLoading(true);
@@ -71,6 +85,19 @@ export const useAbmApi = (entity) => {
     try {
       setLoading(true);
       const response = await ABMService.updatePrestador(id, formData);
+      return response;
+    } catch (err) {
+      setError(err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updatePrestadorStatus = async (formData) => {
+    try {
+      setLoading(true);
+      const response = await ABMService.updatePrestadorStatus(formData);
       return response;
     } catch (err) {
       setError(err);
@@ -143,6 +170,7 @@ export const useAbmApi = (entity) => {
     loading,
     error,
     getAll,
+    getAllPrestadores,
     getById,
     create,
     update,
@@ -150,6 +178,7 @@ export const useAbmApi = (entity) => {
     toggleStatus,
     createPrestador,
     updatePrestador,
+    updatePrestadorStatus,
     getLocalidadesByProvincia,
   };
 };

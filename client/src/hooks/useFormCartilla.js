@@ -32,15 +32,32 @@ export const useFormCartilla = (apiHook) => {
 
     // Efecto para verificar criterios seleccionados
     useEffect(() => {
-        setCriteriosSeleccionados(
-            formData.plan &&
-            formData.provincia &&
-            formData.localidad &&
-            !loading.planes &&
-            !loading.provincias &&
-            !loading.localidades,
-        )
-    }, [formData.plan, formData.provincia, formData.localidad, loading.planes, loading.provincias, loading.localidades])
+        if (formData.searchMethod === "virtual") {
+            // Para búsqueda virtual solo necesitamos plan
+            setCriteriosSeleccionados(
+                formData.plan &&
+                !loading.planes
+            )
+        } else {
+            // Para búsqueda normal y por nombre necesitamos plan, provincia y localidad
+            setCriteriosSeleccionados(
+                formData.plan &&
+                formData.provincia &&
+                formData.localidad &&
+                !loading.planes &&
+                !loading.provincias &&
+                !loading.localidades
+            )
+        }
+    }, [
+        formData.plan, 
+        formData.provincia, 
+        formData.localidad, 
+        formData.searchMethod,
+        loading.planes, 
+        loading.provincias, 
+        loading.localidades
+    ])
 
     // Efecto para actualizar categoría seleccionada
     useEffect(() => {
@@ -54,18 +71,41 @@ export const useFormCartilla = (apiHook) => {
 
     // Efecto para determinar categorías disponibles
     useEffect(() => {
-        if (!formData.plan || !formData.provincia || !formData.localidad) {
-            setAvailableCategories([])
-            return
-        }
+        if (formData.searchMethod === "virtual") {
+            // Para búsqueda virtual solo necesitamos el plan
+            if (!formData.plan) {
+                setAvailableCategories([])
+                return
+            }
 
-        if (options.categorias && options.categorias.length > 0) {
-            const availableCategoryIds = options.categorias.map((cat) => cat.id_categoria.toString())
-            setAvailableCategories(availableCategoryIds)
+            if (options.categoriasVirtuales && options.categoriasVirtuales.length > 0) {
+                const availableCategoryIds = options.categoriasVirtuales.map((cat) => cat.id_categoria.toString())
+                setAvailableCategories(availableCategoryIds)
+            } else {
+                setAvailableCategories([])
+            }
         } else {
-            setAvailableCategories([])
+            // Para búsqueda normal y por nombre necesitamos plan, provincia y localidad
+            if (!formData.plan || !formData.provincia || !formData.localidad) {
+                setAvailableCategories([])
+                return
+            }
+
+            if (options.categorias && options.categorias.length > 0) {
+                const availableCategoryIds = options.categorias.map((cat) => cat.id_categoria.toString())
+                setAvailableCategories(availableCategoryIds)
+            } else {
+                setAvailableCategories([])
+            }
         }
-    }, [formData.plan, formData.provincia, formData.localidad, options.categorias])
+    }, [
+        formData.plan, 
+        formData.provincia, 
+        formData.localidad, 
+        formData.searchMethod,
+        options.categorias, 
+        options.categoriasVirtuales
+    ])
 
     // Efecto para actualizar vista de resultados
     useEffect(() => {
@@ -103,10 +143,17 @@ export const useFormCartilla = (apiHook) => {
     const handleSubmit = (e) => {
         e.preventDefault()
 
-        const requiredFields = ["plan", "provincia", "localidad", "categoria", "especialidad"]
+        let requiredFields = []
 
-        if (formData.searchMethod === "porNombre") {
-            requiredFields.push("nombrePrestador")
+        if (formData.searchMethod === "virtual") {
+            // Para búsqueda virtual solo necesitamos plan, categoria y especialidad
+            requiredFields = ["plan", "categoria", "especialidad"]
+        } else if (formData.searchMethod === "porNombre") {
+            // Para búsqueda por nombre necesitamos todos los campos incluyendo nombrePrestador
+            requiredFields = ["plan", "provincia", "localidad", "categoria", "especialidad", "nombrePrestador"]
+        } else {
+            // Para búsqueda normal necesitamos plan, provincia, localidad, categoria y especialidad
+            requiredFields = ["plan", "provincia", "localidad", "categoria", "especialidad"]
         }
 
         if (requiredFields.some((field) => !formData[field])) {

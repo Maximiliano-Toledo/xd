@@ -32,7 +32,8 @@ import {
 } from "react-icons/go";
 import {
   PiNumberSquareOneLight,
-  PiNumberSquareTwoLight
+  PiNumberSquareTwoLight,
+  PiNumberSquareThreeLight
 } from "react-icons/pi";
 import {
   LuLogOut
@@ -115,7 +116,7 @@ export default function Sidebar({ children }) {
       key: "home",
       icon: <IoMdHome />,
       label: "Gestión de cartilla",
-      path: "/admin/dashboard",
+      path: "/dashboard",
       type: "link"
     },
     {
@@ -142,6 +143,12 @@ export default function Sidebar({ children }) {
           icon: <PiNumberSquareTwoLight />,
           label: "Carga Masiva",
           path: "/carga-masiva"
+        },
+        {
+          key: "subir",
+          icon: <PiNumberSquareThreeLight />,
+          label: "Cargar Portada PDF",
+          path: "/subir-portada-pdf"
         }
       ]
     },
@@ -169,8 +176,21 @@ export default function Sidebar({ children }) {
       key: "editar",
       icon: <IoIosCreate />,
       label: "Editar prestador",
-      path: "/editar-prestador",
-      type: "link"
+      type: "submenu",
+      children: [
+        {
+          key: "editar",
+          icon: <IoIosCreate />,
+          label: "Editar prestador",
+          path: "/editar-prestador"
+        },
+        {
+          key: "editar-nombre",
+          icon: <IoIosCreate />,
+          label: "Editar estado prestador",
+          path: "/editar-prestador-por-nombre"
+        }
+      ]
     },
     {
       key: "plan",

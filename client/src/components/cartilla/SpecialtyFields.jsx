@@ -40,6 +40,23 @@ const SpecialtyFields = ({
         );
     }
 
+    if (searchMethod === "virtual") {
+        return (
+            <div className="search-select-group speciality-select">
+                <CustomSelect
+                    options={adaptarOpciones(options.especialidadesVirtuales, "id_especialidad", "nombre")}
+                    value={formData.especialidad}
+                    onChange={onFieldChange}
+                    name="especialidad"
+                    placeholder="Seleccioná la especialidad"
+                    disabled={!formData.categoria || loading.especialidadesVirtuales}
+                    loading={loading.especialidades}
+                    className="search-select"
+                />
+            </div>
+        );
+    }
+
     return (
         <>
             <div className="search-select-group">

@@ -1,0 +1,229 @@
+/* Contenedor para teléfono único */
+.phone-display-inline {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9rem;
+    color: var(--color-text, #333333);
+}
+
+/* Lista de múltiples teléfonos */
+.phone-display-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+/* Elemento individual de teléfono */
+.phone-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background-color: var(--color-gray-light, #F5F5F5);
+    border-radius: var(--border-radius-md, 8px);
+    padding: 10px 14px;
+    transition: var(--transition, all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1));
+    border: 1px solid transparent;
+    position: relative;
+}
+
+.phone-item:hover {
+    background-color: var(--color-primary-lighter, #DCEDC8);
+    border-color: var(--color-primary-light, #8BC34A);
+    transform: translateX(5px);
+}
+
+/* Wrapper para el icono */
+.phone-icon-wrapper {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    border-radius: 50%;
+    flex-shrink: 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Iconos de teléfono */
+.phone-icon {
+    font-size: 18px;
+    transition: transform 0.2s ease;
+}
+
+.phone-item:hover .phone-icon {
+    transform: scale(1.1);
+}
+
+.phone-icon.whatsapp {
+    color: #25D366;
+}
+
+.phone-icon.mobile {
+    color: var(--color-primary, #64A70B);
+}
+
+.phone-icon.landline {
+    color: var(--color-primary, #64A70B);
+}
+
+.phone-icon.toll-free {
+    color: #858585;
+}
+
+.phone-icon.default {
+    color: var(--color-text-light, #757575);
+}
+
+/* Detalles del teléfono */
+.phone-details {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+}
+
+.phone-label {
+    font-size: 0.75rem;
+    color: var(--color-text-light, #757575);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1;
+}
+
+.phone-number {
+    font-size: 0.95rem;
+    color: var(--color-text, #333333);
+    font-weight: 500;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', monospace;
+    line-height: 1.2;
+}
+
+/* Estado sin teléfonos */
+.no-phones {
+    color: var(--color-text-light, #757575);
+    font-style: italic;
+    font-size: 0.85rem;
+}
+
+/* Adaptación para el contenedor de prestador */
+.prestador-detail.phone-detail {
+    align-items: flex-start;
+}
+
+.prestador-detail.phone-detail .detail-icon {
+    margin-top: 2px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .phone-item {
+        padding: 8px 12px;
+        gap: 10px;
+    }
+
+    .phone-icon-wrapper {
+        width: 32px;
+        height: 32px;
+    }
+
+    .phone-icon {
+        font-size: 16px;
+    }
+
+    .phone-number {
+        font-size: 0.9rem;
+    }
+
+    .phone-label {
+        font-size: 0.7rem;
+    }
+}
+
+/* Animación de entrada */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.phone-item {
+    animation: fadeInUp 0.3s ease-out;
+    animation-fill-mode: both;
+}
+
+.phone-item:nth-child(1) { animation-delay: 0s; }
+.phone-item:nth-child(2) { animation-delay: 0.05s; }
+.phone-item:nth-child(3) { animation-delay: 0.1s; }
+.phone-item:nth-child(4) { animation-delay: 0.15s; }
+
+/* Indicador de tipo especial */
+.phone-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 60%;
+    background-color: transparent;
+    border-radius: 0 3px 3px 0;
+    transition: var(--transition);
+}
+
+.phone-item:hover::before {
+    background-color: var(--color-primary, #64A70B);
+}
+
+/* Ajustes específicos para WhatsApp */
+.phone-item:has(.phone-icon.whatsapp) {
+    background-color: #e8f5e9;
+}
+
+.phone-item:has(.phone-icon.whatsapp):hover {
+    background-color: #c8e6c9;
+    border-color: #25D366;
+}
+
+.phone-item:has(.phone-icon.whatsapp)::before {
+    background-color: #25D366;
+}
+
+.phone-item:has(.phone-icon.toll-free):hover {
+    background-color: #e4e4e4;
+    border-color: #616161;
+}
+
+.phone-item:has(.phone-icon.toll-free)::before {
+    background-color: #616161;
+}
+
+/* Ajustes para móviles */
+.phone-item:has(.phone-icon.mobile) {
+    /*background-color: #e3f2fd;*/
+    background-color: #e8f1de;
+}
+
+.phone-item:has(.phone-icon.mobile):hover {
+    /*background-color: #bbdefb;*/
+    background-color: var(--color-primary-lighter);
+    border-color: var(--color-primary, #64A70B);
+}
+
+/* Integración con PrestadorCard */
+.prestador-card .phone-display-list {
+    margin-left: 0;
+    max-width: 100%;
+}
+
+.prestador-card .phone-display-inline {
+    font-size: 0.9rem;
+}

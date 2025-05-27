@@ -22,6 +22,9 @@ const SearchFormFields = ({
         }));
     };
 
+    // Determinar si estamos en modo virtual
+    const isVirtual = formData.searchMethod === "virtual";
+
     return (
         <div className="search-form-selects">
             {/* Plan */}
@@ -38,34 +41,36 @@ const SearchFormFields = ({
                 />
             </div>
 
-            {/* Provincia y Localidad */}
-            <div className="search-select-row">
-                <div className="search-select-group">
-                    <CustomSelect
-                        options={adaptarOpciones(options.provincias, "id_provincia", "nombre")}
-                        value={formData.provincia}
-                        onChange={onFieldChange}
-                        name="provincia"
-                        placeholder="Seleccioná la provincia"
-                        disabled={!formData.plan || loading.provincias}
-                        loading={loading.provincias}
-                        className="search-select"
-                    />
-                </div>
+            {/* Provincia y Localidad - Solo mostrar si no es virtual */}
+            {!isVirtual && (
+                <div className="search-select-row">
+                    <div className="search-select-group">
+                        <CustomSelect
+                            options={adaptarOpciones(options.provincias, "id_provincia", "nombre")}
+                            value={formData.provincia}
+                            onChange={onFieldChange}
+                            name="provincia"
+                            placeholder="Seleccioná la provincia"
+                            disabled={!formData.plan || loading.provincias}
+                            loading={loading.provincias}
+                            className="search-select"
+                        />
+                    </div>
 
-                <div className="search-select-group">
-                    <CustomSelect
-                        options={adaptarOpciones(options.localidades, "id_localidad", "nombre")}
-                        value={formData.localidad}
-                        onChange={onFieldChange}
-                        name="localidad"
-                        placeholder="Seleccioná la localidad"
-                        disabled={!formData.provincia || loading.localidades}
-                        loading={loading.localidades}
-                        className="search-select"
-                    />
+                    <div className="search-select-group">
+                        <CustomSelect
+                            options={adaptarOpciones(options.localidades, "id_localidad", "nombre")}
+                            value={formData.localidad}
+                            onChange={onFieldChange}
+                            name="localidad"
+                            placeholder="Seleccioná la localidad"
+                            disabled={!formData.provincia || loading.localidades}
+                            loading={loading.localidades}
+                            className="search-select"
+                        />
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 };

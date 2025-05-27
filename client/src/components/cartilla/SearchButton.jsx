@@ -8,21 +8,36 @@ const SearchButton = ({
     const isDisabled = () => {
         const hasLoading = Object.values(loading).some(Boolean);
 
-        const commonFields = [
-            "plan",
-            "provincia",
-            "localidad",
-            "categoria",
-            "especialidad"
-        ];
-
-        if (searchMethod === "normal") {
-            return hasLoading || commonFields.some(field => !formData[field]);
+        if (searchMethod === "virtual") {
+            // Solo necesitamos estos campos para búsqueda virtual
+            return hasLoading || 
+                !formData.plan || 
+                !formData.categoria || 
+                !formData.especialidad;
         }
 
-        // Para búsqueda por nombre
-        return hasLoading ||
-            [...commonFields, "nombrePrestador"].some(field => !formData[field]);
+        if (searchMethod === "normal") {
+            // Campos para búsqueda normal
+            return hasLoading || 
+                !formData.plan || 
+                !formData.provincia || 
+                !formData.localidad || 
+                !formData.categoria || 
+                !formData.especialidad;
+        }
+
+        if (searchMethod === "porNombre") {
+            // Campos para búsqueda por nombre
+            return hasLoading || 
+                !formData.plan || 
+                !formData.provincia || 
+                !formData.localidad || 
+                !formData.categoria || 
+                !formData.especialidad || 
+                !formData.nombrePrestador;
+        }
+
+        return true; // Por defecto deshabilitado si no coincide con ningún método
     };
 
     const getButtonText = () => {

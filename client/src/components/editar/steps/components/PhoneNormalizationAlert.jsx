@@ -1,12 +1,31 @@
 import React from 'react';
 
 import "../../../../styles/phone-normalization.css"
+import {normalizeOldPhoneFormat, normalizePhoneWithPrefixes} from "../../../../utils/phoneFormatter.js";
+
 
 const PhoneNormalizationAlert = ({
                                    originalPhones,
                                    onNormalizeClick,
                                    onManualEdit
                                  }) => {
+
+  const handleNormalizePhones = () => {
+    if (!originalPhones) return;
+
+    try {
+      // Usar la nueva función con prefijos
+      const normalizedPhones = normalizePhoneWithPrefixes(originalPhones);
+      const phoneJsonString = JSON.stringify(normalizedPhones);
+
+      onNormalizeClick(phoneJsonString);
+    } catch (error) {
+      console.error("Error al normalizar teléfonos:", error);
+      // Fallback al método anterior
+      onNormalizeClick(normalizeOldPhoneFormat(originalPhones));
+    }
+  };
+
   return (
     <div className="alert alert-warning mb-3">
       <h5 className="alert-heading">
@@ -25,7 +44,7 @@ const PhoneNormalizationAlert = ({
         <button
           type="button"
           className="btn btn-success"
-          onClick={onNormalizeClick}
+          onClick={handleNormalizePhones}
         >
           Normalizar automáticamente
         </button>

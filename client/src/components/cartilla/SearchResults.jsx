@@ -16,31 +16,48 @@ const SearchResults = ({
     const getSearchSummary = () => {
         const planName = options.planes.length > 0 && formData.plan
             ? (options.planes.find(p => p.id_plan == formData.plan) ||
-                options.planes.find(p => String(p.id_plan) === String(formData.plan)))?.nombre || "Plan"
-            : "Plan";
+                options.planes.find(p => String(p.id_plan) === String(formData.plan)))?.nombre || ""
+            : "";
 
         const provinciaName = options.provincias.length > 0 && formData.provincia
             ? (options.provincias.find(p => p.id_provincia == formData.provincia) ||
-                options.provincias.find(p => String(p.id_provincia) === String(formData.provincia)))?.nombre || "Provincia"
-            : "Provincia";
+                options.provincias.find(p => String(p.id_provincia) === String(formData.provincia)))?.nombre || ""
+            : "";
 
         const localidadName = options.localidades.length > 0 && formData.localidad
             ? (options.localidades.find(p => p.id_localidad == formData.localidad) ||
-                options.localidades.find(p => String(p.id_localidad) === String(formData.localidad)))?.nombre || "Localidad"
-            : "Localidad";
+                options.localidades.find(p => String(p.id_localidad) === String(formData.localidad)))?.nombre || ""
+            : "";
 
+        // Check both especialidades and especialidadesVirtuales
         const especialidadName = options.especialidades.length > 0 && formData.especialidad
             ? (options.especialidades.find(e => e.id_especialidad == formData.especialidad) ||
-                options.especialidades.find(e => String(e.id_especialidad) === String(formData.especialidad)))?.nombre || "Especialidad"
+                options.especialidades.find(e => String(e.id_especialidad) === String(formData.especialidad)))?.nombre || ""
             : (options.especialidadesPrestador.length > 0 && formData.especialidad
                 ? (options.especialidadesPrestador.find(e => e.id_especialidad == formData.especialidad) ||
-                    options.especialidadesPrestador.find(e => String(e.id_especialidad) === String(formData.especialidad)))?.nombre || "Especialidad"
-                : "Especialidad");
+                    options.especialidadesPrestador.find(e => String(e.id_especialidad) === String(formData.especialidad)))?.nombre || ""
+                : (options.especialidadesVirtuales?.length > 0 && formData.especialidad
+                    ? (options.especialidadesVirtuales.find(e => e.id_especialidad == formData.especialidad) ||
+                        options.especialidadesVirtuales.find(e => String(e.id_especialidad) === String(formData.especialidad)))?.nombre || ""
+                    : ""));
 
-        return { planName, provinciaName, localidadName, especialidadName };
+        const atencionVirtual = options.especialidadesVirtuales?.length > 0 && formData.especialidad
+            ? "Atención virtual"
+            : "";
+
+        return { planName, provinciaName, localidadName, especialidadName, atencionVirtual };
     };
 
-    const { planName, provinciaName, localidadName, especialidadName } = getSearchSummary();
+    const { planName, provinciaName, localidadName, especialidadName, atencionVirtual } = getSearchSummary();
+
+    // Crear un array con los tags de la búsqueda
+    const searchTags = [
+        planName,
+        provinciaName,
+        localidadName,
+        especialidadName,
+        atencionVirtual
+    ].filter(tag => tag && tag.trim() !== "");
 
     if (loading.prestadores) {
         return (
@@ -88,12 +105,13 @@ const SearchResults = ({
                     <BsArrowLeft /> Volver a la búsqueda
                 </button>
                 <h2 className="results-title">Resultados de la búsqueda</h2>
-                <div className="search-summary">
-                    <span className="search-tag">{planName}</span>
-                    <span className="search-tag">{provinciaName}</span>
-                    <span className="search-tag">{localidadName}</span>
-                    <span className="search-tag">{especialidadName}</span>
-                </div>
+                {searchTags.length > 0 && (
+                    <div className="search-summary">
+                        {searchTags.map((tag, index) => (
+                            <span key={index} className="search-tag">{tag}</span>
+                        ))}
+                    </div>
+                )}
             </div>
 
             <div className="results-container">

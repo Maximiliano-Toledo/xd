@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import AdminDashboardPage from "./containers/pages/AdminDashboardPage";
 import './styles/index.css'
 import './styles/cartilla.css'
 import ProtectedRoute from './components/ProtectedRoute';
@@ -27,8 +26,6 @@ function App() {
           <Route element={<RoleBasedRoute allowedRoles={['admin']} />}>
            
           </Route>
-
-          <Route path="/user/dashboard" element={<div>User</div>} />
 
           <Route path="/logout" element={<LogoutPage />} />
         </Route>

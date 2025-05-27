@@ -11,7 +11,7 @@ export const useCartillaApi = (edit = false) => {
     categoria: "",
     especialidad: "",
     nombrePrestador: "",
-    searchMethod: "normal", // 'normal' o 'porNombre'
+    searchMethod: "normal", // 'normal', 'porNombre' o 'virtual'
     especialidadesPrestador: [],
   }
 
@@ -31,6 +31,8 @@ export const useCartillaApi = (edit = false) => {
     especialidades: [],
     nombresPrestadores: [],
     especialidadesPrestador: [],
+    categoriasVirtuales: [],
+    especialidadesVirtuales: [],
   })
   const [loading, setLoading] = useState({
     planes: false,
@@ -41,6 +43,8 @@ export const useCartillaApi = (edit = false) => {
     prestadores: false,
     nombresPrestadores: false,
     especialidadesPrestador: false,
+    categoriasVirtuales: false,
+    especialidadesVirtuales: false,
   })
   const [prestadores, setPrestadores] = useState([])
   const [showResults, setShowResults] = useState(false)
@@ -81,6 +85,9 @@ export const useCartillaApi = (edit = false) => {
           nombresPrestadores: [],
           especialidadesPrestador: [],
         }),
+        ...(optionsKey === "categoriasVirtuales" && {
+          especialidadesVirtuales: [],
+        }),
       }))
 
       setFormData((prev) => ({ ...prev, ...resetFields }))
@@ -98,20 +105,37 @@ export const useCartillaApi = (edit = false) => {
 
   useEffect(() => {
     if (!formData.plan) return
-    fetchData(
-      () => getServiceMethod('getProvincias')(formData.plan), 
-      "provincias", 
-      "provincias", 
-      {
-        provincia: "",
-        localidad: "",
-        categoria: "",
-        especialidad: "",
-        nombrePrestador: "",
-        especialidadesPrestador: [],
-      }
-    )
-  }, [formData.plan, edit])
+    
+    if (formData.searchMethod === "virtual") {
+      // Cargar categorías virtuales si el modo es virtual
+      fetchData(
+        () => getServiceMethod('getCategoriasVirtuales')(formData.plan), 
+        "categoriasVirtuales", 
+        "categoriasVirtuales", 
+        {
+          categoria: "",
+          especialidad: "",
+          nombrePrestador: "",
+          especialidadesPrestador: [],
+        }
+      )
+    } else {
+      // Cargar provincias para búsqueda normal o por nombre
+      fetchData(
+        () => getServiceMethod('getProvincias')(formData.plan), 
+        "provincias", 
+        "provincias", 
+        {
+          provincia: "",
+          localidad: "",
+          categoria: "",
+          especialidad: "",
+          nombrePrestador: "",
+          especialidadesPrestador: [],
+        }
+      )
+    }
+  }, [formData.plan, formData.searchMethod, edit])
 
   useEffect(() => {
     if (!formData.plan || !formData.provincia) return
@@ -170,6 +194,29 @@ export const useCartillaApi = (edit = false) => {
       },
     )
   }, [formData.localidad, formData.provincia, formData.categoria, formData.plan, formData.searchMethod, edit])
+
+  // Efecto para cargar especialidades virtuales
+  useEffect(() => {
+    if (
+      !formData.plan ||
+      !formData.categoria ||
+      formData.searchMethod !== "virtual"
+    )
+      return
+    
+    fetchData(
+      () =>
+        getServiceMethod('getEspecialidadesVirtuales')(
+          formData.categoria,
+          formData.plan
+        ),
+      "especialidadesVirtuales",
+      "especialidadesVirtuales",
+      {
+        especialidad: "",
+      },
+    )
+  }, [formData.categoria, formData.plan, formData.searchMethod, edit])
 
   // Efecto para cargar nombres de prestadores en búsqueda por nombre
   useEffect(() => {
@@ -355,6 +402,118 @@ export const useCartillaApi = (edit = false) => {
     [formData, pagination.itemsPerPage, edit],
   )
 
+  // Función para cargar prestadores virtuales con paginación
+  const fetchPrestadoresVirtuales = useCallback(
+    async (page = 1, pageSize = pagination.itemsPerPage, isPageChange = false) => {
+      if (
+        !formData.plan ||
+        !formData.categoria ||
+        !formData.especialidad
+      ) {
+        return
+      }
+
+      setLoading((prev) => ({ ...prev, prestadores: true }))
+
+      if (!isPageChange) {
+        setShowResults(false)
+      }
+
+      try {
+        const response = await getServiceMethod('getPrestadoresVirtuales')(
+          formData.categoria,
+          formData.plan,
+          formData.especialidad,
+        )
+
+        console.log("Respuesta completa de getPrestadoresVirtuales:", response)
+
+        // Manejar diferentes estructuras de respuesta
+        let items = []
+        let paginationInfo = {
+          currentPage: page,
+          totalPages: 1,
+          totalItems: 0,
+          itemsPerPage: pageSize,
+          hasNextPage: false,
+          hasPrevPage: page > 1,
+        }
+
+        if (response) {
+          if (Array.isArray(response)) {
+            // Si es un array, tomamos el primer elemento
+            const firstItem = response[0]
+            if (firstItem && firstItem.items) {
+              items = firstItem.items
+              paginationInfo = {
+                ...paginationInfo,
+                ...firstItem.pagination,
+                itemsPerPage: pageSize,
+                currentPage: page,
+              }
+            } else if (Array.isArray(firstItem)) {
+              // Si el primer elemento es un array, lo usamos directamente
+              items = firstItem
+              paginationInfo.totalItems = firstItem.length
+            } else {
+              // Si no tiene estructura esperada pero es un array, lo usamos directamente
+              items = response
+              paginationInfo.totalItems = response.length
+            }
+          } else if (response.items) {
+            // Si tiene una propiedad items, la usamos
+            items = response.items
+            paginationInfo = {
+              ...paginationInfo,
+              ...response.pagination,
+              itemsPerPage: pageSize,
+              currentPage: page,
+            }
+          } else if (response.data && response.data.items) {
+            // Si tiene una estructura data.items
+            items = response.data.items
+            paginationInfo = {
+              ...paginationInfo,
+              ...response.data.pagination,
+              itemsPerPage: pageSize,
+              currentPage: page,
+            }
+          } else {
+            // Si no tiene ninguna estructura esperada, asumimos que es la lista directamente
+            items = response
+            paginationInfo.totalItems = response.length
+          }
+        }
+
+        console.log("Items procesados:", items)
+        console.log("Información de paginación:", paginationInfo)
+
+        setPrestadores(items)
+        setPagination((prev) => ({
+          ...prev,
+          ...paginationInfo,
+        }))
+
+        setShowResults(true)
+      } catch (error) {
+        console.error("Error fetching prestadores virtuales:", error)
+        setPrestadores([])
+        setPagination({
+          currentPage: 1,
+          totalPages: 0,
+          totalItems: 0,
+          itemsPerPage: pageSize,
+          hasNextPage: false,
+          hasPrevPage: false,
+        })
+        setShowResults(true)
+      } finally {
+        setLoading((prev) => ({ ...prev, prestadores: false }))
+      }
+    },
+    [formData, pagination.itemsPerPage, edit],
+  )
+
   // Función para cargar prestadores por nombre con paginación
   const fetchPrestadoresPorNombre = useCallback(
     async (page = 1, pageSize = pagination.itemsPerPage, isPageChange = false) => {
@@ -477,8 +636,10 @@ export const useCartillaApi = (edit = false) => {
   const handlePageChange = (newPage) => {
     if (formData.searchMethod === "normal") {
       fetchPrestadoresNormal(newPage, pagination.itemsPerPage, true)
-    } else {
+    } else if (formData.searchMethod === "porNombre") {
       fetchPrestadoresPorNombre(newPage, pagination.itemsPerPage, true)
+    } else if (formData.searchMethod === "virtual") {
+      fetchPrestadoresVirtuales(newPage, pagination.itemsPerPage, true)
     }
   }
 
@@ -492,8 +653,10 @@ export const useCartillaApi = (edit = false) => {
 
     if (formData.searchMethod === "normal") {
       fetchPrestadoresNormal(1, newSize, true)
-    } else {
+    } else if (formData.searchMethod === "porNombre") {
       fetchPrestadoresPorNombre(1, newSize, true)
+    } else if (formData.searchMethod === "virtual") {
+      fetchPrestadoresVirtuales(1, newSize, true)
     }
   }
 
@@ -506,6 +669,17 @@ export const useCartillaApi = (edit = false) => {
     }
 
     await fetchPrestadoresNormal(1, pagination.itemsPerPage, false)
+  }
+
+  const handleVirtualSearch = async () => {
+    const requiredFields = ["plan", "categoria", "especialidad"]
+
+    if (requiredFields.some((field) => !formData[field])) {
+      alert("Complete todos los campos obligatorios")
+      return
+    }
+
+    await fetchPrestadoresVirtuales(1, pagination.itemsPerPage, false)
   }
 
   const handleNameSearch = async () => {
@@ -524,8 +698,10 @@ export const useCartillaApi = (edit = false) => {
 
     if (formData.searchMethod === "normal") {
       await handleNormalSearch()
-    } else {
+    } else if (formData.searchMethod === "porNombre") {
       await handleNameSearch()
+    } else if (formData.searchMethod === "virtual") {
+      await handleVirtualSearch()
     }
   }
 
@@ -544,6 +720,8 @@ export const useCartillaApi = (edit = false) => {
       especialidades: [],
       nombresPrestadores: [],
       especialidadesPrestador: [],
+      categoriasVirtuales: method === "virtual" ? options.categoriasVirtuales : [],
+      especialidadesVirtuales: [],
     })
 
     setPrestadores([])

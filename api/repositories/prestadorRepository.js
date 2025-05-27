@@ -13,18 +13,7 @@ const csv = require("csv-parser");
 const { Transform } = require("stream");
 const { PDFDocument, rgb, StandardFonts } = require("pdf-lib");
 const fontkit = require("@pdf-lib/fontkit");
-const {phoneJsonToCSVFormat, formatPhoneForPDF } = require("../utils/phoneFormatter");
-
-const PLAN_MAPPING = {
-  "Plan Clásico": "clasico",
-  "Plan Social": "social",
-  "Plan Total": "total",
-  "Plan Total Profesional": "total-profesional",
-};
-
-const PROVINCIA_MAPPING = {
-  "C.A.B.A.": "CABA",
-};
+const {phoneJsonToCSVFormat, formatPhoneForPDF, csvFormatToPhoneJson} = require("../utils/phoneFormatter");
 
 /**
  * Carga un archivo de consulta SQL desde el directorio de consultas
@@ -115,6 +104,19 @@ const PrestadorRepository = {
     }
   },
 
+  getCategoriasVirtuales: async (idPlan, edit = false) => {
+    const estado = edit ? 'Todos' : 'Activo';
+    try {
+      return await pool.query("CALL getCategoriasByAtencionVirtual(?, ?);", [
+        idPlan,
+        estado,
+      ]);
+    } catch (error) {
+      console.error("Error al obtener categorías virtuales:", error);
+      throw error;
+    }
+  },
+
   /**
    * Obtiene especialidades filtradas por varios criterios
    * @async
@@ -130,6 +132,19 @@ const PrestadorRepository = {
       return await pool.query(
         "CALL getEspecialidadesByLocalidadAndProvinciaAndCategoriaAndPlan(?, ?, ?, ?, ?);",
         [idPlan, idCategoria, idProvincia, idLocalidad, estado]
+      );
+    } catch (error) {
+      console.error("Error al obtener especialidades:", error);
+      throw error;
+    }
+  },
+
+  getEspecialidadesVirtuales: async (idPlan, idCategoria, edit = false) => {
+    const estado = edit ? 'Todos' : 'Activo';
+    try {
+      return await pool.query(
+        "CALL getEspecialidadesVirtualesByCategoriaAndPlan(?, ?, ?);",
+        [idPlan, idCategoria, estado]
       );
     } catch (error) {
       console.error("Error al obtener especialidades:", error);
@@ -176,6 +191,15 @@ const PrestadorRepository = {
       return prestador;
     } catch (error) {
       console.error(`Error al obtener prestador ID ${id}:`, error);
+      throw error;
+    }
+  },
+
+  getNombresPrestadores: async () => {
+    try {
+      return await pool.query("CALL getNombresPrestadores();");
+    } catch (error) {
+      console.error("Error al obtener nombres de prestadores:", error);
       throw error;
     }
   },
@@ -396,6 +420,44 @@ const PrestadorRepository = {
     }
   },
 
+  getPrestadoresVirtuales: async (idPlan, idCategoria, idEspecialidad, edit = false, page = 1, limit = 10) => {
+
+    try {
+      const offset = (page - 1) * limit;
+      const estado = edit ? 'Todos' : 'Activo';
+
+      const [countResult] = await pool.query(
+        "CALL getCountPrestadoresVirtuales(?, ?, ?, ?);",
+        [idPlan, idCategoria, idEspecialidad, estado]
+      );
+      const totalItems = countResult[0][0].total || 0;
+
+      const [rows] = await pool.query(
+        "CALL GetPrestadoresVirtualesPaginados(?, ?, ?, ?, ?, ?);",
+        [idPlan, idCategoria, idEspecialidad, estado, limit, offset]
+      );
+
+      const totalPages = Math.ceil(totalItems / limit);
+
+      return [
+        {
+          items: rows[0],
+          pagination: {
+            totalItems,
+            itemsPerPage: limit,
+            currentPage: page,
+            totalPages,
+            hasNextPage: page < totalPages,
+            hasPrevPage: page > 1,
+          },
+        },
+      ]
+    } catch (error) {
+      console.error("Error al obtener prestadores virtuales:", error);
+      throw error;
+    }
+  },
+
   /**
    * Obtiene nombres de prestadores filtrados por varios criterios
    * @async
@@ -559,6 +621,7 @@ const PrestadorRepository = {
             direccion: prestadorData.direccion,
             telefonos: prestadorData.telefonos,
             email: prestadorData.email,
+            atencion_virtual: prestadorData.atencion_virtual,
             informacion_adicional: prestadorData.informacion_adicional,
             id_localidad: prestadorData.id_localidad,
             estado: prestadorData.estado || "Activo",
@@ -573,6 +636,7 @@ const PrestadorRepository = {
             direccion: prestadorData.direccion,
             telefonos: prestadorData.telefonos,
             email: prestadorData.email,
+            atencion_virtual: prestadorData.atencion_virtual,
             informacion_adicional: prestadorData.informacion_adicional,
             localidad: localidad[0].nombre,
             provincia: provincia[0].nombre,
@@ -681,6 +745,7 @@ const PrestadorRepository = {
           direccion: "direccion",
           telefonos: "telefonos",
           email: "email",
+          atencion_virtual: "atencion_virtual",
           informacion_adicional: "informacion_adicional",
           estado: "estado",
         };
@@ -1005,6 +1070,7 @@ const PrestadorRepository = {
               row.direccion || "",
               row.telefonos || "",
               row.email || "",
+              row.atencion_virtual || "No",
               row.informacion_adicional || "",
               row.estado || "Activo",
             ];
@@ -1050,7 +1116,7 @@ const PrestadorRepository = {
             await connection.query(
               `INSERT INTO cartilla 
               (plan, categoria_prestador, especialidad, provincia, localidad, 
-                nombre_prestador, direccion, telefonos, email, informacion_adicional, estado) 
+                nombre_prestador, direccion, telefonos, email, atencion_virtual, informacion_adicional, estado) 
               VALUES ?`,
               [batch]
             );
@@ -1118,6 +1184,63 @@ const PrestadorRepository = {
   },
 
   /**
+   * Actualiza/reemplaza la portada PDF para un plan y provincia específicos
+   * @async
+   * @param {number} id_plan - ID del plan
+   * @param {number} id_provincia - ID de la provincia
+   * @param {Buffer} pdfFile - Buffer del archivo PDF
+   * @returns {Promise<Object>} - Promesa que resuelve a un objeto con el resultado de la operación
+   */
+  updatePortadaPDF: async (id_plan, id_provincia, pdfFile) => {
+    try {
+      // 1. Verificar que el plan y la provincia existen
+      const [planResult] = await pool.query(
+        "SELECT id_plan FROM planes WHERE id_plan = ?",
+        [id_plan]
+      );
+      const [provinciaResult] = await pool.query(
+        "SELECT id_provincia FROM provincias WHERE id_provincia = ?",
+        [id_provincia]
+      );
+
+      if (!planResult.length || !provinciaResult.length) {
+        throw new Error("Plan o provincia no encontrados");
+      }
+
+      // 2. Crear la estructura de directorios si no existe
+      const templatesDir = path.join(__dirname, "..", "templates");
+      const planDir = path.join(templatesDir, id_plan.toString());
+      const filePath = path.join(planDir, `${id_provincia}.pdf`);
+
+      // Verificar si el directorio del plan existe, si no, crearlo
+      try {
+        await fsPromises.access(planDir);
+      } catch (error) {
+        await fsPromises.mkdir(planDir, { recursive: true });
+      }
+
+      // 3. Guardar el archivo PDF
+      await fsPromises.writeFile(filePath, pdfFile);
+
+      // 4. Verificar que el archivo se guardó correctamente
+      const fileStats = await fsPromises.stat(filePath);
+      if (!fileStats.isFile()) {
+        throw new Error("No se pudo guardar el archivo PDF");
+      }
+
+      return {
+        success: true,
+        message: "Portada PDF actualizada correctamente",
+        path: filePath,
+        size: fileStats.size
+      };
+    } catch (error) {
+      console.error("Error al actualizar portada PDF:", error);
+      throw new Error(`Error al actualizar portada PDF: ${error.message}`);
+    }
+  },
+
+  /**
    * Descarga la cartilla en formato PDF
    * @async
    * @param {number} id_plan - ID del plan
@@ -1147,27 +1270,24 @@ const PrestadorRepository = {
       const planNombre = planResult[0].nombre;
       const provinciaNombre = provinciaResult[0].nombre;
 
-      // 2. Normalizar nombres para rutas de archivos
-      const planFolder =
-        PLAN_MAPPING[planNombre] ||
-        planNombre.toLowerCase().replace(/\s+/g, "-");
-      const provinciaArchivo =
-        PROVINCIA_MAPPING[provinciaNombre] || provinciaNombre;
-
-      // 3. Obtener prestadores desde el stored procedure
-      const [prestadores] = await connection.query(
+      // 3. Obtener todos los prestadores (presenciales y virtuales)
+      const [prestadoresResult] = await connection.query(
         "CALL getCartillaPDF(?, ?)",
         [planNombre, provinciaNombre]
       );
 
-      if (!prestadores[0].length) {
+      if (!prestadoresResult[0].length) {
         throw new Error(
           "No se encontraron prestadores para la combinación especificada"
         );
       }
 
-      // 4. Organizar prestadores por especialidad
-      const prestadoresPorEspecialidad = prestadores[0].reduce(
+      // Separar prestadores presenciales y virtuales
+      const prestadores = prestadoresResult[0].filter(p => p.tipo_atencion === 'Presencial');
+      const prestadoresVirtuales = prestadoresResult[0].filter(p => p.tipo_atencion === 'Virtual');
+
+      // 4. Organizar prestadores presenciales por especialidad
+      const prestadoresPorEspecialidad = prestadores.reduce(
         (acc, prestador) => {
           // Normalizar los teléfonos para cada prestador
           prestador = { ...prestador };
@@ -1203,8 +1323,8 @@ const PrestadorRepository = {
         __dirname,
         "..",
         "templates",
-        planFolder,
-        `${provinciaArchivo}.pdf`
+        id_plan,
+        `${id_provincia}.pdf`
       );
 
       const portadaExists = await fsPromises
@@ -1223,7 +1343,7 @@ const PrestadorRepository = {
       // Registrar el plugin de fuentes
       pdfDoc.registerFontkit(fontkit);
 
-      // Cargar una fuente estándar (opcional, mejora la compatibilidad)
+      // Cargar una fuente estándar
       let font;
       try {
         const fontBytes = await fsPromises.readFile(
@@ -1236,6 +1356,26 @@ const PrestadorRepository = {
         );
         font = await pdfDoc.embedFont(StandardFonts.Helvetica);
       }
+
+      // Obtener mes y año actual para el pie de página
+      const now = new Date();
+      const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+                         "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+      const currentMonth = monthNames[now.getMonth()];
+      const currentYear = now.getFullYear();
+
+      // Función para agregar pie de página a una página
+      const addFooter = (page) => {
+        const footerText = `Vigencia ${currentMonth} ${currentYear}`;
+        const footerWidth = font.widthOfTextAtSize(footerText, 10);
+        page.drawText(footerText, {
+          x: (page.getWidth() - footerWidth) / 2,
+          y: 30,
+          size: 10,
+          font,
+          color: rgb(0.5, 0.5, 0.5),
+        });
+      };
 
       // 6. Crear página de índice de especialidades (segunda página)
       const pageWidth = 595; // Ancho A4 en puntos
@@ -1269,6 +1409,7 @@ const PrestadorRepository = {
       const addNewIndexPage = () => {
         currentIndexPage = pdfDoc.addPage([pageWidth, pageHeight]);
         yPosition = pageHeight - margin.top;
+        addFooter(currentIndexPage);
       };
 
       // Crear un mapa de especialidad -> número
@@ -1277,19 +1418,19 @@ const PrestadorRepository = {
         especialidadNumeros[especialidad] = index + 1;
       });
 
+      // Agregar pie de página a la página de índice
+      addFooter(currentIndexPage);
+
+      // Agregar entradas de índice para especialidades presenciales
       for (const especialidad of especialidadesOrdenadas) {
         // Verificar si necesitamos nueva página de índice
         if (yPosition < margin.bottom + 30) {
-          // 30 es espacio mínimo para nueva entrada
           addNewIndexPage();
         }
 
-        // Número de especialidad y texto completo
         const especialidadNum = especialidadNumeros[especialidad];
         const numeradaEspecialidad = `${especialidadNum}. ${especialidad}`;
-        const especialidadWidth = font.widthOfTextAtSize(numeradaEspecialidad, 12);
         
-        // Dibujar texto alineado a la izquierda (usando margin.left)
         currentIndexPage.drawText(numeradaEspecialidad, {
           x: margin.left,
           y: yPosition,
@@ -1297,7 +1438,6 @@ const PrestadorRepository = {
           font,
         });
 
-        // Guardar posición y destino del enlace
         const entryWidth = font.widthOfTextAtSize(numeradaEspecialidad, 12);
         indexEntries.push({
           bounds: {
@@ -1306,26 +1446,54 @@ const PrestadorRepository = {
             width: entryWidth,
             height: 15,
           },
-          pageIndex: pageCount - 1, // Ajustar porque insertPage cuenta diferente
+          pageIndex: pageCount - 1,
         });
 
         // Calcular cuántas páginas ocupará esta especialidad
-        const prestadoresCount =
-          prestadoresPorEspecialidad[especialidad].length;
+        const prestadoresCount = prestadoresPorEspecialidad[especialidad].length;
         const pagesNeeded = Math.ceil(prestadoresCount / 15);
         pageCount += pagesNeeded;
 
         yPosition -= 25;
       }
 
-      // 7. Crear páginas para cada especialidad
+      // Agregar entrada para atención virtual si hay prestadores virtuales
+      if (prestadoresVirtuales.length > 0) {
+        if (yPosition < margin.bottom + 30) {
+          addNewIndexPage();
+        }
+
+        const virtualNum = especialidadesOrdenadas.length + 1;
+        const virtualEntry = `${virtualNum}. Atención Virtual`;
+        
+        currentIndexPage.drawText(virtualEntry, {
+          x: margin.left,
+          y: yPosition,
+          size: 12,
+          font,
+        });
+
+        const entryWidth = font.widthOfTextAtSize(virtualEntry, 12);
+        indexEntries.push({
+          bounds: {
+            x: margin.left,
+            y: yPosition - 10,
+            width: entryWidth,
+            height: 15,
+          },
+          pageIndex: pageCount - 1,
+        });
+
+        yPosition -= 25;
+      }
+
+      // 7. Crear páginas para cada especialidad presencial
       const pageRefs = {};
       const columnWidth = 120;
       const maxTextWidth = columnWidth - 10;
       const lineHeight = 12;
-      const rowSpacing = 5; // Espacio adicional entre filas
+      const rowSpacing = 5;
 
-      // Función para dividir texto con espaciado (la movemos fuera del loop)
       const splitTextToFit = (text, maxWidth, fontSize, font) => {
         if (!text) return [""];
         const words = text.split(" ");
@@ -1348,25 +1516,28 @@ const PrestadorRepository = {
         return lines;
       };
 
+      const createNewContentPage = () => {
+        const newPage = pdfDoc.addPage([pageWidth, pageHeight]);
+        addFooter(newPage);
+        return newPage;
+      };
+
       for (const especialidad of especialidadesOrdenadas) {
         const prestadores = prestadoresPorEspecialidad[especialidad];
         let currentPage;
         let prestadoresInPage = 0;
         let currentY = pageHeight - margin.top;
         const tableWidth = columnWidth * 4;
-        const tableStartX = (pageWidth - tableWidth) / 2; // Declarado una sola vez aquí
+        const tableStartX = (pageWidth - tableWidth) / 2;
 
         for (let i = 0; i < prestadores.length; i++) {
           if (prestadoresInPage === 0 || currentY <= margin.bottom) {
-            // Crear nueva página si no hay espacio suficiente
-            currentPage = pdfDoc.addPage([pageWidth, pageHeight]);
+            currentPage = createNewContentPage();
             const pageIndex = pdfDoc.getPageCount() - 1;
             pageRefs[especialidad] = pageRefs[especialidad] || [];
             pageRefs[especialidad].push(pageIndex);
 
-            // Obtener el número de la especialidad
             const especialidadNum = especialidadNumeros[especialidad];
-            // Título de la especialidad centrado con número
             const tituloNumerado = `${especialidadNum}. ${especialidad}`;
             const titleWidth = font.widthOfTextAtSize(tituloNumerado, 18);
             currentPage.drawText(tituloNumerado, {
@@ -1457,27 +1628,13 @@ const PrestadorRepository = {
           );
           const rowNeededHeight = maxLines * lineHeight + rowSpacing;
 
-          // Verificar espacio en página
           if (currentY - rowNeededHeight < margin.bottom) {
-            // Crear nueva página (código similar al anterior)
-            currentPage = pdfDoc.addPage([pageWidth, pageHeight]);
+            currentPage = createNewContentPage();
             const pageIndex = pdfDoc.getPageCount() - 1;
             pageRefs[especialidad].push(pageIndex);
 
             currentY = pageHeight - margin.top;
             prestadoresInPage = 0;
-
-            // Título de la especialidad en la nueva página con número
-            // const especialidadNum = especialidadNumeros[especialidad];
-            // const tituloNumerado = `${especialidadNum}. ${especialidad}`;
-            // const titleWidth = font.widthOfTextAtSize(tituloNumerado, 18);
-            // currentPage.drawText(tituloNumerado, {
-            //   x: (pageWidth - titleWidth) / 2,
-            //   y: currentY,
-            //   size: 18,
-            //   font,
-            //   color: rgb(0, 0, 0),
-            // });
 
             currentY -= 30;
 
@@ -1568,13 +1725,165 @@ const PrestadorRepository = {
         }
       }
 
-      // 8. Guardar el PDF final
+      // 8. Agregar sección de atención virtual si hay prestadores virtuales
+      if (prestadoresVirtuales.length > 0) {
+        // Ordenar prestadores virtuales por especialidad alfabéticamente
+        const virtualesOrdenados = [...prestadoresVirtuales].sort((a, b) => 
+          a.especialidad.localeCompare(b.especialidad)
+        );
+
+        let currentPage = createNewContentPage();
+        let currentY = pageHeight - margin.top;
+        const tableWidth = columnWidth * 4;
+        const tableStartX = (pageWidth - tableWidth) / 2;
+
+        // Título de la sección de atención virtual
+        const virtualNum = especialidadesOrdenadas.length + 1;
+        const tituloVirtual = `${virtualNum}. Atención Virtual`;
+        const titleWidth = font.widthOfTextAtSize(tituloVirtual, 18);
+        currentPage.drawText(tituloVirtual, {
+          x: (pageWidth - titleWidth) / 2,
+          y: currentY,
+          size: 18,
+          font,
+          color: rgb(0, 0, 0),
+        });
+
+        currentY -= 30;
+
+        // Encabezados de columna para atención virtual
+        currentPage.drawText("PRESTADOR", {
+          x: tableStartX,
+          y: currentY,
+          size: 10,
+          font,
+          color: rgb(0.3, 0.3, 0.3),
+        });
+        currentPage.drawText("ESPECIALIDAD", {
+          x: tableStartX + columnWidth,
+          y: currentY,
+          size: 10,
+          font,
+          color: rgb(0.3, 0.3, 0.3),
+        });
+        currentPage.drawText("TELÉFONO", {
+          x: tableStartX + columnWidth * 2,
+          y: currentY,
+          size: 10,
+          font,
+          color: rgb(0.3, 0.3, 0.3),
+        });
+        currentPage.drawText("EMAIL", {
+          x: tableStartX + columnWidth * 3,
+          y: currentY,
+          size: 10,
+          font,
+          color: rgb(0.3, 0.3, 0.3),
+        });
+
+        // Línea divisoria
+        currentPage.drawLine({
+          start: { x: tableStartX, y: currentY - 5 },
+          end: { x: tableStartX + tableWidth, y: currentY - 5 },
+          thickness: 0.5,
+          color: rgb(0.8, 0.8, 0.8),
+        });
+
+        currentY -= 20;
+
+        for (const prestador of virtualesOrdenados) {
+          // Verificar si necesitamos nueva página
+          if (currentY <= margin.bottom + 50) {
+            currentPage = createNewContentPage();
+            currentY = pageHeight - margin.top - 50;
+          }
+
+          // Calcular altura necesaria para esta fila
+          const nombreLines = splitTextToFit(
+            prestador.nombre,
+            maxTextWidth,
+            9,
+            font
+          );
+          const especialidadLines = splitTextToFit(
+            prestador.especialidad,
+            maxTextWidth,
+            9,
+            font
+          );
+          const telefonoLines = splitTextToFit(
+            prestador.telefonos,
+            maxTextWidth,
+            9,
+            font
+          );
+          const emailLines = splitTextToFit(
+            prestador.email,
+            maxTextWidth,
+            9,
+            font
+          );
+          const maxLines = Math.max(
+            nombreLines.length,
+            especialidadLines.length,
+            telefonoLines.length,
+            emailLines.length,
+            1
+          );
+          const rowNeededHeight = maxLines * lineHeight + rowSpacing;
+
+          // Dibujar contenido de la fila
+          nombreLines.forEach((line, idx) => {
+            currentPage.drawText(line, {
+              x: tableStartX,
+              y: currentY - idx * lineHeight,
+              size: 9,
+              font,
+              maxWidth: maxTextWidth,
+            });
+          });
+
+          especialidadLines.forEach((line, idx) => {
+            currentPage.drawText(line, {
+              x: tableStartX + columnWidth,
+              y: currentY - idx * lineHeight,
+              size: 9,
+              font,
+              maxWidth: maxTextWidth,
+            });
+          });
+
+          telefonoLines.forEach((line, idx) => {
+            currentPage.drawText(line, {
+              x: tableStartX + columnWidth * 2,
+              y: currentY - idx * lineHeight,
+              size: 9,
+              font,
+              maxWidth: maxTextWidth,
+            });
+          });
+
+          emailLines.forEach((line, idx) => {
+            currentPage.drawText(line, {
+              x: tableStartX + columnWidth * 3,
+              y: currentY - idx * lineHeight,
+              size: 9,
+              font,
+              maxWidth: maxTextWidth,
+            });
+          });
+
+          currentY -= rowNeededHeight;
+        }
+      }
+
+      // 9. Guardar el PDF final
       const pdfBytes = await pdfDoc.save();
       await connection.commit();
 
-      const nombreArchivo = `${planNombre} - ${provinciaArchivo}.pdf`;
+      const nombreArchivo = `${planNombre} - ${provinciaNombre}.pdf`;
 
-      // 9. Devolver el PDF y el nombre del archivo
+      // 10. Devolver el PDF y el nombre del archivo
       return {
         pdfBytes,
         nombreArchivo,

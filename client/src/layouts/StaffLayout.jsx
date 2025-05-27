@@ -6,9 +6,10 @@ import '../styles/staff-layout.css';
 
 // Lazy loading de componentes para mejor performance
 const RegisterForm = lazy(() => import('../containers/pages/RegisterForm'));
-const AdminDashboardPage = lazy(() => import('../containers/pages/AdminDashboardPage'));
+const DashboardPage = lazy(() => import('../containers/pages/DashboardPage'));
 const CargaMasivaPage = lazy(() => import('../containers/pages/CargaMasivaPage'));
 const CargaIndividualPage = lazy(() => import('../containers/pages/CargaIndividualPage'));
+const CargaPortadaPDFPage = lazy(() => import('../containers/pages/CargaPortadaPDFPage'));
 const InfoPage = lazy(() => import('../containers/pages/InfoPage'));
 const ManualUsuario = lazy(() => import('../components/info/ManualUsuario'));
 const EspecialidadPage = lazy(() => import('../containers/pages/EspecialidadPage'));
@@ -21,6 +22,7 @@ const PanelUsuarioPage = lazy(() => import('../containers/pages/PanelUsuarioPage
 const Historial = lazy(() => import('../components/panel/Historial'));
 const ChangePass = lazy(() => import('../components/panel/ChangePass'));
 const EditarPrestadorPage = lazy(() => import('../containers/pages/EditarCartillaPage'));
+const EditarPrestadorPorNombrePage = lazy(() => import('../containers/pages/EditarPrestadorPorNombrePage'));
 const DescargarCartillaPDFPage = lazy(() => import('../containers/pages/DescargarCartillaPDFPage'));
 const DescargarCartillaCSVPage = lazy(() => import('../containers/pages/DescargarCartillaCSVPage'));
 
@@ -57,12 +59,14 @@ const NotFound = () => (
 const routesConfig = [
   { path: '/', component: FormCartilla, title: 'Vista de Cartilla' },
   { path: '/register', component: RegisterForm, title: 'Registro' },
-  { path: '/admin/dashboard', component: AdminDashboardPage, title: 'Panel Administrativo' },
+  { path: '/dashboard', component: DashboardPage, title: 'Panel Administrativo' },
 
   // Rutas de carga
   { path: '/carga-masiva', component: CargaMasivaPage, title: 'Carga Masiva' },
   { path: '/carga-individual', component: CargaIndividualPage, title: 'Carga Individual' },
+  { path: '/subir-portada-pdf', component: CargaPortadaPDFPage, title: 'Carga Portada PDF' },
   { path: '/editar-prestador', component: EditarPrestadorPage, title: 'Editar Prestador' },
+  { path: '/editar-prestador-por-nombre', component: EditarPrestadorPorNombrePage, title: 'Editar Prestador Por Nombre' },
 
   // Rutas de planes
   { path: '/gestion-plan', component: GestionPlanPage, title: 'Gestión de Planes' },

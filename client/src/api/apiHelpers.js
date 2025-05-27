@@ -14,6 +14,7 @@ const apiWrapper = async (method, endpoint, params = {}) => {
   try {
     const response = await api[method](endpoint, params);
     const data = handleResponse(response);
+    console.log(data);
     return Array.isArray(data?.data?.[0]) ? data.data[0] : data.data || [];
   } catch (error) {
     throw handleResponse(error.response);

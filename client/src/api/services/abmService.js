@@ -9,8 +9,10 @@ const createEntityMethods = (entity) => ({
   [`update${capitalizeFirstLetter(entity)}`]: (id, data) => apiWrapper('put', `abm/${entity}/${id}`, data),
   [`delete${capitalizeFirstLetter(entity)}`]: (id) => apiWrapper('delete', `abm/${entity}/${id}`),
   [`toggle${capitalizeFirstLetter(entity)}Status`]: (id) => apiWrapper('patch', `abm/${entity}/${id}/toggle-status`),
+  [`getAllPrestadores`]: () => apiWrapper('get', `cartilla/nombresPrestadores`),
   [`createPrestador`]: (data) => apiWrapper('post', `cartilla/crear-prestador`, data),
   [`updatePrestador`]: (id, data) => apiWrapper('post', `cartilla/actualizar-prestador/${id}`, data),
+  [`updatePrestadorStatus`]: (data) => apiWrapper('post', `cartilla/actualizar-estado-prestador-por-nombre`, data),
   [`getLocalidadesByProvincia`]: (id) => apiWrapper('get', `abm/localidades/provincia/${id}`),
 });
 

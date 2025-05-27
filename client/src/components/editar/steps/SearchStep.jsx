@@ -64,114 +64,118 @@ const SearchStep = ({
               </div>
             </div>
 
-            <div className="row mb-4">
-              <div className="col-md-6">
-                <label
-                  htmlFor="provincia"
-                  className="p-1 text-success-label fw-medium fs-6"
-                >
-                  Provincia:
-                </label>
-                <CustomSelect
-                  options={adaptarOpciones(
-                    options.provincias,
-                    "id_provincia",
-                    "nombre"
-                  )}
-                  value={formData.provincia}
-                  onChange={handleChange}
-                  name="provincia"
-                  placeholder={
-                    loading.provincias
-                      ? "Cargando provincias..."
-                      : "Seleccione una provincia"
-                  }
-                  disabled={loading.provincias || !formData.plan}
-                  loading={loading.provincias}
-                />
-              </div>
-              <div className="col-md-6">
-                <label
-                  htmlFor="localidad"
-                  className="p-1 text-success-label fw-medium fs-6"
-                >
-                  Localidad:
-                </label>
-                <CustomSelect
-                  options={adaptarOpciones(
-                    options.localidades,
-                    "id_localidad",
-                    "nombre"
-                  )}
-                  value={formData.localidad}
-                  onChange={handleChange}
-                  name="localidad"
-                  placeholder={
-                    loading.localidades
-                      ? "Cargando localidades..."
-                      : "Seleccione una localidad"
-                  }
-                  disabled={loading.localidades || !formData.provincia}
-                  loading={loading.localidades}
-                />
-              </div>
-            </div>
-
-            {formData.searchMethod === "normal" ? (
-              <div className="row mb-4">
-                <div className="col-md-6">
-                  <label
-                    htmlFor="categoria"
-                    className="p-1 text-success-label fw-medium fs-6"
-                  >
-                    Categoría:
-                  </label>
-                  <CustomSelect
-                    options={adaptarOpciones(
-                      options.categorias,
-                      "id_categoria",
-                      "nombre"
-                    )}
-                    value={formData.categoria}
-                    onChange={handleChange}
-                    name="categoria"
-                    placeholder={
-                      loading.categorias
-                        ? "Cargando categorías..."
-                        : "Seleccione una categoría"
-                    }
-                    disabled={loading.categorias || !formData.localidad}
-                    loading={loading.categorias}
-                  />
-                </div>
-                <div className="col-md-6">
-                  <label
-                    htmlFor="especialidad"
-                    className="p-1 text-success-label fw-medium fs-6"
-                  >
-                    Especialidad:
-                  </label>
-                  <CustomSelect
-                    options={adaptarOpciones(
-                      options.especialidades,
-                      "id_especialidad",
-                      "nombre"
-                    )}
-                    value={formData.especialidad}
-                    onChange={handleChange}
-                    name="especialidad"
-                    placeholder={
-                      loading.especialidades
-                        ? "Cargando especialidades..."
-                        : "Seleccione una especialidad"
-                    }
-                    disabled={loading.especialidades || !formData.categoria}
-                    loading={loading.especialidades}
-                  />
-                </div>
-              </div>
-            ) : (
+            {formData.searchMethod === "virtual" ? (
               <>
+                {/* Campos para búsqueda virtual */}
+                <div className="row mb-4">
+                  <div className="col-md-6">
+                    <label
+                      htmlFor="categoria"
+                      className="p-1 text-success-label fw-medium fs-6"
+                    >
+                      Categoría:
+                    </label>
+                    <CustomSelect
+                      options={adaptarOpciones(
+                        options.categoriasVirtuales || options.categorias,
+                        "id_categoria",
+                        "nombre"
+                      )}
+                      value={formData.categoria}
+                      onChange={handleChange}
+                      name="categoria"
+                      placeholder={
+                        loading.categoriasVirtuales || loading.categorias
+                          ? "Cargando categorías..."
+                          : "Seleccione una categoría"
+                      }
+                      disabled={(loading.categoriasVirtuales || loading.categorias) || !formData.plan}
+                      loading={loading.categoriasVirtuales || loading.categorias}
+                    />
+                  </div>
+                  <div className="col-md-6">
+                    <label
+                      htmlFor="especialidad"
+                      className="p-1 text-success-label fw-medium fs-6"
+                    >
+                      Especialidad:
+                    </label>
+                    <CustomSelect
+                      options={adaptarOpciones(
+                        options.especialidadesVirtuales || options.especialidades,
+                        "id_especialidad",
+                        "nombre"
+                      )}
+                      value={formData.especialidad}
+                      onChange={handleChange}
+                      name="especialidad"
+                      placeholder={
+                        loading.especialidadesVirtuales || loading.especialidades
+                          ? "Cargando especialidades..."
+                          : "Seleccione una especialidad"
+                      }
+                      disabled={(loading.especialidadesVirtuales || loading.especialidades) || !formData.categoria}
+                      loading={loading.especialidadesVirtuales || loading.especialidades}
+                    />
+                  </div>
+                </div>
+              </>
+            ) : formData.searchMethod === "porNombre" ? (
+              <>
+                {/* Campos para búsqueda por nombre */}
+                <div className="row mb-4">
+                  <div className="col-md-6">
+                    <label
+                      htmlFor="provincia"
+                      className="p-1 text-success-label fw-medium fs-6"
+                    >
+                      Provincia:
+                    </label>
+                    <CustomSelect
+                      options={adaptarOpciones(
+                        options.provincias,
+                        "id_provincia",
+                        "nombre"
+                      )}
+                      value={formData.provincia}
+                      onChange={handleChange}
+                      name="provincia"
+                      placeholder={
+                        loading.provincias
+                          ? "Cargando provincias..."
+                          : "Seleccione una provincia"
+                      }
+                      disabled={loading.provincias || !formData.plan}
+                      loading={loading.provincias}
+                    />
+                  </div>
+                  <div className="col-md-6">
+                    <label
+                      htmlFor="localidad"
+                      className="p-1 text-success-label fw-medium fs-6"
+                    >
+                      Localidad:
+                    </label>
+                    <CustomSelect
+                      options={adaptarOpciones(
+                        options.localidades,
+                        "id_localidad",
+                        "nombre"
+                      )}
+                      value={formData.localidad}
+                      onChange={handleChange}
+                      name="localidad"
+                      placeholder={
+                        loading.localidades
+                          ? "Cargando localidades..."
+                          : "Seleccione una localidad"
+                      }
+                      disabled={loading.localidades || !formData.provincia}
+                      loading={loading.localidades}
+                    />
+                  </div>
+                </div>
+
                 <div className="row mb-4">
                   <div className="col-md-6">
                     <label
@@ -257,6 +261,115 @@ const SearchStep = ({
                   </div>
                 </div>
               </>
+            ) : (
+              <>
+                {/* Campos para búsqueda normal */}
+                <div className="row mb-4">
+                  <div className="col-md-6">
+                    <label
+                      htmlFor="provincia"
+                      className="p-1 text-success-label fw-medium fs-6"
+                    >
+                      Provincia:
+                    </label>
+                    <CustomSelect
+                      options={adaptarOpciones(
+                        options.provincias,
+                        "id_provincia",
+                        "nombre"
+                      )}
+                      value={formData.provincia}
+                      onChange={handleChange}
+                      name="provincia"
+                      placeholder={
+                        loading.provincias
+                          ? "Cargando provincias..."
+                          : "Seleccione una provincia"
+                      }
+                      disabled={loading.provincias || !formData.plan}
+                      loading={loading.provincias}
+                    />
+                  </div>
+                  <div className="col-md-6">
+                    <label
+                      htmlFor="localidad"
+                      className="p-1 text-success-label fw-medium fs-6"
+                    >
+                      Localidad:
+                    </label>
+                    <CustomSelect
+                      options={adaptarOpciones(
+                        options.localidades,
+                        "id_localidad",
+                        "nombre"
+                      )}
+                      value={formData.localidad}
+                      onChange={handleChange}
+                      name="localidad"
+                      placeholder={
+                        loading.localidades
+                          ? "Cargando localidades..."
+                          : "Seleccione una localidad"
+                      }
+                      disabled={loading.localidades || !formData.provincia}
+                      loading={loading.localidades}
+                    />
+                  </div>
+                </div>
+
+                <div className="row mb-4">
+                  <div className="col-md-6">
+                    <label
+                      htmlFor="categoria"
+                      className="p-1 text-success-label fw-medium fs-6"
+                    >
+                      Categoría:
+                    </label>
+                    <CustomSelect
+                      options={adaptarOpciones(
+                        options.categorias,
+                        "id_categoria",
+                        "nombre"
+                      )}
+                      value={formData.categoria}
+                      onChange={handleChange}
+                      name="categoria"
+                      placeholder={
+                        loading.categorias
+                          ? "Cargando categorías..."
+                          : "Seleccione una categoría"
+                      }
+                      disabled={loading.categorias || !formData.localidad}
+                      loading={loading.categorias}
+                    />
+                  </div>
+                  <div className="col-md-6">
+                    <label
+                      htmlFor="especialidad"
+                      className="p-1 text-success-label fw-medium fs-6"
+                    >
+                      Especialidad:
+                    </label>
+                    <CustomSelect
+                      options={adaptarOpciones(
+                        options.especialidades,
+                        "id_especialidad",
+                        "nombre"
+                      )}
+                      value={formData.especialidad}
+                      onChange={handleChange}
+                      name="especialidad"
+                      placeholder={
+                        loading.especialidades
+                          ? "Cargando especialidades..."
+                          : "Seleccione una especialidad"
+                      }
+                      disabled={loading.especialidades || !formData.categoria}
+                      loading={loading.especialidades}
+                    />
+                  </div>
+                </div>
+              </>
             )}
 
             <div className="d-flex justify-content-center">
@@ -265,12 +378,18 @@ const SearchStep = ({
                 type="submit"
                 disabled={
                   !formData.plan ||
-                  !formData.provincia ||
-                  !formData.localidad ||
-                  !formData.categoria ||
-                  (formData.searchMethod === "normal"
-                    ? !formData.especialidad
-                    : !formData.nombrePrestador) ||
+                  (formData.searchMethod === "virtual"
+                    ? !formData.categoria || !formData.especialidad
+                    : formData.searchMethod === "porNombre"
+                      ? !formData.provincia ||
+                      !formData.localidad ||
+                      !formData.categoria ||
+                      !formData.nombrePrestador ||
+                      !formData.especialidad
+                      : !formData.provincia ||
+                      !formData.localidad ||
+                      !formData.categoria ||
+                      !formData.especialidad) ||
                   loading.prestadores
                 }
               >

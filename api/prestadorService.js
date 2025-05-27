@@ -80,6 +80,15 @@ const PrestadorService = {
     }
   },
 
+  getCategoriasVirtuales: async (idPlan, edit = false) => {
+    try {
+      return await PrestadorRepository.getCategoriasVirtuales(idPlan, edit);
+    } catch (error) {
+      console.error("Error al obtener categorías virtuales:", error);
+      throw error;
+    }
+  },
+
   /**
    * Obtiene especialidades filtradas por varios criterios
    * @async
@@ -100,6 +109,15 @@ const PrestadorService = {
       );
     } catch (error) {
       console.error("Error al obtener especialidades:", error);
+      throw error;
+    }
+  },
+
+  getNombresPrestadores: async () => {
+    try {
+      return await PrestadorRepository.getNombresPrestadores();
+    } catch (error) {
+      console.error("Error al obtener nombres de prestadores:", error);
       throw error;
     }
   },
@@ -136,6 +154,15 @@ const PrestadorService = {
         "Error al obtener especialidades por nombre de prestador:",
         error
       );
+      throw error;
+    }
+  },
+
+  getEspecialidadesVirtuales: async (idPlan, idCategoria, edit = false) => {
+    try {
+      return await PrestadorRepository.getEspecialidadesVirtuales(idPlan, idCategoria, edit);
+    } catch (error) {
+      console.error("Error al obtener especialidades:", error);
       throw error;
     }
   },
@@ -247,6 +274,15 @@ const PrestadorService = {
     }
   },
 
+  getPrestadoresVirtuales: async (idPlan, idCategoria, idEspecialidad, edit = false, page = 1, limit = 10) => {
+    try {
+      return await PrestadorRepository.getPrestadoresVirtuales(idPlan, idCategoria, idEspecialidad, edit, page, limit);
+    } catch (error) {
+      console.error("Error al obtener prestadores virtuales:", error);
+      throw error;
+    }
+  },
+
   /**
    * Obtiene nombres de prestadores filtrados por varios criterios
    * @async
@@ -297,6 +333,39 @@ const PrestadorService = {
     } catch (error) {
       console.error("Error en servicio getCartillaStream:", error);
       throw error;
+    }
+  },
+
+  /**
+   * Actualiza/reemplaza la portada PDF para un plan y provincia específicos
+   * @async
+   * @param {number} id_plan - ID del plan
+   * @param {number} id_provincia - ID de la provincia
+   * @param {Buffer} pdfFile - Buffer del archivo PDF
+   * @returns {Promise<Object>} - Promesa que resuelve a un objeto con el resultado de la operación
+   */
+  updatePortadaPDF: async (id_plan, id_provincia, pdfFile) => {
+    try {
+      // Validar que se proporcionó un archivo PDF
+      if (!pdfFile || !Buffer.isBuffer(pdfFile)) {
+        throw new Error("Archivo PDF no válido o faltante");
+      }
+
+      // Llamar al repositorio para realizar la actualización
+      const result = await PrestadorRepository.updatePortadaPDF(
+        id_plan,
+        id_provincia,
+        pdfFile
+      );
+
+      return {
+        success: true,
+        message: "Portada PDF actualizada exitosamente",
+        data: result
+      };
+    } catch (error) {
+      console.error("Error en servicio updatePortadaPDF:", error);
+      throw new Error(`Error al actualizar portada PDF: ${error.message}`);
     }
   },
 

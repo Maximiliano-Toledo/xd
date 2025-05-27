@@ -1,5 +1,6 @@
 import { FiSearch } from "react-icons/fi";
 import { RxLetterCaseCapitalize } from "react-icons/rx";
+import { MdOutlineSupportAgent } from "react-icons/md";
 
 const SearchMethodTabs = ({ searchMethod, onSearchMethodChange }) => {
     const methods = [
@@ -12,7 +13,12 @@ const SearchMethodTabs = ({ searchMethod, onSearchMethodChange }) => {
             key: "porNombre",
             label: "Búsqueda por nombre",
             icon: <RxLetterCaseCapitalize />
-        }
+        },
+        {
+            key: "virtual",
+            label: "Atención Virtual",
+            icon: <MdOutlineSupportAgent />
+        },
     ];
 
     return (

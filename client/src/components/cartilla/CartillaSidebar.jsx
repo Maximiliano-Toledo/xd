@@ -4,24 +4,28 @@ import { BsHospital, BsGlobe } from "react-icons/bs";
 const CartillaSidebar = () => {
     const sidebarLinks = [
         {
-            href: "#",
+            href: "https://ossacra.org.ar/telemedicina/",
+            target: "_blank",
             icon: <MdMedicalServices />,
-            text: "Médico en línea"
+            text: "Telemedicina"
         },
         {
-            href: "#",
+            href: "https://ossacra.org.ar/centros-medicos-propios/",
+            target: "_blank",
             icon: <BsHospital />,
             text: "Centros médicos propios"
         },
         {
-            href: "#",
+            href: "https://ossacra.org.ar/quiero-asociarme/",
+            target: "_blank",
             icon: <BsGlobe />,
-            text: "Quiero afiliarme"
+            text: "Quiero asociarme"
         },
         {
-            href: "#",
+            href: "https://ossacra.org.ar/la-farmacita/",
+            target: "_blank",
             icon: <MdHealthAndSafety />,
-            text: "Beneficios"
+            text: "La Farmacita"
         }
     ];
 
@@ -33,7 +37,7 @@ const CartillaSidebar = () => {
 
             <div className="sidebar-links">
                 {sidebarLinks.map((link, index) => (
-                    <a key={index} href={link.href} className="sidebar-link">
+                    <a key={index} href={link.href} target={link.target} className="sidebar-link">
                         <div className="sidebar-icon">
                             {link.icon}
                         </div>

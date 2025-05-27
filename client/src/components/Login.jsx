@@ -21,10 +21,11 @@ const Login = () => {
         try {
           const response = await checkAuth();
           if (isAuthenticated) {
-            const user = response.data;
-            const redirectPath = user?.role === 'admin' 
-              ? '/admin/dashboard' 
-              : '/user/dashboard';
+            // const user = response.data;
+            // const redirectPath = user?.role === 'admin' 
+            //   ? '/admin/dashboard' 
+            //   : '/user/dashboard';
+            const redirectPath = '/dashboard'; 
             navigate(redirectPath, { replace: true });
           }
         } catch (error) {
@@ -59,11 +60,11 @@ const Login = () => {
       if (response.data) {
         const user = response.data.user;
         if (user) {
-          // 3. Redirigir según el rol del usuario
-          const redirectPath = user.role === 'admin' 
-            ? '/admin/dashboard' 
-            : '/user/dashboard';
-          
+          // const user = response.data;
+            // const redirectPath = user?.role === 'admin' 
+            //   ? '/admin/dashboard' 
+            //   : '/user/dashboard';
+          const redirectPath = '/dashboard'; 
           navigate(redirectPath);
         } else {
           setError("No se pudo verificar la sesión. Intente nuevamente.");
