@@ -13,7 +13,12 @@ const csv = require("csv-parser");
 const { Transform } = require("stream");
 const { PDFDocument, rgb, StandardFonts } = require("pdf-lib");
 const fontkit = require("@pdf-lib/fontkit");
-const {phoneJsonToCSVFormat, formatPhoneForPDF, csvFormatToPhoneJson} = require("../utils/phoneFormatter");
+const {
+  phoneJsonToCSVFormat,
+  formatPhoneForPDF,
+  csvFormatToPhoneJson,
+  normalizeOldPhoneFormat  // Esta función ahora incluye la lógica avanzada
+} = require("../utils/phoneFormatter");
 
 /**
  * Carga un archivo de consulta SQL desde el directorio de consultas
@@ -28,18 +33,53 @@ const loadQuery = (fileName) =>
  * @type {Object}
  */
 const PrestadorRepository = {
+  // /**
+  //  * Obtiene todos los planes disponibles
+  //  * @async
+  //  * @returns {Promise<Array>} - Promesa que resuelve a un array con los planes
+  //  */
+  // getPlanes: async (edit = false) => {
+  //   const estado = edit ? 'Todos' : 'Activo';
+  //   try {
+  //     if (estado === 'Todos') {
+  //       return await pool.query("SELECT * FROM planes;");
+  //     }
+  //     return await pool.query("SELECT * FROM planes WHERE estado = ?;", [estado]);
+  //   } catch (error) {
+  //     console.error("Error al obtener planes:", error);
+  //     throw error;
+  //   }
+  // },
   /**
-   * Obtiene todos los planes disponibles
+   * Obtiene todos los planes disponibles ordenados
    * @async
-   * @returns {Promise<Array>} - Promesa que resuelve a un array con los planes
+   * @returns {Promise<Array>} - Promesa que resuelve a un array con los planes ordenados
    */
   getPlanes: async (edit = false) => {
     const estado = edit ? 'Todos' : 'Activo';
     try {
+      let query;
+      let params = [];
+
       if (estado === 'Todos') {
-        return await pool.query("SELECT * FROM planes;");
+        query = `
+        SELECT * FROM planes 
+        ORDER BY 
+          CASE WHEN orden IS NULL OR orden = 0 THEN 999999 ELSE orden END ASC,
+          id_plan ASC
+      `;
+      } else {
+        query = `
+        SELECT * FROM planes 
+        WHERE estado = ? 
+        ORDER BY 
+          CASE WHEN orden IS NULL OR orden = 0 THEN 999999 ELSE orden END ASC,
+          id_plan ASC
+      `;
+        params = [estado];
       }
-      return await pool.query("SELECT * FROM planes WHERE estado = ?;", [estado]);
+
+      return await pool.query(query, params);
     } catch (error) {
       console.error("Error al obtener planes:", error);
       throw error;
@@ -1029,7 +1069,11 @@ const PrestadorRepository = {
     const { delimiter = ",", batchSize = 1000, progressCallback } = options;
 
     let processedCount = 0;
+    let successfulCount = 0;
+    let failedCount = 0;
+    let warnings = [];
     let connection;
+
     try {
       connection = await pool.getConnection();
       await connection.beginTransaction();
@@ -1047,41 +1091,98 @@ const PrestadorRepository = {
           try {
             // Validación básica de campos requeridos
             if (!row.nombre_prestador || !row.plan || !row.especialidad) {
-              return callback(
-                new Error(
-                  `Fila ${processedCount + 1}: Faltan campos requeridos`
-                )
-              );
+              failedCount++;
+              warnings.push(`Fila ${processedCount + 1}: Faltan campos requeridos (nombre_prestador, plan, especialidad)`);
+              callback(); // Continuar sin procesar esta fila
+              return;
             }
 
-            // Normalizar el campo teléfonos
+            // Normalizar el campo teléfonos usando la función mejorada
             if (row.telefonos) {
-              row.telefonos = csvFormatToPhoneJson(row.telefonos);
+              try {
+                // Usar la función de normalización avanzada
+                row.telefonos = normalizeOldPhoneFormat(row.telefonos);
+
+                // Log para debugging (opcional, se puede remover en producción)
+                if (process.env.NODE_ENV === 'development') {
+                  console.log(`Teléfono normalizado en fila ${processedCount + 1}: "${row.telefonos}"`);
+                }
+              } catch (phoneError) {
+                // Si falla la normalización avanzada, usar el método CSV como fallback
+                console.warn(`Error normalizando teléfono en fila ${processedCount + 1}: ${phoneError.message}`);
+                warnings.push(`Fila ${processedCount + 1}: Teléfono normalizado con método básico`);
+
+                try {
+                  row.telefonos = csvFormatToPhoneJson(row.telefonos);
+                } catch (fallbackError) {
+                  console.warn(`Error en normalización básica: ${fallbackError.message}`);
+                  warnings.push(`Fila ${processedCount + 1}: No se pudo normalizar el teléfono, se mantiene formato original`);
+                  // Mantener el valor original si ambos métodos fallan
+                }
+              }
+            } else {
+              // Si no hay teléfonos, establecer un array vacío
+              row.telefonos = JSON.stringify([]);
+            }
+
+            // Validar y normalizar otros campos
+            const processedRow = {
+              plan: (row.plan || "").trim(),
+              categoria_prestador: (row.categoria_prestador || "").trim(),
+              especialidad: (row.especialidad || "").trim(),
+              provincia: (row.provincia || "").trim(),
+              localidad: (row.localidad || "").trim(),
+              nombre_prestador: (row.nombre_prestador || "").trim(),
+              direccion: (row.direccion || "").trim(),
+              telefonos: row.telefonos,
+              email: (row.email || "").trim(),
+              atencion_virtual: row.atencion_virtual || "No",
+              informacion_adicional: (row.informacion_adicional || "").trim(),
+              estado: (row.estado || "Activo").trim()
+            };
+
+            // Validaciones adicionales
+            if (processedRow.nombre_prestador.length < 2) {
+              failedCount++;
+              warnings.push(`Fila ${processedCount + 1}: Nombre del prestador demasiado corto`);
+              callback();
+              return;
+            }
+
+            if (processedRow.plan.length < 2) {
+              failedCount++;
+              warnings.push(`Fila ${processedCount + 1}: Plan inválido`);
+              callback();
+              return;
             }
 
             // Preparar valores para la inserción
             const values = [
-              row.plan || "",
-              row.categoria_prestador || "",
-              row.especialidad || "",
-              row.provincia || "",
-              row.localidad || "",
-              row.nombre_prestador || "",
-              row.direccion || "",
-              row.telefonos || "",
-              row.email || "",
-              row.atencion_virtual || "No",
-              row.informacion_adicional || "",
-              row.estado || "Activo",
+              processedRow.plan,
+              processedRow.categoria_prestador,
+              processedRow.especialidad,
+              processedRow.provincia,
+              processedRow.localidad,
+              processedRow.nombre_prestador,
+              processedRow.direccion,
+              processedRow.telefonos,
+              processedRow.email,
+              processedRow.atencion_virtual,
+              processedRow.informacion_adicional,
+              processedRow.estado,
             ];
 
             batchValues.push(values);
             processedCount++;
+            successfulCount++;
 
             // Notificar progreso cada 1000 registros
             if (progressCallback && processedCount % 1000 === 0) {
               progressCallback({
                 totalProcessed: processedCount,
+                successful: successfulCount,
+                failed: failedCount,
+                warnings: warnings.length,
                 batchNumber: Math.floor(processedCount / batchSize),
                 status: "processing",
               });
@@ -1096,7 +1197,10 @@ const PrestadorRepository = {
 
             callback();
           } catch (error) {
-            callback(error);
+            failedCount++;
+            warnings.push(`Fila ${processedCount + 1}: Error de procesamiento - ${error.message}`);
+            console.error(`Error procesando fila ${processedCount + 1}:`, error);
+            callback(); // Continuar con la siguiente fila
           }
         },
         flush(callback) {
@@ -1114,14 +1218,19 @@ const PrestadorRepository = {
         async transform(batch, encoding, callback) {
           try {
             await connection.query(
-              `INSERT INTO cartilla 
-              (plan, categoria_prestador, especialidad, provincia, localidad, 
-                nombre_prestador, direccion, telefonos, email, atencion_virtual, informacion_adicional, estado) 
-              VALUES ?`,
+              `INSERT INTO cartilla
+               (plan, categoria_prestador, especialidad, provincia, localidad,
+                nombre_prestador, direccion, telefonos, email, atencion_virtual, informacion_adicional, estado)
+               VALUES ?`,
               [batch]
             );
             callback();
           } catch (error) {
+            console.error('Error insertando batch en base de datos:', error);
+            // Contar los registros fallidos de este batch
+            failedCount += batch.length;
+            successfulCount -= batch.length;
+            warnings.push(`Error insertando lote de ${batch.length} registros: ${error.message}`);
             callback(error);
           }
         },
@@ -1133,16 +1242,29 @@ const PrestadorRepository = {
           .pipe(
             csv({
               separator: delimiter,
-              mapValues: ({ value }) => value.trim(),
-              skipLines: 0, // Asumiendo que no hay encabezados
+              mapValues: ({ value }) => value ? value.toString().trim() : '',
+              skipEmptyLines: true,
+              skipLinesWithError: true,
             })
           )
-          .on("error", reject)
+          .on("error", (error) => {
+            console.error('Error en stream de lectura CSV:', error);
+            reject(error);
+          })
           .pipe(csvTransformer)
-          .on("error", reject)
+          .on("error", (error) => {
+            console.error('Error en transformación CSV:', error);
+            reject(error);
+          })
           .pipe(dbInserter)
-          .on("error", reject)
-          .on("finish", resolve);
+          .on("error", (error) => {
+            console.error('Error en inserción a DB:', error);
+            reject(error);
+          })
+          .on("finish", () => {
+            console.log('Pipeline CSV completado exitosamente');
+            resolve();
+          });
       });
 
       // 3. Limpiar tablas de cartilla
@@ -1153,17 +1275,25 @@ const PrestadorRepository = {
 
       await connection.commit();
 
+      // Notificación final de progreso
       if (progressCallback) {
         progressCallback({
           totalProcessed: processedCount,
+          successful: successfulCount,
+          failed: failedCount,
+          warnings: warnings.length,
           status: "completed",
         });
       }
 
+      // Resultado detallado
       return {
         success: true,
         totalProcessed: processedCount,
-        message: `CSV procesado exitosamente. ${processedCount} registros cargados.`,
+        successful: successfulCount,
+        failed: failedCount,
+        warnings: warnings,
+        message: `CSV procesado exitosamente. ${successfulCount} registros cargados exitosamente, ${failedCount} fallaron.`,
       };
     } catch (error) {
       if (connection) await connection.rollback();
@@ -1173,6 +1303,9 @@ const PrestadorRepository = {
           error: error.message,
           status: "failed",
           totalProcessed: processedCount || 0,
+          successful: successfulCount || 0,
+          failed: failedCount || 0,
+          warnings: warnings.length || 0,
         });
       }
 
@@ -1347,7 +1480,7 @@ const PrestadorRepository = {
       let font;
       try {
         const fontBytes = await fsPromises.readFile(
-          path.join(__dirname, "..", "/fonts", "WorkSans-Regular.ttf")
+          path.join(__dirname, "..", "/assets/fonts", "WorkSans-Regular.ttf")
         );
         font = await pdfDoc.embedFont(fontBytes);
       } catch (e) {

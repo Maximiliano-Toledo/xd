@@ -1,0 +1,348 @@
+/* ===== ESTILOS PARA DASHBOARD PLAN ===== */
+
+/* Lista de planes */
+.plan-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 100px;
+    padding: 10px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+}
+
+/* Efecto cuando se está arrastrando sobre la lista */
+.plan-list:has(.plan-item.dragging) {
+    background-color: #f0f8e8;
+    border: 2px dashed #64A70B;
+}
+
+/* Item individual de plan */
+.plan-item {
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    user-select: none;
+}
+
+.plan-item:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-color: #64A70B;
+}
+
+.plan-item.dragging {
+    transform: rotate(5deg);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+    border-color: #64A70B;
+    background-color: #f9fff9;
+}
+
+/* Contenido del item */
+.plan-item-content {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    gap: 16px;
+}
+
+/* Handle para arrastrar */
+.drag-handle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    color: #666;
+    cursor: grab;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.drag-handle:hover {
+    background-color: #64A70B;
+    color: white;
+    transform: scale(1.1);
+}
+
+.drag-handle:active {
+    cursor: grabbing;
+}
+
+.plan-item.dragging .drag-handle {
+    background-color: #64A70B;
+    color: white;
+}
+
+/* Número de orden */
+.plan-order {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #64A70B, #4a7c08);
+    color: white;
+    border-radius: 50%;
+    font-weight: bold;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(100, 167, 11, 0.3);
+}
+
+/* Información del plan */
+.plan-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.plan-name {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+    line-height: 1.2;
+}
+
+.plan-details {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.plan-status {
+    display: flex;
+    align-items: center;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    gap: 4px;
+}
+
+.plan-status.active {
+    background-color: #e8f5e8;
+    color: #2e7d2e;
+    border: 1px solid #4caf50;
+}
+
+.plan-status.inactive {
+    background-color: #fff3e0;
+    color: #d84315;
+    border: 1px solid #ff9800;
+}
+
+.plan-id {
+    color: #666;
+    font-size: 0.9rem;
+    font-weight: 500;
+    background-color: #f5f5f5;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+/* Controles de movimiento */
+.plan-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.plan-controls .btn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.plan-controls .btn:hover:not(:disabled) {
+    background-color: #64A70B;
+    border-color: #64A70B;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.plan-controls .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Animaciones */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.plan-item {
+    animation: slideIn 0.3s ease-out;
+}
+
+.plan-item:nth-child(1) { animation-delay: 0s; }
+.plan-item:nth-child(2) { animation-delay: 0.1s; }
+.plan-item:nth-child(3) { animation-delay: 0.2s; }
+.plan-item:nth-child(4) { animation-delay: 0.3s; }
+.plan-item:nth-child(5) { animation-delay: 0.4s; }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .plan-item-content {
+        padding: 12px;
+        gap: 12px;
+    }
+
+    .plan-order {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+
+    .plan-name {
+        font-size: 1.1rem;
+    }
+
+    .plan-details {
+        gap: 12px;
+    }
+
+    .plan-controls {
+        flex-direction: row;
+        gap: 6px;
+    }
+
+    .plan-controls .btn {
+        width: 32px;
+        height: 32px;
+    }
+
+    .drag-handle {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+@media (max-width: 480px) {
+    .plan-item-content {
+        flex-wrap: wrap;
+        padding: 10px;
+    }
+
+    .plan-info {
+        width: 100%;
+        order: 2;
+    }
+
+    .plan-controls {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+        margin-top: 8px;
+    }
+
+    .drag-handle {
+        order: 1;
+    }
+
+    .plan-order {
+        order: 1;
+    }
+}
+
+/* Estados especiales */
+.plan-item:first-child .plan-controls button:first-child,
+.plan-item:last-child .plan-controls button:last-child {
+    opacity: 0.3;
+}
+
+/* Indicador de cambios */
+.badge.bg-warning {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Mejora visual para el área de drop */
+.plan-list:empty::before {
+    content: "Arrastra los planes aquí para reordenar";
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100px;
+    color: #999;
+    font-style: italic;
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+    background-color: #fafafa;
+}
+
+/* Transiciones suaves para reordenamiento */
+.plan-item {
+    transition: transform 0.2s ease;
+}
+
+/* Estilos para los botones de acción principales */
+.btn-search {
+    background: linear-gradient(135deg, #64A70B, #4a7c08);
+    border: none;
+    color: white;
+    font-weight: 600;
+    padding: 10px 20px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(100, 167, 11, 0.3);
+}
+
+.btn-search:hover:not(:disabled) {
+    background: linear-gradient(135deg, #4a7c08, #64A70B);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(100, 167, 11, 0.4);
+}
+
+.btn-search:disabled {
+    background: #ccc;
+    box-shadow: none;
+    transform: none;
+    cursor: not-allowed;
+}
+
+/* Estilo para la nota informativa */
+.bg-light {
+    background-color: #f8f9fa !important;
+    border-left: 4px solid #64A70B;
+}
+
+/* Mejoras visuales adicionales */
+.plan-item-content:hover .plan-order {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(100, 167, 11, 0.4);
+}
+
+.plan-item.dragging .plan-order {
+    transform: scale(1.2);
+    box-shadow: 0 6px 16px rgba(100, 167, 11, 0.5);
+}

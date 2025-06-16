@@ -107,6 +107,20 @@ export const useAbmApi = (entity) => {
     }
   };
 
+  const updatePlanOrder = async (orderData) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await ABMService.updatePlanesOrder(orderData);
+      return response;
+    } catch (err) {
+      setError(err.message || 'Error al actualizar el orden');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const update = async (id, formData) => {
     try {
       setLoading(true);
@@ -177,6 +191,7 @@ export const useAbmApi = (entity) => {
     remove,
     toggleStatus,
     createPrestador,
+    updatePlanOrder,
     updatePrestador,
     updatePrestadorStatus,
     getLocalidadesByProvincia,

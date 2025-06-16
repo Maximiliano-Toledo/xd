@@ -5,6 +5,7 @@
 
 const { AuthService } = require("../services/authService");
 const auditLogger = require("../utils/auditLogger");
+const { EmailService } = require('../services/emailService');
 
 /**
  * Controlador para operaciones de autenticación y autorización
@@ -89,6 +90,87 @@ const AuthController = {
       );
 
       res.status(201).json(response);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  },
+
+  getAllUsers: async (req, res) => {
+    const { page, limit } = req.query;
+    try {
+      const response = await AuthService.getAllUsers(page, limit);
+      res.status(200).json(response);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  },
+
+  editUser: async (req, res) => {
+    const { id } = req.params;
+    const { email = null, password = null } = req.body;
+
+    if (!id) {
+      return res.status(400).json({ error: "ID de usuario requerido" });
+    }
+
+    if (!email && !password) {
+      return res.status(400).json({ error: "Email o contraseña requeridos" });
+    }
+
+    try {
+      const response = await AuthService.editUser(id, email, password);
+      res.status(200).json(response);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  },
+
+  forgotPassword: async (req, res) => {
+    const { email } = req.body;
+    try {
+      // Generar el token y obtener la URL base desde las variables de entorno
+      const response = await AuthService.forgotPassword(email);
+      const resetUrl = process.env.PASSWORD_RESET_URL + 'restablecer-contrasena' || 'http://localhost:5173/restablecer-contrasena';
+      
+      // Enviar el correo electrónico
+      await EmailService.sendPasswordResetEmail(email, response.token, resetUrl);
+      
+      // Registrar el evento
+      await auditLogger.logAction(
+        response.userId,
+        'password_reset_request',
+        'users',
+        response.userId,
+        { email, timestamp: new Date() }
+      );
+
+      res.status(200).json({ 
+        message: 'Se ha enviado un correo con las instrucciones para restablecer tu contraseña' 
+      });
+    } catch (error) {
+      console.error('Error en forgotPassword:', error);
+      res.status(400).json({ error: error.message });
+    }
+  },
+
+  verifyTokenForgotPassword: async (req, res) => {
+    const { token } = req.query;
+    if (!token) {
+      return res.status(400).json({ error: 'Token no proporcionado' });
+    }
+    try {
+      const response = await AuthService.verifyTokenForgotPassword(token);
+      res.status(200).json(response);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  },
+
+  resetPassword: async (req, res) => {
+    const { token, newPassword } = req.body;
+    try {
+      const response = await AuthService.resetPassword(token, newPassword);
+      res.status(200).json(response);
     } catch (error) {
       res.status(400).json({ error: error.message });
     }

@@ -33,8 +33,13 @@ const AuthService = {
       throw new Error("Todos los campos son requeridos");
     }
 
-    const existingUser = await userRepository.findByEmail(email);
+    const existingUser = await userRepository.getUser(username);
     if (existingUser) {
+      throw new Error("El nombre de usuario ya está registrado");
+    }
+
+    const existingEmail = await userRepository.findByEmail(email);
+    if (existingEmail) {
       throw new Error("El email ya está registrado");
     }
 
@@ -94,10 +99,6 @@ const AuthService = {
       { expiresIn: refreshExpiresIn }
     );
 
-    // Depuración
-    console.log("Token generado para usuario ID:", user.id);
-    console.log("Secret usado:", secret ? "Secret configurado" : "Secret no configurado");
-
     return {
       accessToken,
       refreshToken,
@@ -113,35 +114,21 @@ const AuthService = {
     };
   },
 
-  /**
-   * Crea un token para recuperación de contraseña
-   * @async
-   * @param {string} email - Correo electrónico del usuario
-   * @returns {Promise<Object>} - Promesa que resuelve a un objeto con el resultado
-   * @throws {Error} - Si no se encuentra el usuario o hay un error
-   */
-  createToken: async (email) => {
-    try {
-      const user = await userRepository.findByEmail(email);
-      if (!user) {
-        throw new Error("No se encontró ningún usuario con ese email");
-      }
-
-      const token = bcrypt.hashSync(email + Date.now(), 10);
-
-      await userRepository.saveToken(user.id, token);
-
-      return {
-        success: true,
-        message: "Token creado correctamente",
-        token: token // Opcional
-      };
-    } catch (error) {
-      console.error('Error creating token:', error);
-      throw new Error(error.message || 'Error al crear token');
-    }
+  getAllUsers: async (page, limit) => {
+    const users = await userRepository.getAllUsers(page, limit);
+    return users;
   },
 
+  editUser: async (id, email, password) => {
+    try {
+      await userRepository.editUser(id, email, password);
+      return { success: true };
+    } catch (error) {
+      console.error('Error in editUser:', error);
+      throw new Error('Error editing user');
+    }
+  },
+ 
   /**
    * Verifica la validez de un token de acceso
    * @async
@@ -263,6 +250,60 @@ const AuthService = {
     } catch (error) {
       console.error("Error en verifyRole:", error);
       throw new Error(error.message || "Error verificando rol");
+    }
+  },
+
+  async forgotPassword(email) {
+    try{
+      const user = await userRepository.findByEmail(email);
+      if (!user) {
+        throw new Error('Usuario no encontrado');
+      }
+      const token = bcrypt.hashSync(email + Date.now(), 10);
+      userRepository.saveToken(user.id, token);
+      return {
+        success: true,
+        message: 'Token enviado correctamente',
+        token: token,
+        userId: user.id
+      }
+    } catch (error) {
+      console.error('Error in forgotPassword:', error);
+      throw new Error('Error updating password');
+    }
+  },
+
+  async verifyTokenForgotPassword(token) {
+    try{
+      const user = await userRepository.findByToken(token);
+      if (!user) {
+        throw new Error('Token inválido');
+      }
+      return {
+        success: true,
+        message: 'Token valido'
+      }
+    } catch (error) {
+      console.error('Error in verifyTokenForgotPassword:', error);
+      throw new Error('Error verifying token');
+    }
+  },
+
+  async resetPassword(token, newPassword) {
+    try{
+      const user = await userRepository.findByToken(token);
+      if (!user) {
+        throw new Error('Token inválido');
+      }
+      const hashedPassword = bcrypt.hashSync(newPassword, 12);
+      userRepository.updatePassword(user.id, hashedPassword);
+      return {
+        success: true,
+        message: 'Contraseña cambiada correctamente'
+      }
+    } catch (error) {
+      console.error('Error in resetPassword:', error);
+      throw new Error('Error updating password');
     }
   },
 

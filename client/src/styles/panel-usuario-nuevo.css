@@ -60,6 +60,12 @@
     animation: float 20s linear infinite;
 }
 
+.list-group-item.active {
+    color: #fff;
+    background-color: #64A70B;
+    border-color: #64A70B;
+}
+
 @keyframes float {
     0% {
         transform: translate(0, 0);

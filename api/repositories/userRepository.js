@@ -1,6 +1,38 @@
 const { pool } = require('../config/db');
 
 const userRepository = {
+
+    getAllUsers: async (page = 1, limit = 10) => {
+        const offset = (page - 1) * limit;
+        try {
+            const [totalRows] = await pool.query(
+                "CALL getCountUsers();"
+            );
+
+            const totalItems = totalRows[0][0].total || 0;
+            const [rows] = await pool.query(
+                "CALL GetUsersPaginados(?, ?);",
+                [limit, offset]
+            );
+            const totalPages = Math.ceil(totalItems / limit);
+
+            return {
+                items: rows[0],
+                pagination: {
+                    totalItems,
+                    itemsPerPage: limit,
+                    currentPage: page,
+                    totalPages,
+                    hasNextPage: page < totalPages,
+                    hasPrevPage: page > 1,
+                },
+            };
+        } catch (error) {
+            console.error('Error in getAllUsers:', error);
+            throw new Error('Error retrieving users');
+        }
+    },
+
     getUser: async (username) => {
         try {
             const [rows] = await pool.query(
@@ -41,6 +73,36 @@ const userRepository = {
                 sql: error.sql
             });
             throw new Error('Error creating user: ' + error.sqlMessage);
+        }
+    },
+
+    editUser: async (id, email, password) => {
+        try {
+            // Si viene solo el email o el password, se actualiza solo ese campo
+            if (!email && password) {
+                const hashPassword = await bcrypt.hash(password, 12);
+                await pool.query(
+                    "UPDATE users SET password = ? WHERE id = ?",
+                    [hashPassword, id]
+                );
+                return { success: true };
+            } else if (email && !password) {
+                await pool.query(
+                    "UPDATE users SET email = ? WHERE id = ?",
+                    [email, id]
+                );
+                return { success: true };
+            }
+
+            const hashPassword = await bcrypt.hash(password, 12);
+            await pool.query(
+                "UPDATE users SET email = ?, password = ? WHERE id = ?",
+                [email, hashPassword, id]
+            );
+            return { success: true };
+        } catch (error) {
+            console.error('Error in editUser:', error);
+            throw new Error('Error editing user');
         }
     },
 
@@ -101,7 +163,7 @@ const userRepository = {
                 "UPDATE users SET token = ? WHERE id = ?",
                 [token, userId]
             );
-            return { success: true };
+            return { success: true};
         } catch (error) {
             console.error('Error in saveToken:', error);
             throw new Error('Error saving token');
@@ -111,7 +173,7 @@ const userRepository = {
     findByToken: async (token) => {
         try {
             const [rows] = await pool.query(
-                "SELECT id, username, email, role FROM users WHERE token = ?",
+                "SELECT id, username, email, role FROM users WHERE BINARY token = ?",
                 [token]
             );
             return rows[0] || null;
@@ -124,7 +186,7 @@ const userRepository = {
     updatePassword: async (userId, newPassword) => {
         try {
             await pool.query(
-                "UPDATE users SET password = ? WHERE id = ?",
+                "UPDATE users SET password = ?, token = NULL WHERE id = ?",
                 [newPassword, userId]
             );
             return { success: true };

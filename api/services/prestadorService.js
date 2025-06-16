@@ -6,7 +6,12 @@
 const fs = require("fs");
 const path = require("path");
 const PrestadorRepository = require("../repositories/prestadorRepository");
-const { phoneJsonToCSVFormat, csvFormatToPhoneJson } = require("../utils/phoneFormatter");
+const {
+  phoneJsonToCSVFormat,
+  csvFormatToPhoneJson,
+  normalizeOldPhoneFormat,     // Esta función ahora incluye la lógica avanzada
+  isPhoneJsonFormat            // NUEVA FUNCIÓN
+} = require("../utils/phoneFormatter");
 
 // Asegurar que la carpeta /data exista
 const dataDir = path.join(__dirname, "../data");
@@ -393,12 +398,35 @@ const PrestadorService = {
    */
   postCrearPrestador: async (prestadorData) => {
     try {
-      // Asegurar que teléfonos esté en formato JSON
-      if (prestadorData.telefonos && typeof prestadorData.telefonos === 'string' && !prestadorData.telefonos.startsWith('[')) {
-        prestadorData.telefonos = csvFormatToPhoneJson(prestadorData.telefonos);
+      // Normalizar teléfonos usando la función avanzada
+      if (prestadorData.telefonos) {
+        if (typeof prestadorData.telefonos === 'string') {
+          // Si ya está en formato JSON, no hacer nada
+          if (isPhoneJsonFormat(prestadorData.telefonos)) {
+            // Ya está en formato correcto
+            console.log('Teléfonos ya están en formato JSON correcto');
+          } else {
+            // Usar la función de normalización (que ahora incluye lógica avanzada)
+            console.log('Normalizando teléfonos con función mejorada...');
+            prestadorData.telefonos = normalizeOldPhoneFormat(prestadorData.telefonos);
+          }
+        } else if (Array.isArray(prestadorData.telefonos)) {
+          // Si es un array, convertirlo a JSON string
+          prestadorData.telefonos = JSON.stringify(prestadorData.telefonos);
+        }
+      } else {
+        // Si no hay teléfonos, establecer array vacío
+        prestadorData.telefonos = JSON.stringify([]);
       }
 
-      // Resto de la función permanece igual
+      // Validar que los teléfonos estén en formato JSON válido
+      try {
+        JSON.parse(prestadorData.telefonos);
+      } catch (e) {
+        console.warn('Error validando formato JSON de teléfonos, usando formato por defecto');
+        prestadorData.telefonos = JSON.stringify([]);
+      }
+
       const result = await PrestadorRepository.createPrestadorCompleto(prestadorData);
       return result;
     } catch (error) {
@@ -406,6 +434,7 @@ const PrestadorService = {
       throw error;
     }
   },
+
 
   /**
    * Actualiza un prestador existente
@@ -416,12 +445,34 @@ const PrestadorService = {
    */
   postActualizarPrestador: async (id, prestadorData) => {
     try {
-      // Asegurar que teléfonos esté en formato JSON
-      if (prestadorData.telefonos && typeof prestadorData.telefonos === 'string' && !prestadorData.telefonos.startsWith('[')) {
-        prestadorData.telefonos = csvFormatToPhoneJson(prestadorData.telefonos);
+      // Normalizar teléfonos usando la función avanzada
+      if (prestadorData.telefonos) {
+        if (typeof prestadorData.telefonos === 'string') {
+          // Si ya está en formato JSON, no hacer nada
+          if (isPhoneJsonFormat(prestadorData.telefonos)) {
+            console.log('Teléfonos ya están en formato JSON correcto');
+          } else {
+            // Usar la función de normalización (que ahora incluye lógica avanzada)
+            console.log('Normalizando teléfonos con función mejorada...');
+            prestadorData.telefonos = normalizeOldPhoneFormat(prestadorData.telefonos);
+          }
+        } else if (Array.isArray(prestadorData.telefonos)) {
+          // Si es un array, convertirlo a JSON string
+          prestadorData.telefonos = JSON.stringify(prestadorData.telefonos);
+        }
       }
 
-      // Resto de la función permanece igual
+      // Validar que los teléfonos estén en formato JSON válido si se proporcionaron
+      if (prestadorData.telefonos) {
+        try {
+          JSON.parse(prestadorData.telefonos);
+        } catch (e) {
+          console.warn('Error validando formato JSON de teléfonos en actualización');
+          // En caso de error, no actualizar el campo de teléfonos
+          delete prestadorData.telefonos;
+        }
+      }
+
       return await PrestadorRepository.updatePrestador(id, prestadorData);
     } catch (error) {
       console.error("Error en servicio postActualizarPrestador:", error);
@@ -561,24 +612,58 @@ const PrestadorService = {
         throw new Error("Solo se permiten archivos CSV");
       }
 
+      // Validar tamaño del archivo (máximo 100MB)
+      if (file.size > 100 * 1024 * 1024) {
+        throw new Error("El archivo es demasiado grande (máximo 100MB)");
+      }
+
       // Mover el archivo a la carpeta de datos
       const destPath = path.join(dataDir, `upload_${Date.now()}.csv`);
       await fs.promises.rename(file.path, destPath);
 
+      console.log(`Iniciando procesamiento de CSV: ${file.originalname}`);
+      console.log(`Archivo guardado en: ${destPath}`);
+
       // Procesar el archivo con notificación de progreso
       const result = await PrestadorService.processMassiveCSV(destPath, {
-        progressCallback,
+        progressCallback: (progress) => {
+          // Enriquecer la información de progreso
+          const enrichedProgress = {
+            ...progress,
+            fileName: file.originalname,
+            fileSize: file.size,
+            timestamp: new Date().toISOString()
+          };
+
+          if (progressCallback) {
+            progressCallback(enrichedProgress);
+          }
+
+          // Log del progreso
+          if (progress.status === 'processing') {
+            console.log(`Procesando: ${progress.successful}/${progress.totalProcessed} exitosos, ${progress.failed} fallidos`);
+          }
+        },
         batchSize: 2000, // Tamaño de lote optimizado
+        delimiter: ',',   // Delimitador por defecto
       });
 
-      // Eliminar el archivo después de procesarlo (opcional)
+      // Eliminar el archivo después de procesarlo
       try {
         await fs.promises.unlink(destPath);
+        console.log(`Archivo temporal eliminado: ${destPath}`);
       } catch (cleanupError) {
         console.warn("No se pudo eliminar el archivo temporal:", cleanupError);
       }
 
-      return result;
+      console.log(`CSV procesado exitosamente: ${result.successful} registros cargados`);
+
+      return {
+        ...result,
+        fileName: file.originalname,
+        fileSize: file.size,
+        processingTime: new Date().toISOString()
+      };
     } catch (error) {
       console.error("Error en handleCSVUpload:", error);
 

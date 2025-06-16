@@ -227,3 +227,236 @@
 .prestador-card .phone-display-inline {
     font-size: 0.9rem;
 }
+
+/* Estilos para el componente PhoneDisplay */
+.phone-display-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.phone-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    transition: all 0.2s ease;
+}
+
+.phone-item:hover {
+    background-color: #e9ecef;
+    border-color: #dee2e6;
+}
+
+/* Estilos específicos para enlaces de WhatsApp */
+.phone-item.whatsapp-link {
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    background-color: #f0f8e8;
+    border-color: var(--color-primary, #64A70B);
+}
+
+.phone-item.whatsapp-link:hover {
+    background-color: #e8f5e8;
+    border-color: #4e8509;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(100, 167, 11, 0.2);
+}
+
+.phone-item.whatsapp-link:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(100, 167, 11, 0.5);
+}
+
+/* Estilos específicos para enlaces de llamada (tel:) */
+.phone-item.tel-link {
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    background-color: #f0f8e8;
+    border-color: var(--color-primary, #64A70B);
+}
+
+.phone-item.tel-link:hover {
+    background-color: #e8f5e8;
+    border-color: #4e8509;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(100, 167, 11, 0.2);
+}
+
+.phone-item.tel-link:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(100, 167, 11, 0.5);
+}
+
+.phone-icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+}
+
+.phone-icon {
+    font-size: 16px;
+    color: #6c757d;
+}
+
+.phone-icon.whatsapp {
+    color: var(--color-primary, #64A70B);
+}
+
+.phone-icon.mobile {
+    color: var(--color-primary, #64A70B);
+}
+
+.phone-icon.landline {
+    color: var(--color-primary, #64A70B);
+}
+
+.phone-icon.toll-free {
+    color: var(--color-primary, #64A70B);
+}
+
+.phone-icon.legacy {
+    color: #6c757d;
+}
+
+.phone-icon.default {
+    color: #6c757d;
+}
+
+.phone-details {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+}
+
+.phone-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Estilo especial para teléfonos no normalizados */
+/*.phone-item:has(.phone-icon.legacy) {*/
+/*    background-color: #fff3cd;*/
+/*    border-color: #ffeaa7;*/
+/*}*/
+
+/*.phone-item:has(.phone-icon.legacy) .phone-label {*/
+/*    color: #856404;*/
+/*    font-size: 9px;*/
+/*}*/
+
+/*.phone-item:has(.phone-icon.legacy) .phone-number {*/
+/*    color: #856404;*/
+/*}*/
+
+.phone-number {
+    font-size: 14px;
+    font-weight: 500;
+    color: #212529;
+    font-family: 'Courier New', monospace;
+}
+
+.no-phones {
+    color: #6c757d;
+    font-style: italic;
+    font-size: 14px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .phone-display-list {
+        gap: 6px;
+    }
+
+    .phone-item {
+        padding: 4px 6px;
+    }
+
+    .phone-icon {
+        font-size: 14px;
+    }
+
+    .phone-label {
+        font-size: 9px;
+    }
+
+    .phone-number {
+        font-size: 13px;
+    }
+}
+
+/* Animación para el hover de WhatsApp */
+@keyframes whatsapp-pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.phone-item.whatsapp-link:hover .phone-icon.whatsapp {
+    animation: whatsapp-pulse 0.6s ease-in-out;
+}
+
+/* Estilo adicional para indicar que es clickeable */
+.phone-action-icon {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+}
+
+.action-indicator {
+    font-size: 12px;
+    color: var(--color-primary, #64A70B);
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+}
+
+.phone-item:hover .action-indicator {
+    opacity: 1;
+}
+
+.whatsapp-indicator {
+    font-weight: bold;
+}
+
+.call-indicator {
+    font-size: 14px;
+}
+
+/* Remover los ::after ya que ahora usamos componentes React */
+.phone-item.whatsapp-link::after,
+.phone-item.tel-link::after {
+    display: none;
+}
+
+/* Animación para el hover de llamadas */
+@keyframes phone-ring {
+    0%, 100% {
+        transform: rotate(0deg);
+    }
+    25% {
+        transform: rotate(-5deg);
+    }
+    75% {
+        transform: rotate(5deg);
+    }
+}
+
+.phone-item.tel-link:hover .phone-icon {
+    animation: phone-ring 0.6s ease-in-out;
+}

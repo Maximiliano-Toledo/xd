@@ -14,6 +14,7 @@ const createEntityMethods = (entity) => ({
   [`updatePrestador`]: (id, data) => apiWrapper('post', `cartilla/actualizar-prestador/${id}`, data),
   [`updatePrestadorStatus`]: (data) => apiWrapper('post', `cartilla/actualizar-estado-prestador-por-nombre`, data),
   [`getLocalidadesByProvincia`]: (id) => apiWrapper('get', `abm/localidades/provincia/${id}`),
+  [`updatePlanesOrder`]: (orders) => apiWrapper('put', 'abm/order/planes', { orders }),
 });
 
 // Helper para capitalizar la primera letra

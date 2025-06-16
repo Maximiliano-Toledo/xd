@@ -1,0 +1,447 @@
+/* ===== ESTILOS PARA ATENCIÓN VIRTUAL ===== */
+
+.virtual-attention-container {
+    width: 100%;
+    margin-bottom: 24px;
+}
+
+.virtual-attention-header {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.virtual-attention-title {
+    color: var(--color-primary-dark, #3e6907);
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+}
+
+.virtual-attention-subtitle {
+    color: var(--color-text-light, #757575);
+    font-size: 0.9rem;
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* Contenedor principal de la tarjeta toggle */
+.virtual-attention-toggle-container {
+    position: relative;
+}
+
+.virtual-attention-card {
+    background: linear-gradient(135deg, #ffffff, #f8fffe);
+    border: 2px solid var(--color-gray, #e0e0e0);
+    border-radius: var(--border-radius-lg, 12px);
+    padding: 20px;
+    cursor: pointer;
+    transition: var(--transition, all 0.3s ease);
+    position: relative;
+    overflow: hidden;
+}
+
+.virtual-attention-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--color-gray, #e0e0e0), var(--color-gray-light, #f5f5f5));
+    transition: var(--transition);
+}
+
+.virtual-attention-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md, 0 3px 6px rgba(0, 0, 0, 0.16));
+    border-color: var(--color-primary-light, #8BC34A);
+}
+
+.virtual-attention-card.active {
+    border-color: var(--color-primary, #64A70B);
+    background: linear-gradient(135deg, #f0f7e6, #e8f5e8);
+    box-shadow: 0 4px 20px rgba(100, 167, 11, 0.2);
+}
+
+.virtual-attention-card.active::before {
+    background: linear-gradient(90deg, var(--color-primary, #64A70B), var(--color-primary-light, #8BC34A));
+}
+
+.virtual-attention-card.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Contenido principal de la tarjeta */
+.virtual-attention-card-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+/* Wrapper del icono */
+.virtual-attention-icon-wrapper {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--color-gray-light, #f5f5f5), #eeeeee);
+    transition: var(--transition);
+    flex-shrink: 0;
+}
+
+.virtual-attention-card.active .virtual-attention-icon-wrapper {
+    background: linear-gradient(135deg, var(--color-primary, #64A70B), var(--color-primary-dark, #3e6907));
+}
+
+.virtual-attention-icon {
+    font-size: 24px;
+    color: var(--color-text-light, #757575);
+    transition: var(--transition);
+}
+
+.virtual-attention-icon.active,
+.virtual-attention-card.active .virtual-attention-icon {
+    color: white;
+    transform: scale(1.1);
+}
+
+/* Información de atención virtual */
+.virtual-attention-info {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.virtual-attention-label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.virtual-attention-main-text {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-text, #333333);
+    transition: var(--transition);
+}
+
+.virtual-attention-card.active .virtual-attention-main-text {
+    color: var(--color-primary-dark, #3e6907);
+}
+
+.virtual-attention-status {
+    display: flex;
+    align-items: center;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: var(--transition);
+}
+
+.status-badge.virtual {
+    background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+    color: #0d47a1;
+    border: 1px solid #2196f3;
+}
+
+.status-badge.presential {
+    background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+    color: #e65100;
+    border: 1px solid #ff9800;
+}
+
+.virtual-attention-description {
+    font-size: 0.9rem;
+    color: var(--color-text-light, #757575);
+    display: flex;
+    align-items: center;
+    line-height: 1.4;
+}
+
+.virtual-attention-card.active .virtual-attention-description {
+    color: var(--color-primary-dark, #3e6907);
+}
+
+/* Toggle switch */
+.virtual-attention-toggle {
+    flex-shrink: 0;
+}
+
+.toggle-switch {
+    width: 60px;
+    height: 32px;
+    background-color: var(--color-gray, #e0e0e0);
+    border-radius: 20px;
+    position: relative;
+    transition: var(--transition);
+    cursor: pointer;
+}
+
+.toggle-switch.active {
+    background: linear-gradient(135deg, var(--color-primary, #64A70B), var(--color-primary-dark, #3e6907));
+}
+
+.toggle-slider {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    bottom: 2px;
+    border-radius: 18px;
+    transition: var(--transition);
+}
+
+.toggle-circle {
+    width: 28px;
+    height: 28px;
+    background-color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    transform: translateX(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-switch.active .toggle-circle {
+    transform: translateX(28px);
+    background: linear-gradient(135deg, #ffffff, #f0f0f0);
+}
+
+.toggle-circle svg {
+    font-size: 14px;
+    color: var(--color-text-light, #757575);
+    transition: var(--transition);
+}
+
+.toggle-switch.active .toggle-circle svg {
+    color: var(--color-primary, #64A70B);
+    transform: scale(1.2);
+}
+
+/* Beneficios de atención virtual */
+.virtual-attention-benefits {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px dashed var(--color-primary-light, #8BC34A);
+    background: linear-gradient(135deg, rgba(100, 167, 11, 0.05), rgba(100, 167, 11, 0.02));
+    border-radius: var(--border-radius-md, 8px);
+    padding: 12px;
+    animation: fadeInUp 0.3s ease-out;
+}
+
+.benefits-header {
+    display: flex;
+    align-items: center;
+    color: var(--color-primary-dark, #3e6907);
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+.benefits-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.benefit-item {
+    display: inline-flex;
+    align-items: center;
+    background-color: rgba(100, 167, 11, 0.1);
+    color: var(--color-primary-dark, #3e6907);
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.benefit-item svg {
+    font-size: 12px;
+}
+
+/* Animaciones */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+.virtual-attention-card.active .virtual-attention-icon-wrapper {
+    animation: pulse 2s infinite;
+}
+
+/* Estados de hover específicos */
+.virtual-attention-card:hover .virtual-attention-icon {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.virtual-attention-card:hover .toggle-circle {
+    transform: translateX(4px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.virtual-attention-card.active:hover .toggle-circle {
+    transform: translateX(24px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .virtual-attention-card {
+        padding: 16px;
+    }
+
+    .virtual-attention-card-content {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+    }
+
+    .virtual-attention-icon-wrapper {
+        width: 48px;
+        height: 48px;
+    }
+
+    .virtual-attention-icon {
+        font-size: 20px;
+    }
+
+    .virtual-attention-info {
+        align-items: center;
+        text-align: center;
+    }
+
+    .benefits-list {
+        justify-content: center;
+    }
+
+    .toggle-switch {
+        width: 50px;
+        height: 28px;
+    }
+
+    .toggle-circle {
+        width: 24px;
+        height: 24px;
+    }
+
+    .toggle-switch.active .toggle-circle {
+        transform: translateX(22px);
+    }
+}
+
+/* Accesibilidad */
+.virtual-attention-card:focus {
+    outline: 2px solid var(--color-primary, #64A70B);
+    outline-offset: 2px;
+}
+
+.virtual-attention-card:focus:not(:focus-visible) {
+    outline: none;
+}
+
+/* Estados de carga */
+.virtual-attention-card.loading {
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.virtual-attention-card.loading .virtual-attention-icon-wrapper {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Integración con formularios */
+.form-group .virtual-attention-container {
+    border: none;
+    background: none;
+    padding: 0;
+}
+
+/* Estilo para cuando está dentro de un card-body */
+.card-body .virtual-attention-container {
+    margin-bottom: 20px;
+}
+
+/* Mejoras visuales adicionales */
+.virtual-attention-card::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--color-gray, #e0e0e0);
+    transform: translateY(-50%);
+    transition: var(--transition);
+}
+
+.virtual-attention-card.active::after {
+    background: linear-gradient(135deg, var(--color-primary, #64A70B), var(--color-primary-light, #8BC34A));
+    box-shadow: 0 0 10px rgba(100, 167, 11, 0.5);
+}
+
+/* Efecto de ondas para el toggle activo */
+.toggle-switch.active::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: rgba(100, 167, 11, 0.3);
+    transform: translate(-50%, -50%);
+    animation: ripple 1.5s infinite;
+}
+
+@keyframes ripple {
+    0% {
+        transform: translate(-50%, -50%) scale(0.8);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1.4);
+        opacity: 0;
+    }
+}

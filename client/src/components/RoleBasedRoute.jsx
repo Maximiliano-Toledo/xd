@@ -1,28 +1,24 @@
 import { useEffect, useState } from 'react';
-import { Navigate, Outlet, useLocation } from 'react-router';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import useAuthStore from '../stores/authStore';
 
-const RoleBasedRoute = ({ allowedRoles }) => {
+const RoleBasedRoute = ({ allowedRoles, children }) => {
   const [isChecking, setIsChecking] = useState(true);
-  const { isAuthenticated, verifyRole } = useAuthStore();
+  const [hasAccess, setHasAccess] = useState(false);
+  const { isAuthenticated, user } = useAuthStore();
   const location = useLocation();
 
   useEffect(() => {
-    const verifyAccess = async () => {
-      await verifyRole(allowedRoles);
+    const verifyAccess = () => {
+      if (isAuthenticated && user?.role) {
+        const accessGranted = allowedRoles.includes(user.role);
+        setHasAccess(accessGranted);
+      }
       setIsChecking(false);
     };
-    
-    if (isAuthenticated) {
-      verifyAccess();
-    } else {
-      setIsChecking(false);
-    }
-  }, [allowedRoles, isAuthenticated, verifyRole]);
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
-  }
+    verifyAccess();
+  }, [allowedRoles, isAuthenticated, user?.role]);
 
   if (isChecking) {
     return (
@@ -34,7 +30,15 @@ const RoleBasedRoute = ({ allowedRoles }) => {
     );
   }
 
-  return <Outlet />;
+  if (!isAuthenticated) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  if (!hasAccess) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return children || <Outlet />;
 };
 
 export default RoleBasedRoute;

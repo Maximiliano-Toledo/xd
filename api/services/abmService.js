@@ -193,6 +193,8 @@ const ABMService = {
     async update(entityName, id, data) {
         const { table, idField, uniqueFields, displayName, nameField, cartillaField, hasCartillaUpdate } = this.getEntityConfig(entityName);
 
+        console.log(data, entityName)
+
         // Validar que id sea un número
         const numId = Number(id);
         if (isNaN(numId) || !Number.isInteger(numId) || numId <= 0) {
@@ -297,6 +299,44 @@ const ABMService = {
     async getLocalidadesByProvincia(id) {
         return await ABMRepository.getLocalidadesByProvincia(id);
     },
+
+    /**
+     * Actualiza el orden de los elementos de una entidad
+     * @async
+     * @param {string} entityName - Nombre de la entidad
+     * @param {Array} orders - Array con los IDs y órdenes [{id_plan: 1, orden: 1}, ...]
+     * @returns {Promise<Object>} - Promesa que resuelve a un objeto con el resultado
+     */
+    async updateOrder(entityName, orders) {
+        const { table, idField, displayName } = this.getEntityConfig(entityName);
+
+        // Validar que todos los elementos del array tengan la estructura correcta
+        for (const order of orders) {
+            if (!order[idField] || !order.orden) {
+                throw new Error(`Estructura de orden inválida. Se requiere ${idField} y orden`);
+            }
+
+            // Validar que el orden sea un número positivo
+            const orderNum = Number(order.orden);
+            if (isNaN(orderNum) || orderNum <= 0) {
+                throw new Error(`El orden debe ser un número positivo`);
+            }
+        }
+
+        try {
+            // Usar transacción para asegurar consistencia
+            const results = await ABMRepository.updateBulkOrder(table, idField, orders);
+
+            return {
+                success: true,
+                updated: orders.length,
+                message: `Orden de ${displayName} actualizado correctamente`
+            };
+        } catch (error) {
+            console.error(`Error al actualizar orden de ${entityName}:`, error);
+            throw error;
+        }
+    }
 };
 
 module.exports = ABMService;

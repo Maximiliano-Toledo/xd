@@ -32,6 +32,10 @@ body {
     overflow-x: hidden;
 }
 
+a {
+    text-decoration: none;
+}
+
 /* ===== FIX CRITICAL: LAYOUT PRINCIPAL ===== */
 .staff-layout {
     display: flex;

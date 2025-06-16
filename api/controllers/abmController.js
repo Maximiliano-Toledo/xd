@@ -115,9 +115,78 @@ const ABMController = {
                     case 'getLocalidadesByProvincia':
                         result = await ABMService.getLocalidadesByProvincia(req.params.id);
                         return res.status(200).json({ success: true, data: result });
+                    case 'updateOrder':
+                        if (!req.body.orders || !Array.isArray(req.body.orders)) {
+                            return res.status(400).json({
+                                success: false,
+                                error: 'Se requiere un array de órdenes'
+                            });
+                        }
+
+                        console.log(req.body)
+
+                        result = await ABMService.updateOrder("planes", req.body.orders);
+
+                        // Registrar la acción
+                        await auditLogger.logAction(
+                          req.user?.id || 0,
+                          'updateOrder',
+                          entityName,
+                          `bulk-update`,
+                          {
+                              requestData: req.body.orders,
+                              result,
+                              totalUpdated: req.body.orders.length
+                          }
+                        );
+
+                        return res.status(200).json({ success: true, data: result });
                     default:
                         return res.status(400).json({ success: false, error: 'Operación no soportada' });
                 }
+            } catch (error) {
+                handleError(res, error, entityName);
+            }
+        };
+    },
+
+    /**
+     * Actualiza el orden de los elementos de una entidad
+     * @param {string} entityName - Nombre de la entidad
+     * @returns {Function} - Función middleware para Express
+     */
+    updateOrderHandler(entityName) {
+        return async (req, res) => {
+            try {
+                const { orders } = req.body;
+
+                if (!Array.isArray(orders)) {
+                    return res.status(400).json({
+                        success: false,
+                        error: 'Los datos de orden deben ser un array'
+                    });
+                }
+
+                const result = await ABMService.updateOrder(entityName, orders);
+
+                // Registrar la acción
+                await auditLogger.logAction(
+                  req.user?.id || 0,
+                  'updateOrder',
+                  entityName,
+                  'bulk-order-update',
+                  {
+                      requestData: orders,
+                      result,
+                      totalUpdated: orders.length
+                  }
+                );
+
+                return res.status(200).json({
+                    success: true,
+                    message: `Orden de ${ABMService.getEntityConfig(entityName).displayName} actualizado correctamente`,
+                    data: result
+                });
             } catch (error) {
                 handleError(res, error, entityName);
             }

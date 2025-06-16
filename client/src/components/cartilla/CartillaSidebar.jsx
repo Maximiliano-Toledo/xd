@@ -1,8 +1,15 @@
 import { MdMedicalServices, MdHealthAndSafety } from "react-icons/md";
+import { FaHospitalUser } from "react-icons/fa6";
 import { BsHospital, BsGlobe } from "react-icons/bs";
 
 const CartillaSidebar = () => {
     const sidebarLinks = [
+        {
+            href: "http://132.226.241.113:8080/ords/ossacra/f?p=230:LOGIN_DESKTOP:2903865550092:::::",
+            target: "_blank",
+            icon: <FaHospitalUser />,
+            text: "Mi Autogestión"
+        },
         {
             href: "https://ossacra.org.ar/telemedicina/",
             target: "_blank",

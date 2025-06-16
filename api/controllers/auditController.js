@@ -4,6 +4,7 @@ const auditLogger = require('../utils/auditLogger');
 
 const AuditController = {
     async getLogs(req, res) {
+        const accessToken = req.cookies.accessToken;
         try {
             const limit = parseInt(req.query.limit) || 100;
             const offset = parseInt(req.query.offset) || 0;
@@ -16,18 +17,18 @@ const AuditController = {
             let totalCount;
 
             if (startDate && endDate) {
-                logs = await AuditRepository.getLogsByDateRange(startDate, endDate, limit, offset);
+                logs = await AuditRepository.getLogsByDateRange(accessToken, startDate, endDate, limit, offset);
                 // Falta implementar conteo para filtro de fecha
                 totalCount = logs.length; // Temporal
             } else if (action) {
-                logs = await AuditRepository.getLogsByAction(action, limit, offset);
-                totalCount = await AuditRepository.getLogCountByAction(action);
+                logs = await AuditRepository.getLogsByAction(accessToken, action, limit, offset);
+                totalCount = await AuditRepository.getLogCountByAction(accessToken, action);
             } else if (entityType) {
-                logs = await AuditRepository.getLogsByEntity(entityType, limit, offset);
-                totalCount = await AuditRepository.getLogCountByEntity(entityType);
+                logs = await AuditRepository.getLogsByEntity(accessToken, entityType, limit, offset);
+                totalCount = await AuditRepository.getLogCountByEntity(accessToken, entityType);
             } else {
-                logs = await AuditRepository.getLogs(limit, offset);
-                totalCount = await AuditRepository.getLogCount();
+                logs = await AuditRepository.getLogs(accessToken, limit, offset);
+                totalCount = await AuditRepository.getLogCount(accessToken);
             }
 
             // Enriquecer los datos con información de usuario si es posible
@@ -58,13 +59,14 @@ const AuditController = {
     },
 
     async getLogsByEntity(req, res) {
+        const accessToken = req.cookies.accessToken;
         try {
             const { entityType } = req.params;
             const limit = parseInt(req.query.limit) || 100;
             const offset = parseInt(req.query.offset) || 0;
 
-            const logs = await AuditRepository.getLogsByEntity(entityType, limit, offset);
-            const totalCount = await AuditRepository.getLogCountByEntity(entityType);
+            const logs = await AuditRepository.getLogsByEntity(accessToken, entityType, limit, offset);
+            const totalCount = await AuditRepository.getLogCountByEntity(accessToken, entityType);
 
             // Enriquecer los datos con información de usuario si es posible
             const enrichedLogs = await enrichLogsWithUserInfo(logs);
@@ -94,6 +96,7 @@ const AuditController = {
     },
 
     async getLogsByAction(req, res) {
+        const accessToken = req.cookies.accessToken;
         try {
             const { action } = req.params;
             const limit = parseInt(req.query.limit) || 100;
@@ -109,8 +112,8 @@ const AuditController = {
                 });
             }
 
-            const logs = await AuditRepository.getLogsByAction(action, limit, offset);
-            const totalCount = await AuditRepository.getLogCountByAction(action);
+            const logs = await AuditRepository.getLogsByAction(accessToken, action, limit, offset);
+            const totalCount = await AuditRepository.getLogCountByAction(accessToken, action);
 
             // Enriquecer los datos con información de usuario si es posible
             const enrichedLogs = await enrichLogsWithUserInfo(logs);
@@ -140,6 +143,7 @@ const AuditController = {
     },
 
     async getLogsByUser(req, res) {
+        const accessToken = req.cookies.accessToken;
         try {
             const { userId } = req.params;
             const limit = parseInt(req.query.limit) || 100;
@@ -154,7 +158,7 @@ const AuditController = {
                 });
             }
 
-            const logs = await AuditRepository.getLogsByUser(userIdNum, limit, offset);
+            const logs = await AuditRepository.getLogsByUser(accessToken, userIdNum, limit, offset);
 
             // Obtener información del usuario
             let userInfo = null;
@@ -196,6 +200,7 @@ const AuditController = {
     },
 
     async getLogsByEntityId(req, res) {
+        const accessToken = req.cookies.accessToken;
         try {
             const { entityType, entityId } = req.params;
             const limit = parseInt(req.query.limit) || 100;
@@ -210,7 +215,7 @@ const AuditController = {
                 });
             }
 
-            const logs = await AuditRepository.getLogsByEntityId(entityType, entityIdNum, limit, offset);
+            const logs = await AuditRepository.getLogsByEntityId(accessToken, entityType, entityIdNum, limit, offset);
 
             // Enriquecer los datos con información de usuario si es posible
             const enrichedLogs = await enrichLogsWithUserInfo(logs);
@@ -239,6 +244,7 @@ const AuditController = {
     },
 
     async getLogsByDateRange(req, res) {
+        const accessToken = req.cookies.accessToken;
         try {
             const { startDate, endDate } = req.query;
             const limit = parseInt(req.query.limit) || 100;
@@ -267,6 +273,7 @@ const AuditController = {
             endDateObj.setHours(23, 59, 59, 999);
 
             const logs = await AuditRepository.getLogsByDateRange(
+                accessToken,
                 startDateObj.toISOString(),
                 endDateObj.toISOString(),
                 limit,
@@ -304,21 +311,22 @@ const AuditController = {
     },
 
     async getAuditSummary(req, res) {
+        const accessToken = req.cookies.accessToken;
         try {
             // Obtener conteos generales
-            const totalLogs = await AuditRepository.getLogCount();
+            const totalLogs = await AuditRepository.getLogCount(accessToken);
 
             // Obtener conteos por tipo de operación
-            const createCount = await AuditRepository.getLogCountByAction(auditLogger.OPERATION_TYPES.CREATE);
-            const updateCount = await AuditRepository.getLogCountByAction(auditLogger.OPERATION_TYPES.UPDATE);
-            const deleteCount = await AuditRepository.getLogCountByAction(auditLogger.OPERATION_TYPES.DELETE);
-            const individualUploadCount = await AuditRepository.getLogCountByAction(auditLogger.OPERATION_TYPES.INDIVIDUAL_UPLOAD);
-            const bulkUploadCount = await AuditRepository.getLogCountByAction(auditLogger.OPERATION_TYPES.BULK_UPLOAD);
-            const downloadCsvCount = await AuditRepository.getLogCountByAction(auditLogger.OPERATION_TYPES.DOWNLOAD_CSV);
-            const downloadPdfCount = await AuditRepository.getLogCountByAction(auditLogger.OPERATION_TYPES.DOWNLOAD_PDF);
+            const createCount = await AuditRepository.getLogCountByAction(accessToken, auditLogger.OPERATION_TYPES.CREATE);
+            const updateCount = await AuditRepository.getLogCountByAction(accessToken, auditLogger.OPERATION_TYPES.UPDATE);
+            const deleteCount = await AuditRepository.getLogCountByAction(accessToken, auditLogger.OPERATION_TYPES.DELETE);
+            const individualUploadCount = await AuditRepository.getLogCountByAction(accessToken, auditLogger.OPERATION_TYPES.INDIVIDUAL_UPLOAD);
+            const bulkUploadCount = await AuditRepository.getLogCountByAction(accessToken, auditLogger.OPERATION_TYPES.BULK_UPLOAD);
+            const downloadCsvCount = await AuditRepository.getLogCountByAction(accessToken, auditLogger.OPERATION_TYPES.DOWNLOAD_CSV);
+            const downloadPdfCount = await AuditRepository.getLogCountByAction(accessToken, auditLogger.OPERATION_TYPES.DOWNLOAD_PDF);
 
             // Obtener los últimos 5 registros
-            const recentLogs = await AuditRepository.getLogs(5, 0);
+            const recentLogs = await AuditRepository.getLogs(accessToken, 5, 0);
             const enrichedRecentLogs = await enrichLogsWithUserInfo(recentLogs);
 
             // Formatear los detalles para respuesta API - USANDO EL NUEVO FORMATO OPTIMIZADO

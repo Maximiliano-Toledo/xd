@@ -21,7 +21,8 @@ import {
 } from "react-icons/fi";
 import {
   FaPowerOff,
-  FaStethoscope
+  FaStethoscope,
+  FaUserGroup
 } from "react-icons/fa6";
 import {
   CiFolderOn
@@ -38,10 +39,13 @@ import {
 import {
   LuLogOut
 } from "react-icons/lu";
+import { FaUserCheck, FaUserEdit } from "react-icons/fa";
 import Logo from "../components/utils/Logo";
 import "../styles/sidebar-nuevo.css";
+import useAuthStore from '../stores/authStore';
 
 export default function Sidebar({ children }) {
+  const { user } = useAuthStore();
   const location = useLocation();
   const navigate = useNavigate();
   const [activeSubmenu, setActiveSubmenu] = useState(null);
@@ -49,22 +53,18 @@ export default function Sidebar({ children }) {
   const [isMobile, setIsMobile] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
 
-  // Detectar cambios de tamaño de ventana con throttling para mejor performance
   const handleResize = useCallback(() => {
     const mobile = window.innerWidth <= 768;
     setIsMobile(mobile);
 
-    // En desktop, mantener el sidebar siempre visible
     if (!mobile) {
       setIsMobileMenuOpen(false);
     }
   }, []);
 
   useEffect(() => {
-    // Detectar el tamaño inicial
     handleResize();
 
-    // Throttled resize handler
     let timeoutId;
     const throttledResize = () => {
       clearTimeout(timeoutId);
@@ -78,14 +78,12 @@ export default function Sidebar({ children }) {
     };
   }, [handleResize]);
 
-  // Cerrar menú móvil al cambiar de ruta
   useEffect(() => {
     if (isMobile && isMobileMenuOpen) {
       setIsMobileMenuOpen(false);
     }
   }, [location.pathname, isMobile]);
 
-  // Prevenir scroll del body cuando el menú móvil está abierto
   useEffect(() => {
     if (isMobile && isMobileMenuOpen) {
       document.body.style.overflow = 'hidden';
@@ -93,7 +91,6 @@ export default function Sidebar({ children }) {
       document.body.style.overflow = 'auto';
     }
 
-    // Cleanup al desmontar el componente
     return () => {
       document.body.style.overflow = 'auto';
     };
@@ -124,7 +121,7 @@ export default function Sidebar({ children }) {
       icon: <RiFileList3Line />,
       label: "Vista",
       path: "/",
-      type: "link"
+      type: "external"
     },
     {
       key: "cargar",
@@ -147,7 +144,7 @@ export default function Sidebar({ children }) {
         {
           key: "subir",
           icon: <PiNumberSquareThreeLight />,
-          label: "Cargar Portada PDF",
+          label: "Carga Portada PDF",
           path: "/subir-portada-pdf"
         }
       ]
@@ -213,6 +210,30 @@ export default function Sidebar({ children }) {
       path: "/panel-usuario",
       type: "link"
     },
+    ...(user?.role === 'admin' ? [
+      {
+        key: "usuarios",
+        icon: <FaUserCheck />,
+        label: "Gestión de usuarios",
+        type: "submenu",
+        children: [
+        {
+          key: "crear-usuario",
+          icon: <FaUserEdit />,
+          label: "Crear usuario",
+          path: "/alta-usuario",
+          type: "link"
+        },
+        {
+          key: "usuarios",
+          icon: <FaUserGroup />,
+          label: "Gestión de usuarios",
+          path: "/listar-usuarios",
+          type: "link"
+        }
+      ]
+    }
+    ] : []),
     {
       key: "salir",
       icon: <LuLogOut />,
@@ -234,9 +255,8 @@ export default function Sidebar({ children }) {
   const handleMenuClick = useCallback((item) => {
     if (item.type === "submenu") {
       toggleSubmenu(item.key);
-    } else {
+    } else if (item.type !== "external") {
       navigate(item.path);
-      // Cerrar menú en móvil al navegar
       if (isMobile) {
         setIsMobileMenuOpen(false);
       }
@@ -245,7 +265,6 @@ export default function Sidebar({ children }) {
 
   const handleSubmenuClick = useCallback((path) => {
     navigate(path);
-    // Cerrar menú en móvil al navegar
     if (isMobile) {
       setIsMobileMenuOpen(false);
     }
@@ -262,10 +281,49 @@ export default function Sidebar({ children }) {
     const isSubmenuActive = item.type === "submenu" &&
       item.children?.some(child => location.pathname === child.path);
 
-    if (item.type === "submenu") {
-      // En modo colapsado, no mostrar submenús
+    if (item.type === "external") {
       if (collapsed) {
-        // Mostrar solo el icono principal y navegar al primer hijo
+        return (
+          <a
+            key={item.key}
+            className={`menu-item collapsed-item ${isActive ? 'active' : ''} ${item.className || ''}`}
+            href={item.path}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={item.label}
+          >
+            <div className="menu-item-content">
+              <div className="menu-item-icon">
+                {item.icon}
+              </div>
+            </div>
+          </a>
+        );
+      }
+
+      return (
+        <a
+          key={item.key}
+          className={`menu-item ${isActive ? 'active' : ''} ${item.className || ''}`}
+          href={item.path}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <div className="menu-item-content">
+            <div className="menu-item-icon">
+              {item.icon}
+            </div>
+            <span className="menu-item-label">{item.label}</span>
+          </div>
+          <div className="menu-item-indicator">
+            <FiChevronRight />
+          </div>
+        </a>
+      );
+    }
+
+    if (item.type === "submenu") {
+      if (collapsed) {
         return (
           <div
             key={item.key}
@@ -316,7 +374,6 @@ export default function Sidebar({ children }) {
       );
     }
 
-    // Items normales
     if (collapsed) {
       return (
         <div
@@ -353,7 +410,6 @@ export default function Sidebar({ children }) {
     );
   };
 
-  // Calcular clases del sidebar
   const getSidebarClasses = () => {
     const classes = ['sidebar'];
 
@@ -366,7 +422,6 @@ export default function Sidebar({ children }) {
     return classes.join(' ');
   };
 
-  // Calcular clases del contenido principal
   const getMainContentClasses = () => {
     const classes = ['main-content'];
 
@@ -381,7 +436,6 @@ export default function Sidebar({ children }) {
 
   return (
     <div className="staff-layout">
-      {/* Mobile Header */}
       {isMobile && (
         <div className="mobile-header">
           <div className="mobile-header-content">
@@ -400,9 +454,7 @@ export default function Sidebar({ children }) {
         </div>
       )}
 
-      {/* Sidebar */}
       <aside className={getSidebarClasses()}>
-        {/* Botón colapsar solo en desktop */}
         {!isMobile && (
           <button
             className="sidebar-collapse-btn"
@@ -455,7 +507,6 @@ export default function Sidebar({ children }) {
         )}
       </aside>
 
-      {/* Overlay for mobile */}
       {isMobile && isMobileMenuOpen && (
         <div
           className="sidebar-overlay"
@@ -464,7 +515,6 @@ export default function Sidebar({ children }) {
         />
       )}
 
-      {/* Main Content */}
       <main className={getMainContentClasses()} role="main">
         <div className="main-content-wrapper">
           {children}

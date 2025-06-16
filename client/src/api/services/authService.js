@@ -19,6 +19,24 @@ const AuthService = {
     }
   },
 
+  getAllUsers: async (page, limit) => {
+    try {
+      const response = await api.get('/auth/get-users', { params: { page, limit } });
+      return response;
+    } catch (error) {
+      throw error.response?.data || error.message;
+    }
+  },
+
+  editUser: async (id, email, password) => {
+    try {
+      const response = await api.post(`/auth/edit-user/${id}`, { email, password });
+      return response;
+    } catch (error) {
+      throw error.response?.data || error.message;
+    }
+  },
+
   changePassword: async (oldPassword, newPassword) => {
     try {
       const response = await api.post('/auth/change-password', { oldPassword, newPassword });
@@ -70,6 +88,33 @@ const AuthService = {
       return response;
     } catch (error) {
       throw error.response?.data || { message: 'Error verificando roles' };
+    }
+  },
+
+  forgotPassword: async (email) => {
+    try {
+      const response = await api.post('/auth/forgot-password', { email });
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error.message;
+    }
+  },
+
+  verifyTokenForgotPassword: async (token) => {
+    try {
+      const response = await api.get('/auth/verify-token', { params: { token } });
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error.message;
+    }
+  },
+
+  resetPassword: async (token, newPassword) => {
+    try {
+      const response = await api.post('/auth/reset-password', { token, newPassword });
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error.message;
     }
   }
 

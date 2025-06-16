@@ -65,22 +65,9 @@ const PanelUsuario = () => {
 
     const statsCards = [
         {
-            title: 'Total de acciones',
-            value: userData.totalActions,
-            icon: <LuUserCog />,
-            color: 'green'
-        },
-        {
             title: 'Último acceso',
             value: userData.lastLogin,
             icon: <LuShield />,
-            color: 'green'
-        },
-        {
-            title: 'Última acción',
-            value: userData.lastAction,
-            subtitle: userData.actionDate,
-            icon: <LuBell />,
             color: 'green'
         }
     ];

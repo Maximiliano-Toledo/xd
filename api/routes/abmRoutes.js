@@ -17,54 +17,80 @@ const entities = [
 entities.forEach(entity => {
     // Rutas de lectura con limitador general
     router.get(
-        `/${entity.path}`,
-        generalLimiter,
-        authMiddleware(['admin']),
-        ABMController.createHandler('getAll', entity.name)
+      `/${entity.path}`,
+      generalLimiter,
+      authMiddleware(['admin']),
+      ABMController.createHandler('getAll', entity.name)
     );
 
     router.get(
-        `/${entity.path}/:id`,
-        generalLimiter,
-        authMiddleware(['admin']),
-        ABMController.createHandler('getById', entity.name)
-    );
-
-    router.get(
-        `/localidades/provincia/:id`,
-        generalLimiter,
-        authMiddleware(['admin']),
-        ABMController.createHandler('getLocalidadesByProvincia', entity.name)
+      `/${entity.path}/:id`,
+      generalLimiter,
+      authMiddleware(['admin']),
+      ABMController.createHandler('getById', entity.name)
     );
 
     // Rutas de escritura con limitador más estricto
     router.post(
-        `/${entity.path}`,
-        writeLimiter,
-        authMiddleware(['admin']),
-        ABMController.createHandler('create', entity.name)
+      `/${entity.path}`,
+      writeLimiter,
+      authMiddleware(['admin']),
+      ABMController.createHandler('create', entity.name)
     );
 
     router.put(
-        `/${entity.path}/:id`,
-        writeLimiter,
-        authMiddleware(['admin']),
-        ABMController.createHandler('update', entity.name)
+      `/${entity.path}/:id`,
+      writeLimiter,
+      authMiddleware(['admin']),
+      ABMController.createHandler('update', entity.name)
     );
 
     router.delete(
-        `/${entity.path}/:id`,
-        writeLimiter,
-        authMiddleware(['admin']),
-        ABMController.createHandler('delete', entity.name)
+      `/${entity.path}/:id`,
+      writeLimiter,
+      authMiddleware(['admin']),
+      ABMController.createHandler('delete', entity.name)
     );
 
     router.patch(
-        `/${entity.path}/:id/toggle-status`,
-        writeLimiter,
-        authMiddleware(['admin']),
-        ABMController.createHandler('toggleStatus', entity.name)
+      `/${entity.path}/:id/toggle-status`,
+      writeLimiter,
+      authMiddleware(['admin']),
+      ABMController.createHandler('toggleStatus', entity.name)
     );
 });
+
+// ✅ RUTAS ESPECÍFICAS FUERA DEL BUCLE forEach
+
+// Ruta para obtener localidades por provincia
+router.get(
+  '/localidades/provincia/:id',
+  generalLimiter,
+  authMiddleware(['admin']),
+  ABMController.createHandler('getLocalidadesByProvincia', 'localidades')
+);
+
+// ✅ RUTAS ESPECÍFICAS PARA ACTUALIZAR ORDEN
+// Opción 1: Rutas específicas para cada entidad que lo necesite
+router.put(
+  '/order/planes',
+  writeLimiter,
+  authMiddleware(['admin']),
+  ABMController.createHandler('updateOrder', 'planes')
+);
+
+router.put(
+  '/especialidades/order',
+  writeLimiter,
+  authMiddleware(['admin']),
+  ABMController.createHandler('updateOrder', 'especialidades')
+);
+
+router.put(
+  '/categorias/order',
+  writeLimiter,
+  authMiddleware(['admin']),
+  ABMController.createHandler('updateOrder', 'categorias')
+);
 
 module.exports = router;

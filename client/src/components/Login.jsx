@@ -21,10 +21,6 @@ const Login = () => {
         try {
           const response = await checkAuth();
           if (isAuthenticated) {
-            // const user = response.data;
-            // const redirectPath = user?.role === 'admin' 
-            //   ? '/admin/dashboard' 
-            //   : '/user/dashboard';
             const redirectPath = '/dashboard'; 
             navigate(redirectPath, { replace: true });
           }
@@ -60,10 +56,6 @@ const Login = () => {
       if (response.data) {
         const user = response.data.user;
         if (user) {
-          // const user = response.data;
-            // const redirectPath = user?.role === 'admin' 
-            //   ? '/admin/dashboard' 
-            //   : '/user/dashboard';
           const redirectPath = '/dashboard'; 
           navigate(redirectPath);
         } else {
@@ -178,8 +170,8 @@ const Login = () => {
 
                 <div className="text-center">
                   <p className="mb-1 forgot-password">Olvido su contraseña?</p>
-                  <a href="#" className="contact-admin">
-                    Comuníquese con el administrador
+                  <a href="/olvide-contrasena" className="contact-admin">
+                    Recuperar contraseña
                   </a>
                 </div>
               </form>

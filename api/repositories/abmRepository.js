@@ -1,3 +1,5 @@
+
+
 /**
  * @module repositories/abmRepository
  * @description Repositorio para operaciones CRUD genéricas
@@ -475,7 +477,67 @@ const ABMRepository = {
     async getLocalidadesByProvincia(id) {
         const [rows] = await this.execute(`CALL GetLocalidadesByProvincia(?)`, [id]);
         return rows;
-    }
+    },
+
+    /**
+     * Actualiza el orden de múltiples registros en una tabla
+     * @async
+     * @param {string} table - Nombre de la tabla
+     * @param {string} idField - Nombre del campo ID
+     * @param {Array} orders - Array con los IDs y órdenes
+     * @returns {Promise<Object>} - Promesa que resuelve al resultado de la operación
+     */
+    async updateBulkOrder(table, idField, orders) {
+        const safeTable = this.validateTable(table);
+        const safeIdField = this.validateField(idField);
+
+        let connection;
+        try {
+            connection = await pool.getConnection();
+            await connection.beginTransaction();
+
+            // Verificar si la tabla tiene columna 'orden'
+            const [columns] = await connection.query(
+              `SHOW COLUMNS FROM ?? LIKE 'orden'`,
+              [safeTable]
+            );
+
+            if (columns.length === 0) {
+                // Si no existe la columna orden, crearla
+                await connection.query(
+                  `ALTER TABLE ?? ADD COLUMN orden INT DEFAULT 0`,
+                  [safeTable]
+                );
+            }
+
+            // Actualizar cada registro con su nuevo orden
+            let updatedCount = 0;
+            for (const orderItem of orders) {
+                const [result] = await connection.query(
+                  `UPDATE ?? SET orden = ? WHERE ?? = ?`,
+                  [safeTable, orderItem.orden, safeIdField, orderItem[safeIdField]]
+                );
+
+                if (result.affectedRows > 0) {
+                    updatedCount++;
+                }
+            }
+
+            await connection.commit();
+
+            return {
+                success: true,
+                updatedCount,
+                totalProcessed: orders.length
+            };
+        } catch (error) {
+            if (connection) await connection.rollback();
+            console.error(`Error en updateBulkOrder para ${table}:`, error);
+            throw error;
+        } finally {
+            if (connection) connection.release();
+        }
+    },
 };
 
 module.exports = ABMRepository;

@@ -42,11 +42,29 @@ app.use(helmet.frameguard({ action: 'deny' }));
 app.use(helmet.referrerPolicy({ policy: 'same-origin' }));
 app.use(helmet.permittedCrossDomainPolicies());
 
+const allowedOrigins = process.env.CORS_ORIGINS?.split(',') || [];
+
 const corsOptions = {
-    origin: 'http://localhost:5173',
+    origin: (origin, callback) => {
+        // Permitir solicitudes sin origen (como móviles o curl)
+        if (!origin) return callback(null, true);
+        
+        // Verificar coincidencia exacta o subdominios
+        const isAllowed = allowedOrigins.some(allowedOrigin => {
+            return origin === allowedOrigin || 
+                   (allowedOrigin.startsWith('http') && 
+                    new URL(origin).hostname.endsWith(new URL(allowedOrigin).hostname));
+        });
+
+        if (isAllowed || process.env.NODE_ENV === 'development') {
+            callback(null, true);
+        } else {
+            callback(new Error('Origen no permitido por CORS'));
+        }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 };
 
 app.use(cookieParser());
