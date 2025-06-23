@@ -25,7 +25,6 @@ const PhoneDisplay = ({ phones, className = '' }) => {
 
       return [];
     } catch (error) {
-      console.error('Error parsing phones:', error);
       // Si hay error al parsear, tratarlo como formato legacy
       return [{ numero: phoneData, tipo: 'legacy', isNormalized: false }];
     }

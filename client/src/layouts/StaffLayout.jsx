@@ -19,6 +19,7 @@ const CargaPortadaPDFPage = lazy(() =>
 );
 const InfoPage = lazy(() => import("../containers/pages/InfoPage"));
 const ManualUsuario = lazy(() => import("../components/info/ManualUsuario"));
+const AnexoCargaMasiva = lazy(() => import("../components/info/AnexoCargaMasiva"));
 const EspecialidadPage = lazy(() =>
   import("../containers/pages/EspecialidadPage")
 );
@@ -202,6 +203,11 @@ const routesConfig = [
     path: "/manual-de-usuario",
     component: ManualUsuario,
     title: "Manual de Usuario",
+  },
+  {
+    path: "/anexo-carga-masiva",
+    component: AnexoCargaMasiva,
+    title: "Anexo manual de usuario - Carga Masiva",
   },
 ];
 

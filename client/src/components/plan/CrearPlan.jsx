@@ -53,7 +53,6 @@ const CrearPlan = () => {
                     reset({ plan: '' });
                     
                 } catch (error) {
-                    console.error("Error al crear el plan:", error);
                     Swal.fire({
                         title: 'Error al cargar el plan',
                         text: error.message || 'Ha ocurrido un error al intentar crear el plan.',

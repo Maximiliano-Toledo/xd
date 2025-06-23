@@ -22,7 +22,7 @@ export const CartillaService = {
   getCategorias: (planId, localidadId) =>
     apiWrapper('get', `/cartilla/categorias/plan/${planId}/localidad/${localidadId}`),
 
-   getCategoriasVirtuales: (planId) =>
+  getCategoriasVirtuales: (planId) =>
     apiWrapper('get', `/cartilla/categoriasVirtuales/plan/${planId}`),
 
   getCategoriasVirtualesEdit: (planId) =>
@@ -64,8 +64,6 @@ export const CartillaService = {
       url.searchParams.append('page', page);
       url.searchParams.append('limit', limit);
 
-      console.log("URL de solicitud para prestadores por nombre:", url.toString());
-
       const response = await fetch(url.toString(), {
         method: 'GET',
         headers: {
@@ -76,16 +74,13 @@ export const CartillaService = {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error(`Error HTTP ${response.status}: ${errorText}`);
         throw new Error(`Error fetching prestadores por nombre: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
-      console.log("Datos recibidos de prestadores por nombre:", data);
 
       return data;
     } catch (error) {
-      console.error('Error in CartillaService.getPrestadoresPorNombre:', error);
       throw error;
     }
   },
@@ -99,8 +94,6 @@ export const CartillaService = {
       url.searchParams.append('page', page);
       url.searchParams.append('limit', limit);
 
-      console.log("URL de solicitud para prestadores por nombre:", url.toString());
-
       const response = await fetch(url.toString(), {
         method: 'GET',
         headers: {
@@ -111,16 +104,13 @@ export const CartillaService = {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error(`Error HTTP ${response.status}: ${errorText}`);
         throw new Error(`Error fetching prestadores por nombre: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
-      console.log("Datos recibidos de prestadores por nombre:", data);
 
       return data;
     } catch (error) {
-      console.error('Error in CartillaService.getPrestadoresPorNombre:', error);
       throw error;
     }
   },
@@ -138,8 +128,6 @@ export const CartillaService = {
       url.searchParams.append('page', page);
       url.searchParams.append('limit', limit);
 
-      console.log("URL de solicitud:", url.toString());
-
       const response = await fetch(url.toString(), {
         method: 'GET',
         headers: {
@@ -150,16 +138,13 @@ export const CartillaService = {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error(`Error HTTP ${response.status}: ${errorText}`);
         throw new Error(`Error fetching prestadores: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
-      console.log("Datos recibidos de la API:", data);
 
       return data;
     } catch (error) {
-      console.error('Error in CartillaService.getPrestadores:', error);
       throw error;
     }
   },
@@ -173,8 +158,6 @@ export const CartillaService = {
       url.searchParams.append('page', page);
       url.searchParams.append('limit', limit);
 
-      console.log("URL de solicitud:", url.toString());
-
       const response = await fetch(url.toString(), {
         method: 'GET',
         headers: {
@@ -185,16 +168,13 @@ export const CartillaService = {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error(`Error HTTP ${response.status}: ${errorText}`);
         throw new Error(`Error fetching prestadores: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
-      console.log("Datos recibidos de la API:", data);
 
       return data;
     } catch (error) {
-      console.error('Error in CartillaService.getPrestadores:', error);
       throw error;
     }
   },
@@ -212,8 +192,6 @@ export const CartillaService = {
       url.searchParams.append('page', page);
       url.searchParams.append('limit', limit);
 
-      console.log("URL de solicitud:", url.toString());
-
       const response = await fetch(url.toString(), {
         method: 'GET',
         headers: {
@@ -224,16 +202,13 @@ export const CartillaService = {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error(`Error HTTP ${response.status}: ${errorText}`);
         throw new Error(`Error fetching prestadores virtuales: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
-      console.log("Datos recibidos de la API:", data);
 
       return data;
     } catch (error) {
-      console.error('Error in CartillaService.getPrestadoresVirtuales:', error);
       throw error;
     }
   },
@@ -247,8 +222,6 @@ export const CartillaService = {
       url.searchParams.append('page', page);
       url.searchParams.append('limit', limit);
 
-      console.log("URL de solicitud:", url.toString());
-
       const response = await fetch(url.toString(), {
         method: 'GET',
         headers: {
@@ -259,20 +232,17 @@ export const CartillaService = {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error(`Error HTTP ${response.status}: ${errorText}`);
         throw new Error(`Error fetching prestadores virtuales: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
-      console.log("Datos recibidos de la API:", data);
 
       return data;
     } catch (error) {
-      console.error('Error in CartillaService.getPrestadoresVirtualesEdit:', error);
       throw error;
     }
   },
-  
+
   // Descarga de la cartilla completa en CSV
   descargarCartilla: async () => {
     try {
@@ -287,39 +257,38 @@ export const CartillaService = {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error(`Error HTTP ${response.status}: ${errorText}`);
         throw new Error(`Error al descargar la cartilla: ${response.status} ${response.statusText}`);
       }
 
       // Convertimos la respuesta a blob para la descarga
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
-      
+
       // Creamos un enlace temporal para la descarga
       const a = document.createElement('a');
       a.style.display = 'none';
       a.href = url;
-      
+
       // Intentamos obtener el nombre del archivo desde la cabecera
       const contentDisposition = response.headers.get('content-disposition');
       let filename = 'cartilla.csv';
-      
+
       if (contentDisposition) {
         const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
         const matches = filenameRegex.exec(contentDisposition);
-        if (matches != null && matches[1]) { 
+        if (matches != null && matches[1]) {
           filename = matches[1].replace(/['"]/g, '');
         }
       }
-      
+
       a.download = filename;
       document.body.appendChild(a);
       a.click();
-      
+
       // Limpiamos
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
-      
+
       return { success: true, message: 'Archivo descargado correctamente' };
     } catch (error) {
       throw error;
@@ -332,18 +301,18 @@ export const CartillaService = {
       formData.append('idPlan', idPlan);
       formData.append('idProvincia', idProvincia);
       formData.append('pdf', pdfFile);
-      
+
       const response = await fetch(`${API_URL}/cartilla/subir-portada`, {
         method: 'POST',
         body: formData,
         credentials: 'include'
       });
-      
+
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`Error ${response.status}: ${errorText}`);
       }
-      
+
       const data = await response.json();
       return data;
     } catch (error) {
@@ -365,14 +334,14 @@ export const CartillaService = {
         const errorText = await response.text();
         throw new Error(`Error ${response.status}: ${errorText}`);
       }
-      
+
       // Obtener el blob
       const blob = await response.blob();
-      
+
       // Extraer nombre del archivo de forma más robusta
       let filename = 'cartilla.pdf';
       const contentDisposition = response.headers.get('content-disposition') || response.headers.get('Content-Disposition');
-      
+
       if (contentDisposition) {
         // Primero intentar con filename* (formato RFC 6266 para UTF-8)
         const utf8FilenameMatch = contentDisposition.match(/filename\*=UTF-8''([^;]+)/i);
@@ -392,23 +361,50 @@ export const CartillaService = {
       throw error;
     }
   },
-  
-  // Subir archivo CSV de cartilla
-  subirCartilla: async (file, onProgress) => {
+
+  /**
+   * Subir archivo CSV de cartilla
+   * MODIFICADO: Ahora acepta opciones para el parseo de teléfonos
+   * @param {File} file - Archivo CSV a subir
+   * @param {Object} options - Opciones de configuración
+   * @param {boolean} [options.enablePhoneParsing=true] - Si aplicar parseo automático de teléfonos
+   * @param {Function} [onProgress] - Función de callback para monitorear progreso (LEGACY)
+   * @returns {Promise<Object>} - Resultado de la operación
+   */
+  subirCartilla: async (file, options = {}, onProgress = null) => {
     try {
+      // NUEVO: Manejar parámetros flexibles para compatibilidad
+      // Si el segundo parámetro es una función, es el callback legacy
+      let actualOptions = {};
+      let progressCallback = null;
+
+      if (typeof options === 'function') {
+        // Uso legacy: subirCartilla(file, onProgress)
+        progressCallback = options;
+        actualOptions = { enablePhoneParsing: true }; // Default para legacy
+      } else {
+        // Uso nuevo: subirCartilla(file, options, onProgress)
+        actualOptions = options;
+        progressCallback = onProgress;
+      }
+
       const formData = new FormData();
       formData.append('file', file);
+
+      // NUEVO: Agregar el parámetro de parseo de teléfonos
+      const enablePhoneParsing = actualOptions.enablePhoneParsing !== false; // Default true
+      formData.append('enablePhoneParsing', enablePhoneParsing.toString());
 
       // Usamos XMLHttpRequest para poder monitorear el progreso
       return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
-        
+
         // Configurar evento de progreso si se proporciona función de callback
-        if (typeof onProgress === 'function') {
+        if (typeof progressCallback === 'function') {
           xhr.upload.addEventListener('progress', (event) => {
             if (event.lengthComputable) {
               const percentComplete = Math.round((event.loaded / event.total) * 100);
-              onProgress({
+              progressCallback({
                 loaded: event.loaded,
                 total: event.total,
                 percent: percentComplete
@@ -416,18 +412,17 @@ export const CartillaService = {
             }
           });
         }
-        
+
         xhr.open('POST', `${API_URL}/cartilla/subir-cartilla`);
-        
+
         // Asegurarse de incluir las cookies en la solicitud para autenticación
         xhr.withCredentials = true;
-        
+
         xhr.onload = function() {
           if (xhr.status >= 200 && xhr.status < 300) {
             try {
               const data = JSON.parse(xhr.responseText);
               resolve(data);
-              console.log('Respuesta del servidor:', data);
             } catch (error) {
               reject(new Error('Error al procesar la respuesta del servidor'));
             }
@@ -440,19 +435,18 @@ export const CartillaService = {
             }
           }
         };
-        
+
         xhr.onerror = function() {
           reject(new Error('Error de red al subir el archivo'));
         };
-        
+
         xhr.send(formData);
       });
     } catch (error) {
-      console.error('Error in CartillaService.subirCartilla:', error);
       throw error;
     }
   },
-  
+
   // Obtener la lista de prestadores en la cartilla (con paginación)
   getPrestadoresCartilla: async (page = 1, limit = 10) => {
     try {
@@ -470,14 +464,12 @@ export const CartillaService = {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error(`Error HTTP ${response.status}: ${errorText}`);
         throw new Error(`Error fetching prestadores cartilla: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
       return data;
     } catch (error) {
-      console.error('Error in CartillaService.getPrestadoresCartilla:', error);
       throw error;
     }
   }

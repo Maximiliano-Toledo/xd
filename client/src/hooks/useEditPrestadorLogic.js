@@ -140,7 +140,6 @@ export const useEditarPrestadorLogic = () => {
         confirmButtonColor: "#64A70B"
       });
     } catch (error) {
-      console.error("Error al normalizar teléfonos:", error);
       Swal.fire({
         title: "Error al normalizar",
         text: "No se pudieron normalizar los teléfonos. Por favor, inténtelo manualmente.",
@@ -209,7 +208,6 @@ export const useEditarPrestadorLogic = () => {
       });
 
       if (result.isConfirmed) {
-        console.log("Campos que se van a actualizar:", changedFields);
 
         await updatePrestador(selectedPrestador.id_prestador, changedFields);
 
@@ -228,7 +226,6 @@ export const useEditarPrestadorLogic = () => {
         setMostrarOpcionesEstado(false);
       }
     } catch (error) {
-      console.error("Error al actualizar prestador:", error);
       Swal.fire({
         title: "Error",
         text: "No se pudo actualizar el prestador",

@@ -1,0 +1,11 @@
+{
+  "name": "@fourdynam/phone-formatter",
+  "version": "1.0.0",
+  "description": "Universal phone number formatting and validation library",
+  "main": "index.js",
+  "dependencies": {},
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "keywords": ["phone", "argentina", "formatting", "validation"]
+}

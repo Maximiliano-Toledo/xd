@@ -33,7 +33,8 @@ const OPERATION_TYPES = {
     DISABLE_SPECIALTY: 'disable_specialty',
     EDIT_SPECIALTY: 'edit_specialty',
     CREATE_SPECIALTY: 'create_specialty',
-    TOGGLE_STATUS: 'toggle_status'
+    TOGGLE_STATUS: 'toggle_status',
+    UPDATE_ORDER: 'update_order'
 };
 
 /**
@@ -45,7 +46,7 @@ const ENTITY_TYPES = {
     PROVIDER: 'prestadores',
     PLAN: 'planes',
     SPECIALTY: 'especialidades',
-    CATEGORY: 'categorias',
+    CATEGORY: 'categorias_prestador',
     LOCATION: 'localidades',
     PROVINCE: 'provincias',
     CARTILLA: 'cartilla'
@@ -66,7 +67,8 @@ const FIELD_LABELS = {
     'categorias': 'Categorías',
     'especialidades': 'Especialidades',
     'localidad_nombre': 'Localidad',
-    'provincia_nombre': 'Provincia'
+    'provincia_nombre': 'Provincia',
+    'orden': 'Orden'
 };
 
 /**
@@ -87,14 +89,14 @@ const auditLogger = {
      */
     getOperationDescription(action, entityType, details = {}) {
         const entityNames = {
-            [ENTITY_TYPES.USER]: 'Usuario',
-            [ENTITY_TYPES.PROVIDER]: 'Prestador',
-            [ENTITY_TYPES.PLAN]: 'Plan',
-            [ENTITY_TYPES.SPECIALTY]: 'Especialidad',
-            [ENTITY_TYPES.CATEGORY]: 'Categoría',
-            [ENTITY_TYPES.LOCATION]: 'Localidad',
-            [ENTITY_TYPES.PROVINCE]: 'Provincia',
-            [ENTITY_TYPES.CARTILLA]: 'Cartilla'
+            [ENTITY_TYPES.USER]: 'usuario',
+            [ENTITY_TYPES.PROVIDER]: 'prestador',
+            [ENTITY_TYPES.PLAN]: 'plan',
+            [ENTITY_TYPES.SPECIALTY]: 'especialidad',
+            [ENTITY_TYPES.CATEGORY]: 'categoría',
+            [ENTITY_TYPES.LOCATION]: 'localidad',
+            [ENTITY_TYPES.PROVINCE]: 'provincia',
+            [ENTITY_TYPES.CARTILLA]: 'cartilla'
         };
 
         const actionDescriptions = {
@@ -117,7 +119,8 @@ const auditLogger = {
             [OPERATION_TYPES.DISABLE_SPECIALTY]: 'Deshabilitación de especialidad',
             [OPERATION_TYPES.EDIT_SPECIALTY]: 'Edición de especialidad',
             [OPERATION_TYPES.CREATE_SPECIALTY]: 'Creación de especialidad',
-            [OPERATION_TYPES.TOGGLE_STATUS]: `Cambio de estado de ${entityNames[entityType] || entityType}`
+            [OPERATION_TYPES.TOGGLE_STATUS]: `Cambio de estado de ${entityNames[entityType] || entityType}`,
+            [OPERATION_TYPES.UPDATE_ORDER]: `Cambio de orden de ${entityNames[entityType] || entityType}`
         };
 
         // Si hay una descripción personalizada en los detalles, usarla
@@ -171,19 +174,19 @@ const auditLogger = {
 
             // Insertar en la base de datos con los campos adicionales
             const [result] = await pool.query(
-                `INSERT INTO audit_logs 
-         (user_id, action, entity_type, entity_id, details, operation_description, timestamp, ip_address, user_agent) 
-         VALUES (?, ?, ?, ?, ?, ?, NOW(), ?, ?)`,
-                [
-                    userId,
-                    action,
-                    entityType,
-                    formattedEntityId,
-                    JSON.stringify(enrichedDetails),
-                    operationDescription,
-                    ipAddress,
-                    userAgent
-                ]
+              `INSERT INTO audit_logs
+               (user_id, action, entity_type, entity_id, details, operation_description, timestamp, ip_address, user_agent)
+               VALUES (?, ?, ?, ?, ?, ?, NOW(), ?, ?)`,
+              [
+                  userId,
+                  action,
+                  entityType,
+                  formattedEntityId,
+                  JSON.stringify(enrichedDetails),
+                  operationDescription,
+                  ipAddress,
+                  userAgent
+              ]
             );
 
             console.log(`[AUDIT] User ${userId} performed ${action} on ${entityType} ${entityId}`);
@@ -205,6 +208,130 @@ const auditLogger = {
     },
 
     /**
+     * Registra un cambio de estado con información específica
+     * @async
+     * @param {number} userId - ID del usuario
+     * @param {string} entityType - Tipo de entidad
+     * @param {number|string} entityId - ID de la entidad
+     * @param {string} oldStatus - Estado anterior
+     * @param {string} newStatus - Nuevo estado
+     * @param {Object} additionalData - Datos adicionales
+     * @param {string} [ipAddress=null] - Dirección IP
+     * @param {string} [userAgent=null] - Agente de usuario
+     * @returns {Promise<Object>} - Registro de auditoría
+     */
+    async logStatusChange(userId, entityType, entityId, oldStatus, newStatus, additionalData = {}, ipAddress = null, userAgent = null) {
+        const details = {
+            previousStatus: oldStatus,
+            newStatus: newStatus,
+            entityName: additionalData.entityName || null,
+            customDescription: `Cambio de estado de ${this.getEntityName(entityType)}: ${oldStatus} → ${newStatus}`,
+            ...additionalData
+        };
+
+        return this.logAction(
+          userId,
+          OPERATION_TYPES.TOGGLE_STATUS,
+          entityType,
+          entityId,
+          details,
+          ipAddress,
+          userAgent
+        );
+    },
+
+    /**
+     * Registra un cambio de orden con información específica
+     * @async
+     * @param {number} userId - ID del usuario
+     * @param {string} entityType - Tipo de entidad
+     * @param {Array} orderData - Datos del cambio de orden
+     * @param {string} [ipAddress=null] - Dirección IP
+     * @param {string} [userAgent=null] - Agente de usuario
+     * @returns {Promise<Object>} - Registro de auditoría
+     */
+    async logOrderChange(userId, entityType, orderData, ipAddress = null, userAgent = null) {
+        const details = {
+            orderChanges: orderData,
+            totalAffected: orderData.length,
+            customDescription: `Cambio de orden de ${this.getEntityName(entityType)}: ${orderData.length} elementos reordenados`
+        };
+
+        return this.logAction(
+          userId,
+          OPERATION_TYPES.UPDATE_ORDER,
+          entityType,
+          'bulk-update',
+          details,
+          ipAddress,
+          userAgent
+        );
+    },
+
+    /**
+     * Registra la creación de una entidad con datos específicos
+     * @async
+     * @param {number} userId - ID del usuario
+     * @param {string} entityType - Tipo de entidad
+     * @param {number|string} entityId - ID de la entidad
+     * @param {Object} entityData - Datos de la entidad creada
+     * @param {string} [ipAddress=null] - Dirección IP
+     * @param {string} [userAgent=null] - Agente de usuario
+     * @returns {Promise<Object>} - Registro de auditoría
+     */
+    async logEntityCreation(userId, entityType, entityId, entityData, ipAddress = null, userAgent = null) {
+        const details = {
+            createdData: entityData,
+            entityName: entityData.nombre || null,
+            customDescription: `Creación de ${this.getEntityName(entityType)}: ${entityData.nombre || `ID ${entityId}`}`
+        };
+
+        return this.logAction(
+          userId,
+          OPERATION_TYPES.CREATE,
+          entityType,
+          entityId,
+          details,
+          ipAddress,
+          userAgent
+        );
+    },
+
+    /**
+     * Registra una actualización de entidad con cambios específicos
+     * @async
+     * @param {number} userId - ID del usuario
+     * @param {string} entityType - Tipo de entidad
+     * @param {number|string} entityId - ID de la entidad
+     * @param {Object} oldData - Datos originales
+     * @param {Object} newData - Nuevos datos
+     * @param {string} [ipAddress=null] - Dirección IP
+     * @param {string} [userAgent=null] - Agente de usuario
+     * @returns {Promise<Object>} - Registro de auditoría
+     */
+    async logEntityUpdate(userId, entityType, entityId, oldData, newData, ipAddress = null, userAgent = null) {
+        const changes = this.calculateChanges(oldData, newData);
+
+        const details = {
+            changes,
+            originalData: oldData,
+            newData: newData,
+            entityName: newData.nombre || oldData.nombre || null,
+            customDescription: `Actualización de ${this.getEntityName(entityType)}: ${newData.nombre || oldData.nombre || `ID ${entityId}`}`
+        };
+
+        return this.logAction(
+          userId,
+          OPERATION_TYPES.UPDATE,
+          entityType,
+          entityId,
+          details,
+          ipAddress,
+          userAgent
+        );
+    },
+
+    /**
      * Registra una carga individual de prestador
      * @async
      * @param {number} userId - ID del usuario
@@ -221,13 +348,13 @@ const auditLogger = {
         };
 
         return this.logAction(
-            userId,
-            OPERATION_TYPES.INDIVIDUAL_UPLOAD,
-            ENTITY_TYPES.PROVIDER,
-            prestadorId,
-            details,
-            ipAddress,
-            userAgent
+          userId,
+          OPERATION_TYPES.INDIVIDUAL_UPLOAD,
+          ENTITY_TYPES.PROVIDER,
+          prestadorId,
+          details,
+          ipAddress,
+          userAgent
         );
     },
 
@@ -247,13 +374,13 @@ const auditLogger = {
         };
 
         return this.logAction(
-            userId,
-            OPERATION_TYPES.BULK_UPLOAD,
-            ENTITY_TYPES.PROVIDER,
-            'bulk-upload',
-            details,
-            ipAddress,
-            userAgent
+          userId,
+          OPERATION_TYPES.BULK_UPLOAD,
+          ENTITY_TYPES.PROVIDER,
+          'bulk-upload',
+          details,
+          ipAddress,
+          userAgent
         );
     },
 
@@ -274,13 +401,13 @@ const auditLogger = {
         };
 
         return this.logAction(
-            userId,
-            OPERATION_TYPES.DOWNLOAD_CSV,
-            ENTITY_TYPES.CARTILLA,
-            'csv-export',
-            details,
-            ipAddress,
-            userAgent
+          userId,
+          OPERATION_TYPES.DOWNLOAD_CSV,
+          ENTITY_TYPES.CARTILLA,
+          'csv-export',
+          details,
+          ipAddress,
+          userAgent
         );
     },
 
@@ -301,13 +428,13 @@ const auditLogger = {
         };
 
         return this.logAction(
-            userId,
-            OPERATION_TYPES.DOWNLOAD_PDF,
-            ENTITY_TYPES.CARTILLA,
-            'pdf-export',
-            details,
-            ipAddress,
-            userAgent
+          userId,
+          OPERATION_TYPES.DOWNLOAD_PDF,
+          ENTITY_TYPES.CARTILLA,
+          'pdf-export',
+          details,
+          ipAddress,
+          userAgent
         );
     },
 
@@ -334,13 +461,13 @@ const auditLogger = {
         };
 
         return this.logAction(
-            userId,
-            OPERATION_TYPES.EDIT_PROVIDER,
-            ENTITY_TYPES.PROVIDER,
-            prestadorId,
-            details,
-            ipAddress,
-            userAgent
+          userId,
+          OPERATION_TYPES.EDIT_PROVIDER,
+          ENTITY_TYPES.PROVIDER,
+          prestadorId,
+          details,
+          ipAddress,
+          userAgent
         );
     },
 
@@ -369,13 +496,13 @@ const auditLogger = {
         }
 
         return this.logAction(
-            userId,
-            operation,
-            ENTITY_TYPES.PLAN,
-            planId,
-            details,
-            ipAddress,
-            userAgent
+          userId,
+          operation,
+          ENTITY_TYPES.PLAN,
+          planId,
+          details,
+          ipAddress,
+          userAgent
         );
     },
 
@@ -404,13 +531,13 @@ const auditLogger = {
         }
 
         return this.logAction(
-            userId,
-            operation,
-            ENTITY_TYPES.SPECIALTY,
-            specialtyId,
-            details,
-            ipAddress,
-            userAgent
+          userId,
+          operation,
+          ENTITY_TYPES.SPECIALTY,
+          specialtyId,
+          details,
+          ipAddress,
+          userAgent
         );
     },
 
@@ -441,198 +568,24 @@ const auditLogger = {
     },
 
     /**
-     * Formatea los detalles de un registro de auditoría para mostrar en la API (formato antiguo)
-     * @param {Object} auditLog - Registro de auditoría
-     * @returns {Object} - Detalles formateados para API
-     */
-    formatAuditDetails(auditLog) {
-        try {
-            // Asegurar que tengamos detalles válidos
-            const details = typeof auditLog.details === 'string'
-                ? JSON.parse(auditLog.details)
-                : auditLog.details;
-
-            // Crear una versión simplificada para incluir en respuestas API
-            const formattedDetails = {
-                description: auditLog.operation_description || details.description || this.getOperationDescription(auditLog.action, auditLog.entity_type),
-                timestamp: auditLog.timestamp,
-                action: auditLog.action,
-                entityType: auditLog.entity_type,
-                entityId: auditLog.entity_id,
-                // Incluir información contextual relevante
-                context: {}
-            };
-
-            // Añadir contexto específico según el tipo de operación
-            switch (auditLog.action) {
-                case OPERATION_TYPES.INDIVIDUAL_UPLOAD:
-                    formattedDetails.context.prestadorNombre = details.prestadorData?.nombre || 'No especificado';
-                    formattedDetails.context.prestadorTipo = details.prestadorData?.tipo || 'No especificado';
-                    break;
-                case OPERATION_TYPES.BULK_UPLOAD:
-                    formattedDetails.context.registrosProcesados = details.totalProcessed || 0;
-                    formattedDetails.context.registrosExitosos = details.successful || 0;
-                    formattedDetails.context.registrosFallidos = details.failed || 0;
-                    break;
-                case OPERATION_TYPES.DOWNLOAD_CSV:
-                case OPERATION_TYPES.DOWNLOAD_PDF:
-                    formattedDetails.context.formato = details.format || 'No especificado';
-                    formattedDetails.context.filtros = details.filters || {};
-                    break;
-                case OPERATION_TYPES.EDIT_PROVIDER:
-                case OPERATION_TYPES.EDIT_PLAN:
-                case OPERATION_TYPES.EDIT_SPECIALTY:
-                    // Si hay cambios, incluir un resumen de ellos
-                    if (details.changes) {
-                        formattedDetails.context.cambios = Object.keys(details.changes).map(field => ({
-                            campo: field,
-                            valorAnterior: this.formatValue(details.changes[field].from),
-                            valorNuevo: this.formatValue(details.changes[field].to)
-                        }));
-                    }
-                    break;
-                case OPERATION_TYPES.TOGGLE_STATUS:
-                    formattedDetails.context.estadoAnterior = details.previousStatus || 'No especificado';
-                    formattedDetails.context.estadoNuevo = details.newStatus || 'No especificado';
-                    break;
-            }
-
-            return formattedDetails;
-        } catch (error) {
-            console.error('Error formatting audit details:', error);
-            return {
-                description: 'Error al formatear detalles de auditoría',
-                timestamp: auditLog.timestamp,
-                action: auditLog.action,
-                entityType: auditLog.entity_type
-            };
-        }
-    },
-
-    /**
-     * Formatea un valor para mostrarlo de forma amigable
+     * Obtiene el nombre de la entidad en español
      * @private
-     * @param {*} value - Valor a formatear
-     * @returns {string} - Valor formateado
-     */
-    formatValue(value) {
-        if (value === undefined || value === null) {
-            return 'No especificado';
-        }
-
-        if (typeof value === 'object') {
-            return JSON.stringify(value);
-        }
-
-        return String(value);
-    },
-
-    /**
-     * Formatea los nombres de campos según la tabla de origen
-     * @param {string} field - Nombre del campo
      * @param {string} entityType - Tipo de entidad
-     * @returns {string} - Nombre de campo formateado
+     * @returns {string} - Nombre en español
      */
-    getFieldDisplayName(field, entityType) {
-        // Mapeo global de campos
-        const fieldLabels = {
-            'nombre': 'Nombre',
-            'estado': 'Estado',
-            'email': 'Email',
-            'telefonos': 'Teléfonos',
-            'direccion': 'Dirección',
-            'informacion_adicional': 'Información adicional',
-            'id_localidad': 'ID Localidad',
-            'localidad': 'Localidad',
-            'id_provincia': 'ID Provincia',
-            'provincia': 'Provincia',
-            'plan': 'Plan',
-            'planes': 'Planes',
-            'categoria_prestador': 'Categoría',
-            'categorias': 'Categorías',
-            'especialidad': 'Especialidad',
-            'especialidades': 'Especialidades',
-            'previousStatus': 'Estado anterior',
-            'newStatus': 'Nuevo estado'
+    getEntityName(entityType) {
+        const entityNames = {
+            [ENTITY_TYPES.USER]: 'usuario',
+            [ENTITY_TYPES.PROVIDER]: 'prestador',
+            [ENTITY_TYPES.PLAN]: 'plan',
+            [ENTITY_TYPES.SPECIALTY]: 'especialidad',
+            [ENTITY_TYPES.CATEGORY]: 'categoría',
+            [ENTITY_TYPES.LOCATION]: 'localidad',
+            [ENTITY_TYPES.PROVINCE]: 'provincia',
+            [ENTITY_TYPES.CARTILLA]: 'cartilla'
         };
 
-        // Mapeos específicos por tipo de entidad
-        const entityFieldMappings = {
-            'prestadores': {
-                'id_prestador': 'ID Prestador',
-                // otros campos específicos...
-            },
-            'planes': {
-                'id_plan': 'ID Plan',
-                'oldName': 'Nombre anterior',
-                'newName': 'Nuevo nombre'
-            },
-            'especialidades': {
-                'id_especialidad': 'ID Especialidad'
-            },
-            'categorias_prestador': {
-                'id_categoria': 'ID Categoría'
-            }
-        };
-
-        // Primero buscar en el mapeo específico de la entidad
-        if (entityType && entityFieldMappings[entityType] && entityFieldMappings[entityType][field]) {
-            return entityFieldMappings[entityType][field];
-        }
-
-        // Si no se encuentra, usar el mapeo global
-        return fieldLabels[field] || field;
-    },
-
-    /**
-     * Formatea un array de relaciones para mostrar solo los nombres relevantes
-     * @param {Array} array - Array de relaciones (planes, especialidades, etc.)
-     * @param {string} nameField - Campo que contiene el nombre
-     * @returns {string} - Nombres separados por comas
-     */
-    formatRelationshipArray(array, nameField = 'nombre') {
-        if (!Array.isArray(array) || array.length === 0) return null;
-
-        // Intentar obtener el nombre de diferentes posibles campos
-        return array.map(item => {
-            if (item[nameField]) return item[nameField];
-            if (item['plan_nombre']) return item['plan_nombre'];
-            if (item['categoria_nombre']) return item['categoria_nombre'];
-            if (item['especialidad_nombre']) return item['especialidad_nombre'];
-            return item.id || item;
-        }).join(', ');
-    },
-
-    /**
-     * Obtiene el nombre de la entidad para mostrar
-     * @param {Object} auditLog - Registro de auditoría
-     * @param {Object} details - Detalles del registro
-     * @returns {string|null} - Nombre de la entidad o null si no se encuentra
-     */
-    getEntityName(auditLog, details) {
-        // Intentar obtener el nombre de varias posibles fuentes
-        if (details?.original?.nombre) {
-            return details.original.nombre;
-        }
-
-        if (details?.prestadorData?.nombre) {
-            return details.prestadorData.nombre;
-        }
-
-        if (details?.result?.nombre) {
-            return details.result.nombre;
-        }
-
-        if (details?.requestData?.nombre) {
-            return details.requestData.nombre;
-        }
-
-        if (details?.new?.prestador?.nombre) {
-            return details.new.prestador.nombre;
-        }
-
-        // Si no se encuentra en ningún lugar, devolver null
-        return null;
+        return entityNames[entityType] || entityType;
     },
 
     /**
@@ -641,8 +594,8 @@ const auditLogger = {
     formatAuditDetailsOptimized(auditLog) {
         try {
             const details = typeof auditLog.details === 'string'
-                ? JSON.parse(auditLog.details)
-                : auditLog.details;
+              ? JSON.parse(auditLog.details)
+              : auditLog.details;
 
             // Estructura base estandarizada
             const result = {
@@ -660,7 +613,7 @@ const auditLogger = {
                 entity: {
                     type: auditLog.entity_type,
                     id: auditLog.entity_id,
-                    name: this.getEntityName(auditLog, details)
+                    name: this.getEntityName_audit(auditLog, details)
                 },
 
                 changes: []
@@ -717,6 +670,7 @@ const auditLogger = {
 
         switch (action) {
             case 'create':
+            case 'individual_upload':
                 // Para creación de prestador
                 if (details.prestadorData) {
                     // Campos básicos
@@ -769,8 +723,8 @@ const auditLogger = {
                     const basicFields = ['nombre', 'direccion', 'telefonos', 'email', 'informacion_adicional', 'estado'];
                     basicFields.forEach(field => {
                         if (original[field] !== newData[field] &&
-                            !(original[field] === '' && newData[field] === '') &&
-                            !(original[field] === null && newData[field] === null)) {
+                          !(original[field] === '' && newData[field] === '') &&
+                          !(original[field] === null && newData[field] === null)) {
                             changes.push({
                                 field,
                                 label: this.getFieldDisplayName(field, 'prestadores'),
@@ -804,7 +758,7 @@ const auditLogger = {
                 }
                 break;
 
-            case 'toggleStatus':
+            case 'toggle_status':
                 // Para cambio de estado
                 if (details.previousStatus !== undefined && details.newStatus !== undefined) {
                     changes.push({
@@ -829,20 +783,24 @@ const auditLogger = {
         switch (action) {
             case 'create':
                 // Para creación de plan
-                if (details.result) {
-                    changes.push({
-                        field: 'nombre',
-                        label: this.getFieldDisplayName('nombre', 'planes'),
-                        oldValue: null,
-                        newValue: details.result.nombre || details.requestData?.nombre
-                    });
+                if (details.result || details.createdData || details.planData) {
+                    const data = details.result || details.createdData || details.planData;
 
-                    if (details.result.estado) {
+                    if (data.nombre) {
+                        changes.push({
+                            field: 'nombre',
+                            label: this.getFieldDisplayName('nombre', 'planes'),
+                            oldValue: null,
+                            newValue: data.nombre
+                        });
+                    }
+
+                    if (data.estado) {
                         changes.push({
                             field: 'estado',
                             label: this.getFieldDisplayName('estado', 'planes'),
                             oldValue: null,
-                            newValue: details.result.estado
+                            newValue: data.estado
                         });
                     }
                 }
@@ -857,21 +815,32 @@ const auditLogger = {
                         oldValue: details.result.oldName,
                         newValue: details.result.newName
                     });
-                } else if (details.requestData) {
-                    Object.entries(details.requestData).forEach(([field, value]) => {
+                } else if (details.requestData || details.newData) {
+                    const data = details.requestData || details.newData;
+                    Object.entries(data).forEach(([field, value]) => {
                         if (field !== 'id') {
                             changes.push({
                                 field,
                                 label: this.getFieldDisplayName(field, 'planes'),
-                                oldValue: null, // No disponible
+                                oldValue: details.originalData?.[field] || 'No disponible',
                                 newValue: value
                             });
                         }
                     });
+                } else if (details.changes) {
+                    // Si hay cambios calculados directamente
+                    Object.entries(details.changes).forEach(([field, change]) => {
+                        changes.push({
+                            field,
+                            label: this.getFieldDisplayName(field, 'planes'),
+                            oldValue: change.from,
+                            newValue: change.to
+                        });
+                    });
                 }
                 break;
 
-            case 'toggleStatus':
+            case 'toggle_status':
                 // Para cambio de estado
                 if (details.previousStatus !== undefined && details.newStatus !== undefined) {
                     changes.push({
@@ -879,6 +848,27 @@ const auditLogger = {
                         label: this.getFieldDisplayName('estado', 'planes'),
                         oldValue: details.previousStatus,
                         newValue: details.newStatus
+                    });
+                }
+                break;
+
+            case 'update_order':
+                // Para cambio de orden
+                if (details.orderChanges && Array.isArray(details.orderChanges)) {
+                    details.orderChanges.forEach((orderChange, index) => {
+                        changes.push({
+                            field: `orden_${index + 1}`,
+                            label: `Elemento ${index + 1}`,
+                            oldValue: `Posición anterior`,
+                            newValue: `Nueva posición: ${orderChange.orden || orderChange.newOrder || 'N/A'}`
+                        });
+                    });
+                } else if (details.totalAffected) {
+                    changes.push({
+                        field: 'orden_general',
+                        label: 'Cambio de orden',
+                        oldValue: 'Orden anterior',
+                        newValue: `${details.totalAffected} elementos reordenados`
                     });
                 }
                 break;
@@ -906,20 +896,24 @@ const auditLogger = {
 
         switch (action) {
             case 'create':
-                if (details.result) {
-                    changes.push({
-                        field: 'nombre',
-                        label: this.getFieldDisplayName('nombre', entityType),
-                        oldValue: null,
-                        newValue: details.result.nombre || details.requestData?.nombre
-                    });
+                if (details.result || details.createdData || details.specialtyData || details.categoryData) {
+                    const data = details.result || details.createdData || details.specialtyData || details.categoryData;
 
-                    if (details.result.estado) {
+                    if (data.nombre) {
+                        changes.push({
+                            field: 'nombre',
+                            label: this.getFieldDisplayName('nombre', entityType),
+                            oldValue: null,
+                            newValue: data.nombre
+                        });
+                    }
+
+                    if (data.estado) {
                         changes.push({
                             field: 'estado',
                             label: this.getFieldDisplayName('estado', entityType),
                             oldValue: null,
-                            newValue: details.result.estado
+                            newValue: data.estado
                         });
                     }
                 }
@@ -933,16 +927,46 @@ const auditLogger = {
                         oldValue: details.result.oldName,
                         newValue: details.result.newName
                     });
+                } else if (details.changes) {
+                    Object.entries(details.changes).forEach(([field, change]) => {
+                        changes.push({
+                            field,
+                            label: this.getFieldDisplayName(field, entityType),
+                            oldValue: change.from,
+                            newValue: change.to
+                        });
+                    });
                 }
                 break;
 
-            case 'toggleStatus':
+            case 'toggle_status':
                 if (details.previousStatus !== undefined && details.newStatus !== undefined) {
                     changes.push({
                         field: 'estado',
                         label: this.getFieldDisplayName('estado', entityType),
                         oldValue: details.previousStatus,
                         newValue: details.newStatus
+                    });
+                }
+                break;
+
+            case 'update_order':
+                // Para cambio de orden en especialidades/categorías
+                if (details.orderChanges && Array.isArray(details.orderChanges)) {
+                    details.orderChanges.forEach((orderChange, index) => {
+                        changes.push({
+                            field: `orden_${index + 1}`,
+                            label: `Elemento ${index + 1}`,
+                            oldValue: `Posición anterior`,
+                            newValue: `Nueva posición: ${orderChange.orden || orderChange.newOrder || 'N/A'}`
+                        });
+                    });
+                } else if (details.totalAffected) {
+                    changes.push({
+                        field: 'orden_general',
+                        label: 'Cambio de orden',
+                        oldValue: 'Orden anterior',
+                        newValue: `${details.totalAffected} elementos reordenados`
                     });
                 }
                 break;
@@ -955,7 +979,6 @@ const auditLogger = {
      * Formatea cambios para entidades genéricas
      */
     formatGenericChanges(action, details) {
-        // Código genérico similar al anterior para manejar cualquier otro tipo de entidad
         const changes = [];
 
         // Extraer cambios desde varias fuentes posibles
@@ -983,9 +1006,242 @@ const auditLogger = {
                 }
             });
         }
+        else if (details.result && typeof details.result === 'object') {
+            Object.entries(details.result).forEach(([field, value]) => {
+                if (field !== 'id' && field !== 'success') {
+                    changes.push({
+                        field,
+                        label: this.getFieldDisplayName(field),
+                        oldValue: action === 'create' ? null : 'No disponible',
+                        newValue: value
+                    });
+                }
+            });
+        }
 
         return changes;
+    },
+
+    /**
+     * Formatea los nombres de campos según la tabla de origen
+     * @param {string} field - Nombre del campo
+     * @param {string} entityType - Tipo de entidad
+     * @returns {string} - Nombre de campo formateado
+     */
+    getFieldDisplayName(field, entityType) {
+        // Mapeo global de campos
+        const fieldLabels = {
+            'nombre': 'Nombre',
+            'estado': 'Estado',
+            'email': 'Email',
+            'telefonos': 'Teléfonos',
+            'direccion': 'Dirección',
+            'informacion_adicional': 'Información adicional',
+            'id_localidad': 'ID Localidad',
+            'localidad': 'Localidad',
+            'id_provincia': 'ID Provincia',
+            'provincia': 'Provincia',
+            'plan': 'Plan',
+            'planes': 'Planes',
+            'categoria_prestador': 'Categoría',
+            'categorias': 'Categorías',
+            'especialidad': 'Especialidad',
+            'especialidades': 'Especialidades',
+            'previousStatus': 'Estado anterior',
+            'newStatus': 'Nuevo estado',
+            'orden': 'Orden',
+            'orden_general': 'Orden general'
+        };
+
+        // Mapeos específicos por tipo de entidad
+        const entityFieldMappings = {
+            'prestadores': {
+                'id_prestador': 'ID Prestador',
+                // otros campos específicos...
+            },
+            'planes': {
+                'id_plan': 'ID Plan',
+                'oldName': 'Nombre anterior',
+                'newName': 'Nuevo nombre'
+            },
+            'especialidades': {
+                'id_especialidad': 'ID Especialidad'
+            },
+            'categorias_prestador': {
+                'id_categoria': 'ID Categoría'
+            }
+        };
+
+        // Primero buscar en el mapeo específico de la entidad
+        if (entityType && entityFieldMappings[entityType] && entityFieldMappings[entityType][field]) {
+            return entityFieldMappings[entityType][field];
+        }
+
+        // Si no se encuentra, usar el mapeo global
+        return fieldLabels[field] || field;
+    },
+
+    /**
+     * Formatea un array de relaciones para mostrar solo los nombres relevantes
+     * @param {Array} array - Array de relaciones (planes, especialidades, etc.)
+     * @param {string} nameField - Campo que contiene el nombre
+     * @returns {string} - Nombres separados por comas
+     */
+    formatRelationshipArray(array, nameField = 'nombre') {
+        if (!Array.isArray(array) || array.length === 0) return null;
+
+        // Intentar obtener el nombre de diferentes posibles campos
+        return array.map(item => {
+            if (item[nameField]) return item[nameField];
+            if (item['plan_nombre']) return item['plan_nombre'];
+            if (item['categoria_nombre']) return item['categoria_nombre'];
+            if (item['especialidad_nombre']) return item['especialidad_nombre'];
+            return item.id || item;
+        }).join(', ');
+    },
+
+    /**
+     * Obtiene el nombre de la entidad para mostrar
+     * @param {Object} auditLog - Registro de auditoría
+     * @param {Object} details - Detalles del registro
+     * @returns {string|null} - Nombre de la entidad o null si no se encuentra
+     */
+    getEntityName_audit(auditLog, details) {
+        // Intentar obtener el nombre de varias posibles fuentes
+        if (details?.original?.nombre) {
+            return details.original.nombre;
+        }
+
+        if (details?.prestadorData?.nombre) {
+            return details.prestadorData.nombre;
+        }
+
+        if (details?.result?.nombre) {
+            return details.result.nombre;
+        }
+
+        if (details?.requestData?.nombre) {
+            return details.requestData.nombre;
+        }
+
+        if (details?.new?.prestador?.nombre) {
+            return details.new.prestador.nombre;
+        }
+
+        if (details?.planData?.nombre) {
+            return details.planData.nombre;
+        }
+
+        if (details?.specialtyData?.nombre) {
+            return details.specialtyData.nombre;
+        }
+
+        if (details?.createdData?.nombre) {
+            return details.createdData.nombre;
+        }
+
+        if (details?.newData?.nombre) {
+            return details.newData.nombre;
+        }
+
+        if (details?.entityName) {
+            return details.entityName;
+        }
+
+        // Si no se encuentra en ningún lugar, devolver null
+        return null;
+    },
+
+    /**
+     * Formatea los detalles de un registro de auditoría para mostrar en la API (formato antiguo)
+     * @param {Object} auditLog - Registro de auditoría
+     * @returns {Object} - Detalles formateados para API
+     */
+    formatAuditDetails(auditLog) {
+        try {
+            // Asegurar que tengamos detalles válidos
+            const details = typeof auditLog.details === 'string'
+              ? JSON.parse(auditLog.details)
+              : auditLog.details;
+
+            // Crear una versión simplificada para incluir en respuestas API
+            const formattedDetails = {
+                description: auditLog.operation_description || details.description || this.getOperationDescription(auditLog.action, auditLog.entity_type),
+                timestamp: auditLog.timestamp,
+                action: auditLog.action,
+                entityType: auditLog.entity_type,
+                entityId: auditLog.entity_id,
+                // Incluir información contextual relevante
+                context: {}
+            };
+
+            // Añadir contexto específico según el tipo de operación
+            switch (auditLog.action) {
+                case OPERATION_TYPES.INDIVIDUAL_UPLOAD:
+                    formattedDetails.context.prestadorNombre = details.prestadorData?.nombre || 'No especificado';
+                    formattedDetails.context.prestadorTipo = details.prestadorData?.tipo || 'No especificado';
+                    break;
+                case OPERATION_TYPES.BULK_UPLOAD:
+                    formattedDetails.context.registrosProcesados = details.totalProcessed || 0;
+                    formattedDetails.context.registrosExitosos = details.successful || 0;
+                    formattedDetails.context.registrosFallidos = details.failed || 0;
+                    break;
+                case OPERATION_TYPES.DOWNLOAD_CSV:
+                case OPERATION_TYPES.DOWNLOAD_PDF:
+                    formattedDetails.context.formato = details.format || 'No especificado';
+                    formattedDetails.context.filtros = details.filters || {};
+                    break;
+                case OPERATION_TYPES.EDIT_PROVIDER:
+                case OPERATION_TYPES.EDIT_PLAN:
+                case OPERATION_TYPES.EDIT_SPECIALTY:
+                    // Si hay cambios, incluir un resumen de ellos
+                    if (details.changes) {
+                        formattedDetails.context.cambios = Object.keys(details.changes).map(field => ({
+                            campo: field,
+                            valorAnterior: this.formatValue(details.changes[field].from),
+                            valorNuevo: this.formatValue(details.changes[field].to)
+                        }));
+                    }
+                    break;
+                case OPERATION_TYPES.TOGGLE_STATUS:
+                    formattedDetails.context.estadoAnterior = details.previousStatus || 'No especificado';
+                    formattedDetails.context.estadoNuevo = details.newStatus || 'No especificado';
+                    break;
+                case OPERATION_TYPES.UPDATE_ORDER:
+                    formattedDetails.context.elementosAfectados = details.totalAffected || 0;
+                    formattedDetails.context.tipoOrden = 'Reordenamiento de elementos';
+                    break;
+            }
+
+            return formattedDetails;
+        } catch (error) {
+            console.error('Error formatting audit details:', error);
+            return {
+                description: 'Error al formatear detalles de auditoría',
+                timestamp: auditLog.timestamp,
+                action: auditLog.action,
+                entityType: auditLog.entity_type
+            };
+        }
+    },
+
+    /**
+     * Formatea un valor para mostrarlo de forma amigable
+     * @private
+     * @param {*} value - Valor a formatear
+     * @returns {string} - Valor formateado
+     */
+    formatValue(value) {
+        if (value === undefined || value === null) {
+            return 'No especificado';
+        }
+
+        if (typeof value === 'object') {
+            return JSON.stringify(value);
+        }
+
+        return String(value);
     }
-}
+};
 
 module.exports = auditLogger;

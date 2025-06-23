@@ -97,7 +97,6 @@ export const CargaIndividual = () => {
         telefonos = data.telefono;
       }
     } catch (error) {
-      console.error("Error al procesar teléfonos:", error);
       telefonos = JSON.stringify([]);
     }
 
@@ -115,8 +114,6 @@ export const CargaIndividual = () => {
       planes: formData.plan.map((id) => Number.parseInt(id)),
       atencion_virtual: profesional && data.atencionVirtual ? "Si" : "No",
     }
-
-    console.log("Datos a enviar:", datosFormateados);
     confirmarCarga(datosFormateados, createPrestador, limpiarFormulario, reset, setFormStep);
   })
 

@@ -48,7 +48,6 @@ export const CargaPortadaPDF = () => {
         const planes = await CartillaService.getPlanes()
         setOptions((prev) => ({ ...prev, planes }))
       } catch (error) {
-        console.error("Error al cargar planes:", error)
         Swal.fire({
           icon: "error",
           title: "Error",
@@ -76,7 +75,6 @@ export const CargaPortadaPDF = () => {
         const provincias = await CartillaService.getProvincias(formData.plan)
         setOptions((prev) => ({ ...prev, provincias }))
       } catch (error) {
-        console.error("Error al cargar provincias:", error)
         Swal.fire({
           icon: "error",
           title: "Error",
@@ -220,7 +218,6 @@ export const CargaPortadaPDF = () => {
       })
       setFilePreview(null)
     } catch (error) {
-      console.error("Error al subir PDF:", error)
       Swal.fire({
         icon: "error",
         title: "Error al subir",

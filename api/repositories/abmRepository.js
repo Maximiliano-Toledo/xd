@@ -1,63 +1,62 @@
-
-
 /**
  * @module repositories/abmRepository
  * @description Repositorio para operaciones CRUD genéricas
  */
 
-const { pool } = require("../config/db");
+const { pool } = require('../config/db');
 
-/**
- * Lista de tablas permitidas para prevenir inyección SQL
- * @type {Object}
- */
+const DataOperationsManager = require("../libs/data-operations-manager");
+
+const dataOpsManager = new DataOperationsManager(pool);
+
+// Lista de tablas permitidas para validación
 const ALLOWED_TABLES = {
-    'cartilla': 'cartilla',
     'planes': 'planes',
-    'categorias_prestador': 'categorias_prestador',
     'especialidades': 'especialidades',
+    'categorias_prestador': 'categorias_prestador',
+    'categorias': 'categorias_prestador', // Alias
     'provincias': 'provincias',
     'localidades': 'localidades',
-    'prestador_plan': 'prestador_plan',
+    'prestadores': 'prestadores',
+    'cartilla': 'cartilla',
     'prestador_categoria': 'prestador_categoria',
     'prestador_especialidad': 'prestador_especialidad',
-    'prestadores': 'prestadores'
+    'prestador_plan': 'prestador_plan',
+    'users': 'users'
 };
 
-/**
- * Lista de campos permitidos para prevenir inyección SQL
- * @type {Object}
- */
+// Lista de campos permitidos para validación
 const ALLOWED_FIELDS = {
     'id_plan': 'id_plan',
-    'id_categoria': 'id_categoria',
     'id_especialidad': 'id_especialidad',
+    'id_categoria': 'id_categoria',
     'id_provincia': 'id_provincia',
     'id_localidad': 'id_localidad',
     'id_prestador': 'id_prestador',
-    'plan': 'plan',
-    'provincia': 'provincia',
-    'localidad': 'localidad',
-    'especialidad': 'especialidad',
+    'id_user': 'id_user',
     'nombre': 'nombre',
     'nombre_prestador': 'nombre_prestador',
-    'categoria_prestador': 'categoria_prestador',
+    'estado': 'estado',
+    'orden': 'orden',
+    'descripcion': 'descripcion',
+    'email': 'email',
+    'telefono': 'telefono',
     'direccion': 'direccion',
     'telefonos': 'telefonos',
-    'email': 'email',
     'informacion_adicional': 'informacion_adicional',
-    'estado': 'estado'
+    'atencion_virtual': 'atencion_virtual'
 };
 
-/**
- * Repositorio para operaciones CRUD genéricas
- * @type {Object}
- */
 const ABMRepository = {
+
+    // ============================================================================
+    // VALIDACIÓN Y SEGURIDAD
+    // ============================================================================
+
     /**
-     * Valida que una tabla esté en la lista de permitidas
-     * @param {string} table - Nombre de la tabla a validar
-     * @returns {string} - Nombre seguro de la tabla
+     * Valida que una tabla sea permitida
+     * @param {string} table - Nombre de la tabla
+     * @returns {string} - Nombre de tabla validado
      * @throws {Error} - Si la tabla no está permitida
      */
     validateTable(table) {
@@ -68,9 +67,9 @@ const ABMRepository = {
     },
 
     /**
-     * Valida que un campo esté en la lista de permitidos
-     * @param {string} field - Nombre del campo a validar
-     * @returns {string} - Nombre seguro del campo
+     * Valida que un campo sea permitido
+     * @param {string} field - Nombre del campo
+     * @returns {string} - Nombre de campo validado
      * @throws {Error} - Si el campo no está permitido
      */
     validateField(field) {
@@ -80,33 +79,38 @@ const ABMRepository = {
         return ALLOWED_FIELDS[field];
     },
 
+    // ============================================================================
+    // OPERACIONES BÁSICAS CRUD (delegadas a DataOperationsManager)
+    // ============================================================================
+
     /**
      * Ejecuta una consulta SQL con parámetros
      * @async
      * @param {string} query - Consulta SQL
      * @param {Array} [params=[]] - Parámetros para la consulta
-     * @returns {Promise<Array>} - Promesa que resuelve al resultado de la consulta
-     * @throws {Error} - Si hay un error en la consulta
+     * @returns {Promise<Array>} - Resultado de la consulta
      */
     async execute(query, params = []) {
-        try {
-            return await pool.query(query, params);
-        } catch (error) {
-            console.error(`Error en consulta SQL:`, error);
-            throw error;
-        }
+        return await dataOpsManager.executeCustomQuery(query, params);
     },
 
     /**
      * Obtiene todos los registros de una tabla
      * @async
      * @param {string} table - Nombre de la tabla
-     * @returns {Promise<Array>} - Promesa que resuelve a un array con los registros
+     * @param {string} [idField] - Campo ID (opcional)
+     * @param {number} [page] - Página (opcional)
+     * @param {number} [limit] - Límite (opcional)
+     * @param {string} [orderBy] - Campo orden (opcional)
+     * @param {string} [orderDirection] - Dirección orden (opcional)
+     * @returns {Promise<Array|Object>} - Registros o resultado paginado
      */
-    async getAll(table) {
-        const safeTable = this.validateTable(table);
-        const [rows] = await this.execute(`SELECT * FROM ??`, [safeTable]);
-        return rows;
+    async getAll(table, idField, page, limit, orderBy, orderDirection) {
+        // Validar tabla
+        this.validateTable(table);
+
+        // Delegar a DataOperationsManager
+        return await dataOpsManager.retrieveAllRecords(table, idField, page, limit, orderBy, orderDirection);
     },
 
     /**
@@ -115,13 +119,32 @@ const ABMRepository = {
      * @param {string} table - Nombre de la tabla
      * @param {string} idField - Nombre del campo ID
      * @param {number|string} id - Valor del ID
-     * @returns {Promise<Object|null>} - Promesa que resuelve al registro o null si no existe
+     * @returns {Promise<Object|null>} - Registro encontrado o null
      */
     async getById(table, idField, id) {
-        const safeTable = this.validateTable(table);
-        const safeField = this.validateField(idField);
-        const [rows] = await this.execute(`SELECT * FROM ?? WHERE ?? = ?`, [safeTable, safeField, id]);
-        return rows[0] || null;
+        // Validar tabla y campo
+        this.validateTable(table);
+        this.validateField(idField);
+
+        // Delegar a DataOperationsManager
+        return await dataOpsManager.retrieveRecordById(table, idField, id);
+    },
+
+    /**
+     * Obtiene registros por nombre
+     * @async
+     * @param {string} table - Nombre de la tabla
+     * @param {string} nameField - Campo nombre
+     * @param {string} name - Nombre a buscar
+     * @returns {Promise<Array>} - Registros encontrados
+     */
+    async getByName(table, nameField, name) {
+        // Validar tabla y campo
+        this.validateTable(table);
+        this.validateField(nameField);
+
+        // Delegar a DataOperationsManager
+        return await dataOpsManager.retrieveRecordsByName(table, nameField, name);
     },
 
     /**
@@ -129,12 +152,14 @@ const ABMRepository = {
      * @async
      * @param {string} table - Nombre de la tabla
      * @param {Object} data - Datos del nuevo registro
-     * @returns {Promise<Object>} - Promesa que resuelve al registro creado con su ID
+     * @returns {Promise<Object>} - Registro creado con su ID
      */
     async create(table, data) {
-        const safeTable = this.validateTable(table);
-        const [result] = await this.execute(`INSERT INTO ?? SET ?`, [safeTable, data]);
-        return { id: result.insertId, ...data };
+        // Validar tabla
+        this.validateTable(table);
+
+        // Delegar a DataOperationsManager
+        return await dataOpsManager.createNewRecord(table, data);
     },
 
     /**
@@ -144,13 +169,15 @@ const ABMRepository = {
      * @param {string} idField - Nombre del campo ID
      * @param {number|string} id - Valor del ID
      * @param {Object} data - Nuevos datos del registro
-     * @returns {Promise<Object>} - Promesa que resuelve al registro actualizado
+     * @returns {Promise<Object>} - Resultado de la actualización
      */
     async update(table, idField, id, data) {
-        const safeTable = this.validateTable(table);
-        const safeField = this.validateField(idField);
-        await this.execute(`UPDATE ?? SET ? WHERE ?? = ?`, [safeTable, data, safeField, id]);
-        return { [idField]: id, ...data };
+        // Validar tabla y campo
+        this.validateTable(table);
+        this.validateField(idField);
+
+        // Delegar a DataOperationsManager
+        return await dataOpsManager.updateRecordById(table, idField, id, data);
     },
 
     /**
@@ -161,29 +188,16 @@ const ABMRepository = {
      * @param {number|string} id - Valor del ID principal
      * @param {string} relationField - Nombre del campo de relación
      * @param {Array} values - Valores para las nuevas relaciones
-     * @returns {Promise<void>} - Promesa que se resuelve cuando se completa la operación
+     * @returns {Promise<void>}
      */
     async updateRelations(table, idField, id, relationField, values) {
-        if (!Array.isArray(values)) return;
+        // Validar tabla y campos
+        this.validateTable(table);
+        this.validateField(idField);
+        this.validateField(relationField);
 
-        const safeTable = this.validateTable(table);
-        const safeIdField = this.validateField(idField);
-        const safeRelationField = this.validateField(relationField);
-
-        // Eliminar relaciones existentes
-        await this.execute(
-            `DELETE FROM ?? WHERE ?? = ?`,
-            [safeTable, safeIdField, id]
-        );
-
-        // Insertar nuevas relaciones
-        if (values.length > 0) {
-            const relations = values.map(value => [id, value]);
-            await this.execute(
-                `INSERT INTO ?? (??, ??) VALUES ?`,
-                [safeTable, safeIdField, safeRelationField, relations]
-            );
-        }
+        // Delegar a DataOperationsManager
+        return await dataOpsManager.updateRecordRelations(table, idField, id, relationField, values);
     },
 
     /**
@@ -194,217 +208,221 @@ const ABMRepository = {
      * @param {string} oldName - Nombre actual
      * @param {Object} data - Nuevos datos del registro
      * @param {string} [cartillaField=null] - Campo correspondiente en cartilla
-     * @returns {Promise<Object>} - Promesa que resuelve al resultado de la operación
+     * @returns {Promise<Object>} - Resultado de la operación
      */
     async updateByName(table, nameField, oldName, data, cartillaField = null) {
-        const safeTable = this.validateTable(table);
-        const safeNameField = this.validateField(nameField);
+        // Validar tabla y campo
+        this.validateTable(table);
+        this.validateField(nameField);
 
-        try {
-            const connection = await pool.getConnection();
-            await connection.beginTransaction();
-
-            try {
-                // 1. Actualizar el registro principal
-                const [result] = await connection.query(
-                    `UPDATE ?? SET ? WHERE ?? = ?`,
-                    [safeTable, data, safeNameField, oldName]
-                );
-
-                // 2. Si hay campo en cartilla y estamos cambiando el nombre, actualizar cartilla
-                if (cartillaField && data[nameField] && oldName !== data[nameField]) {
-                    await connection.query(
-                        `UPDATE cartilla SET ?? = ? WHERE ?? = ?`,
-                        [cartillaField, data[nameField], cartillaField, oldName]
-                    );
-                }
-
-                await connection.commit();
-                connection.release();
-
-                return {
-                    success: true,
-                    affectedRows: result.affectedRows,
-                    oldName: oldName,
-                    newName: data[nameField],
-                    [nameField]: data[nameField],
-                    ...data
-                };
-            } catch (error) {
-                await connection.rollback();
-                connection.release();
-                throw error;
-            }
-        } catch (error) {
-            console.error(`Error en updateByName para ${table}:`, error);
-            throw error;
-        }
+        // Delegar a DataOperationsManager
+        return await dataOpsManager.updateRecordsByName(table, nameField, oldName, data, cartillaField);
     },
 
     /**
-     * Cambia el estado de un registro y actualiza registros relacionados en cascada
+     * Elimina un registro por su ID
      * @async
      * @param {string} table - Nombre de la tabla
      * @param {string} idField - Nombre del campo ID
      * @param {number|string} id - Valor del ID
-     * @returns {Promise<Object>} - Promesa que resuelve al resultado de la operación
-     */
-    async cascadeToggleStatus(table, idField, id) {
-        // Primero obtenemos el estado actual y el nombre del registro (si es necesario)
-        let currentState;
-        let recordName;
-
-        const [record] = await this.execute(
-            `SELECT estado${table === 'planes' || table === 'categorias_prestador' || table === 'especialidades' ? ', nombre' : ''} FROM ?? WHERE ?? = ?`,
-            [table, idField, id]
-        );
-
-        if (!record) throw new Error('Registro no encontrado');
-
-        currentState = record[0].estado;
-        const newState = currentState === 'Activo' ? 'Inactivo' : 'Activo';
-
-        if (table === 'planes' || table === 'categorias_prestador' || table === 'especialidades') {
-            recordName = record[0].nombre;
-        }
-
-        const cascadeRules = {
-            'planes': [
-                {
-                    table: 'cartilla',
-                    condition: 'plan = ?',
-                    action: 'UPDATE ?? SET estado = ?',
-                    value: recordName,
-                    newState: newState
-                },
-                {
-                    table: 'prestadores',
-                    condition: 'id_prestador IN (SELECT id_prestador FROM prestador_plan WHERE id_plan = ?)',
-                    action: 'UPDATE ?? SET estado = ?',
-                    value: id,
-                    newState: newState
-                }
-            ],
-            'categorias_prestador': [
-                {
-                    table: 'cartilla',
-                    condition: 'categoria = ?',
-                    action: 'UPDATE ?? SET estado = ?',
-                    value: recordName,
-                    newState: newState
-                },
-                {
-                    table: 'prestadores',
-                    condition: 'id_prestador IN (SELECT id_prestador FROM prestador_categoria WHERE id_categoria = ?)',
-                    action: 'UPDATE ?? SET estado = ?',
-                    value: id,
-                    newState: newState
-                }
-            ],
-            'especialidades': [
-                {
-                    table: 'cartilla',
-                    condition: 'especialidad = ?',
-                    action: 'UPDATE ?? SET estado = ?',
-                    value: recordName,
-                    newState: newState
-                },
-                {
-                    table: 'prestadores',
-                    condition: 'id_prestador IN (SELECT id_prestador FROM prestador_especialidad WHERE id_especialidad = ?)',
-                    action: 'UPDATE ?? SET estado = ?',
-                    value: id,
-                    newState: newState
-                }
-            ],
-            'provincias': [
-                {
-                    table: 'cartilla',
-                    condition: 'provincia = (SELECT nombre FROM provincias WHERE id_provincia = ?)',
-                    action: 'UPDATE ?? SET estado = ?',
-                    value: id,
-                    newState: newState
-                },
-                {
-                    table: 'prestadores',
-                    condition: 'id_localidad IN (SELECT id_localidad FROM localidades WHERE id_provincia = ?)',
-                    action: 'UPDATE ?? SET estado = ?',
-                    value: id,
-                    newState: newState
-                }
-            ],
-            'localidades': [
-                {
-                    table: 'cartilla',
-                    condition: 'localidad = (SELECT nombre FROM localidades WHERE id_localidad = ?)',
-                    action: 'UPDATE ?? SET estado = ?',
-                    value: id,
-                    newState: newState
-                },
-                {
-                    table: 'prestadores',
-                    condition: 'id_localidad = ?',
-                    action: 'UPDATE ?? SET estado = ?',
-                    value: id,
-                    newState: newState
-                }
-            ]
-        };
-
-        const safeTable = this.validateTable(table);
-        const safeIdField = this.validateField(idField);
-
-        if (!cascadeRules[safeTable]) {
-            throw new Error('No hay reglas de cascada definidas para esta tabla');
-        }
-
-        let connection;
-        try {
-            connection = await pool.getConnection();
-            await connection.beginTransaction();
-
-            // 1. Ejecutar las reglas de cascada
-            for (const rule of cascadeRules[safeTable]) {
-                // Solo ejecutar si el valor no es null o undefined
-                if (rule.value != null) {
-                    await connection.query(
-                        `${rule.action} WHERE ${rule.condition}`,
-                        [rule.table, rule.newState, rule.value]
-                    );
-                }
-            }
-
-            // 2. Actualizar el estado del registro principal
-            await connection.query(
-                `UPDATE ?? SET estado = ? WHERE ?? = ?`,
-                [safeTable, newState, safeIdField, id]
-            );
-
-            await connection.commit();
-            return { newState, affected: true };
-        } catch (error) {
-            if (connection) await connection.rollback();
-            console.error('Error en cascadeToggleStatus:', error);
-            throw error;
-        } finally {
-            if (connection) connection.release();
-        }
-    },
-
-    /**
-     * Elimina un registro
-     * @async
-     * @param {string} table - Nombre de la tabla
-     * @param {string} idField - Nombre del campo ID
-     * @param {number|string} id - Valor del ID
-     * @returns {Promise<boolean>} - Promesa que resuelve a true si se eliminó correctamente
+     * @returns {Promise<Object>} - Resultado de la eliminación
      */
     async delete(table, idField, id) {
-        const safeTable = this.validateTable(table);
-        const safeField = this.validateField(idField);
-        const [result] = await this.execute(`DELETE FROM ?? WHERE ?? = ?`, [safeTable, safeField, id]);
-        return result.affectedRows > 0;
+        // Validar tabla y campo
+        this.validateTable(table);
+        this.validateField(idField);
+
+        // Delegar a DataOperationsManager
+        return await dataOpsManager.deleteRecordById(table, idField, id);
     },
+
+    /**
+     * Verifica si un registro tiene relaciones en otras tablas
+     * @async
+     * @param {string} table - Nombre de la tabla
+     * @param {number|string} id - Valor del ID
+     * @param {string} idField - Nombre del campo ID
+     * @returns {Promise<boolean>} - true si tiene relaciones, false si no
+     */
+    async hasRelations(table, id, idField) {
+        // Validar tabla y campo
+        this.validateTable(table);
+        this.validateField(idField);
+
+        // Delegar a DataOperationsManager
+        return await dataOpsManager.checkRecordRelations(table, id, idField);
+    },
+
+    // ============================================================================
+    // OPERACIONES AVANZADAS (delegadas a DataOperationsManager)
+    // ============================================================================
+
+    /**
+     * Cambia el estado de un registro con efectos en cascada
+     * @async
+     * @param {string} table - Nombre de la tabla
+     * @param {string} idField - Nombre del campo ID
+     * @param {number|string} id - Valor del ID
+     * @returns {Promise<Object>} - Resultado de la operación
+     */
+    async cascadeToggleStatus(table, idField, id) {
+        // Validar tabla y campo
+        this.validateTable(table);
+        this.validateField(idField);
+
+        // Delegar a DataOperationsManager
+        return await dataOpsManager.toggleRecordStatusWithCascade(table, idField, id);
+    },
+
+    /**
+     * Obtiene localidades filtradas por provincia
+     * @async
+     * @param {number|string} provinciaId - ID de la provincia
+     * @returns {Promise<Array>} - Array de localidades
+     */
+    async getLocalidadesByProvincia(provinciaId) {
+        // Delegar a DataOperationsManager
+        return await dataOpsManager.retrieveLocalitiesByProvince(provinciaId);
+    },
+
+    /**
+     * Actualiza el orden de múltiples registros
+     * @async
+     * @param {string} table - Nombre de la tabla
+     * @param {string} idField - Nombre del campo ID
+     * @param {Array} orders - Array con los nuevos órdenes
+     * @returns {Promise<Object>} - Resultado de la operación
+     */
+    async updateBulkOrder(table, idField, orders) {
+        // Validar tabla y campo
+        this.validateTable(table);
+        this.validateField(idField);
+
+        // Delegar a DataOperationsManager
+        return await dataOpsManager.updateBulkRecordOrder(table, idField, orders);
+    },
+
+    /**
+     * Obtiene registros filtrados con paginación
+     * @async
+     * @param {string} table - Nombre de la tabla
+     * @param {Object} filters - Filtros a aplicar
+     * @param {number} [page=1] - Página actual
+     * @param {number} [limit=10] - Registros por página
+     * @param {string} [orderBy] - Campo para ordenamiento
+     * @param {string} [orderDirection='ASC'] - Dirección del ordenamiento
+     * @returns {Promise<Object>} - Resultado con paginación
+     */
+    async getFiltered(table, filters = {}, page = 1, limit = 10, orderBy = null, orderDirection = 'ASC') {
+        // Validar tabla
+        this.validateTable(table);
+
+        // Delegar a DataOperationsManager
+        return await dataOpsManager.retrieveFilteredRecords(table, filters, page, limit, orderBy, orderDirection);
+    },
+
+    /**
+     * Realiza operaciones en lote (insert, update, delete)
+     * @async
+     * @param {string} operation - Tipo de operación ('insert', 'update', 'delete')
+     * @param {string} table - Nombre de la tabla
+     * @param {Array} data - Array de datos para la operación
+     * @param {string} [idField] - Campo ID (para update/delete)
+     * @returns {Promise<Object>} - Resultado de la operación en lote
+     */
+    async batchOperation(operation, table, data, idField = null) {
+        // Validar tabla
+        this.validateTable(table);
+
+        if (idField) {
+            this.validateField(idField);
+        }
+
+        // Delegar a DataOperationsManager
+        return await dataOpsManager.executeBatchOperation(operation, table, data, idField);
+    },
+
+    /**
+     * Ejecuta una consulta SQL personalizada
+     * @async
+     * @param {string} query - Consulta SQL
+     * @param {Array} [params=[]] - Parámetros de la consulta
+     * @returns {Promise<Array>} - Resultados de la consulta
+     */
+    async customQuery(query, params = []) {
+        // Delegar a DataOperationsManager
+        return await dataOpsManager.executeCustomQuery(query, params);
+    },
+
+    /**
+     * Obtiene estadísticas de una tabla
+     * @async
+     * @param {string} table - Nombre de la tabla
+     * @param {string} [groupBy] - Campo para agrupar
+     * @returns {Promise<Object>} - Estadísticas de la tabla
+     */
+    async getTableStats(table, groupBy = null) {
+        // Validar tabla
+        this.validateTable(table);
+
+        if (groupBy) {
+            this.validateField(groupBy);
+        }
+
+        // Delegar a DataOperationsManager
+        return await dataOpsManager.retrieveTableStatistics(table, groupBy);
+    },
+
+    // ============================================================================
+    // FUNCIONES ADICIONALES PROPORCIONADAS POR DataOperationsManager
+    // ============================================================================
+
+    /**
+     * Valida la integridad de datos antes de operaciones críticas
+     * @async
+     * @param {string} table - Nombre de la tabla
+     * @param {Object} data - Datos a validar
+     * @returns {Promise<Object>} - Resultado de la validación
+     */
+    async validateDataIntegrity(table, data) {
+        // Validar tabla
+        this.validateTable(table);
+
+        // Delegar a DataOperationsManager
+        return await dataOpsManager.validateDataIntegrity(table, data);
+    },
+
+    /**
+     * Obtiene el siguiente valor para campos de orden
+     * @async
+     * @param {string} table - Nombre de la tabla
+     * @returns {Promise<number>} - Siguiente valor de orden
+     */
+    async getNextOrderValue(table) {
+        // Validar tabla
+        this.validateTable(table);
+
+        // Delegar a DataOperationsManager
+        return await dataOpsManager.getNextOrderValue(table);
+    },
+
+    /**
+     * Limpia y optimiza una tabla (elimina registros huérfanos, etc.)
+     * @async
+     * @param {string} table - Nombre de la tabla
+     * @returns {Promise<Object>} - Resultado de la limpieza
+     */
+    async cleanupTableData(table) {
+        // Validar tabla
+        this.validateTable(table);
+
+        // Delegar a DataOperationsManager
+        return await dataOpsManager.cleanupTableData(table);
+    },
+
+    // ============================================================================
+    // MÉTODOS DE UTILIDAD Y COMPATIBILIDAD
+    // ============================================================================
 
     /**
      * Verifica si un valor es único en un campo
@@ -430,114 +448,61 @@ const ABMRepository = {
         }
 
         const [rows] = await this.execute(query, params);
-        return rows[0].count === 0;
+        return rows.count === 0;
     },
 
     /**
-     * Verifica si un registro tiene relaciones en otras tablas
-     * @async
-     * @param {string} table - Nombre de la tabla
-     * @param {number|string} id - Valor del ID
-     * @param {string} idField - Nombre del campo ID
-     * @returns {Promise<boolean>} - Promesa que resuelve a true si tiene relaciones
+     * Obtiene la lista de tablas permitidas
+     * @returns {Object} - Objeto con tablas permitidas
      */
-    async hasRelations(table, id, idField) {
-        // Mapa de relaciones
-        const relations = {
-            'planes': [{ table: 'prestador_plan', field: 'id_plan' }],
-            'categorias_prestador': [{ table: 'prestador_categoria', field: 'id_categoria' }],
-            'especialidades': [{ table: 'prestador_especialidad', field: 'id_especialidad' }],
-            'provincias': [{ table: 'localidades', field: 'id_provincia' }],
-            'localidades': [{ table: 'prestadores', field: 'id_localidad' }]
+    getAllowedTables() {
+        return { ...ALLOWED_TABLES };
+    },
+
+    /**
+     * Obtiene la lista de campos permitidos
+     * @returns {Object} - Objeto con campos permitidos
+     */
+    getAllowedFields() {
+        return { ...ALLOWED_FIELDS };
+    },
+
+    /**
+     * Verifica si una tabla está permitida
+     * @param {string} table - Nombre de la tabla
+     * @returns {boolean} - true si está permitida
+     */
+    isTableAllowed(table) {
+        return !!ALLOWED_TABLES[table];
+    },
+
+    /**
+     * Verifica si un campo está permitido
+     * @param {string} field - Nombre del campo
+     * @returns {boolean} - true si está permitido
+     */
+    isFieldAllowed(field) {
+        return !!ALLOWED_FIELDS[field];
+    },
+
+    /**
+     * Obtiene información sobre la instancia de DataOperationsManager
+     * @returns {Object} - Información de la instancia
+     */
+    getManagerInfo() {
+        return {
+            managerClass: 'DataOperationsManager',
+            isObfuscated: process.env.NODE_ENV === 'production',
+            tablesAllowed: Object.keys(ALLOWED_TABLES).length,
+            fieldsAllowed: Object.keys(ALLOWED_FIELDS).length,
+            version: '1.0.0'
         };
-
-        const safeTable = this.validateTable(table);
-        if (!relations[safeTable]) return false;
-
-        for (const rel of relations[safeTable]) {
-            const safeRelTable = this.validateTable(rel.table);
-            const safeRelField = this.validateField(rel.field);
-
-            const [rows] = await this.execute(
-                `SELECT 1 FROM ?? WHERE ?? = ? LIMIT 1`,
-                [safeRelTable, safeRelField, id]
-            );
-            if (rows.length > 0) return true;
-        }
-
-        return false;
-    },
-
-    /**
-     * Obtiene localidades filtradas por provincia
-     * @async
-     * @param {number|string} id - ID de la provincia
-     * @returns {Promise<Array>} - Promesa que resuelve a un array con las localidades
-     */
-    async getLocalidadesByProvincia(id) {
-        const [rows] = await this.execute(`CALL GetLocalidadesByProvincia(?)`, [id]);
-        return rows;
-    },
-
-    /**
-     * Actualiza el orden de múltiples registros en una tabla
-     * @async
-     * @param {string} table - Nombre de la tabla
-     * @param {string} idField - Nombre del campo ID
-     * @param {Array} orders - Array con los IDs y órdenes
-     * @returns {Promise<Object>} - Promesa que resuelve al resultado de la operación
-     */
-    async updateBulkOrder(table, idField, orders) {
-        const safeTable = this.validateTable(table);
-        const safeIdField = this.validateField(idField);
-
-        let connection;
-        try {
-            connection = await pool.getConnection();
-            await connection.beginTransaction();
-
-            // Verificar si la tabla tiene columna 'orden'
-            const [columns] = await connection.query(
-              `SHOW COLUMNS FROM ?? LIKE 'orden'`,
-              [safeTable]
-            );
-
-            if (columns.length === 0) {
-                // Si no existe la columna orden, crearla
-                await connection.query(
-                  `ALTER TABLE ?? ADD COLUMN orden INT DEFAULT 0`,
-                  [safeTable]
-                );
-            }
-
-            // Actualizar cada registro con su nuevo orden
-            let updatedCount = 0;
-            for (const orderItem of orders) {
-                const [result] = await connection.query(
-                  `UPDATE ?? SET orden = ? WHERE ?? = ?`,
-                  [safeTable, orderItem.orden, safeIdField, orderItem[safeIdField]]
-                );
-
-                if (result.affectedRows > 0) {
-                    updatedCount++;
-                }
-            }
-
-            await connection.commit();
-
-            return {
-                success: true,
-                updatedCount,
-                totalProcessed: orders.length
-            };
-        } catch (error) {
-            if (connection) await connection.rollback();
-            console.error(`Error en updateBulkOrder para ${table}:`, error);
-            throw error;
-        } finally {
-            if (connection) connection.release();
-        }
-    },
+    }
 };
 
 module.exports = ABMRepository;
+
+/*
+
+
+*/

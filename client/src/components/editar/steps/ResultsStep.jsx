@@ -22,7 +22,6 @@ const ResultsStep = ({
       // Si es JSON, formatearlo
       return formatPhonesForDisplay(phones);
     } catch (error) {
-      console.error('Error formatting phones:', error);
       return phones || 'No disponible';
     }
   };

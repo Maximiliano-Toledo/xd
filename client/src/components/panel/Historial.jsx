@@ -72,7 +72,6 @@ const Historial = () => {
                 setTotalPages(1);
             }
         } catch (err) {
-            console.error('Error al obtener historial:', err);
             setLogs([]);
             setTotalItems(0);
             setTotalPages(1);
@@ -141,7 +140,7 @@ const Historial = () => {
             setFilter(filterData);
             await fetchLogs(1, itemsPerPage, filterData);
         } catch (err) {
-            console.error('Error al aplicar filtros:', err);
+            throw err;
         }
     };
 

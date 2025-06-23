@@ -4,19 +4,15 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "test-db": "node ./test/testConnection.js",
-    "create-users-table": "node ./scripts/createUsersTable.js",
     "app": "node --watch app.js",
-    "dev": "nodemon --watch app.js",
-    "obfuscate-backend": "node obfuscate.js"
+    "build": "node obfuscate.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "nodemon": "^3.1.9",
-    "javascript-obfuscator": "^4.1.1"
+    "nodemon": "^3.1.9"
   },
   "dependencies": {
     "@pdf-lib/fontkit": "^1.1.1",

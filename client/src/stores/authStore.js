@@ -40,7 +40,7 @@ const useAuthStore = create((set, get) => ({
       await AuthService.logout();
       set({ user: null, isAuthenticated: false });
     } catch (error) {
-      console.error('Error al cerrar sesión:', error);
+      throw error;
     }
   },
 

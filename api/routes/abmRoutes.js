@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const ABMController = require('../controllers/abmController');
+const auditLogger = require('../utils/auditLogger'); // NUEVA LÍNEA AGREGADA
 const { authMiddleware } = require('../middleware/authMiddleware');
 const { generalLimiter, writeLimiter } = require('../middleware/rateLimiter');
 
@@ -70,27 +71,29 @@ router.get(
   ABMController.createHandler('getLocalidadesByProvincia', 'localidades')
 );
 
-// ✅ RUTAS ESPECÍFICAS PARA ACTUALIZAR ORDEN
-// Opción 1: Rutas específicas para cada entidad que lo necesite
+// ✅ RUTAS ESPECÍFICAS PARA ACTUALIZAR ORDEN - CON MÉTODOS MEJORADOS
+// CAMBIO 1: Usar método mejorado para planes
 router.put(
   '/order/planes',
   writeLimiter,
   authMiddleware(['admin']),
-  ABMController.createHandler('updateOrder', 'planes')
+  ABMController.updateOrderHandlerImproved('planes') // MÉTODO MEJORADO
 );
 
+// CAMBIO 2: Usar método mejorado para especialidades
 router.put(
   '/especialidades/order',
   writeLimiter,
   authMiddleware(['admin']),
-  ABMController.createHandler('updateOrder', 'especialidades')
+  ABMController.updateOrderHandlerImproved('especialidades') // MÉTODO MEJORADO
 );
 
+// CAMBIO 3: Usar método mejorado para categorías
 router.put(
   '/categorias/order',
   writeLimiter,
   authMiddleware(['admin']),
-  ABMController.createHandler('updateOrder', 'categorias')
+  ABMController.updateOrderHandlerImproved('categorias') // MÉTODO MEJORADO
 );
 
 module.exports = router;

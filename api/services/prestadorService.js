@@ -559,6 +559,7 @@ const PrestadorService = {
    * @async
    * @param {string} filePath - Ruta del archivo CSV
    * @param {Object} [options] - Opciones de configuración
+   * @param {boolean} [options.enablePhoneParsing=true] - Si aplicar parseo automático de teléfonos
    * @returns {Promise<Object>} - Resultados del proceso
    */
   processMassiveCSV: async (filePath, options = {}) => {
@@ -568,16 +569,23 @@ const PrestadorService = {
         throw new Error(`El archivo ${filePath} no existe`);
       }
 
+      // NUEVO: Extraer opción de parseo
+      const enablePhoneParsing = options.enablePhoneParsing !== false; // Por defecto true
+
       // Procesar el archivo con el repositorio
       const result = await PrestadorRepository.processMassiveCSVStream(
         filePath,
-        options
+        {
+          ...options,
+          enablePhoneParsing: enablePhoneParsing // NUEVO: Pasar al repositorio
+        }
       );
 
       return {
         success: true,
         ...result,
-        message: `Archivo CSV procesado exitosamente. ${result.totalProcessed} registros cargados.`,
+        enablePhoneParsing: enablePhoneParsing, // NUEVO: Incluir en resultado
+        message: `Archivo CSV procesado exitosamente. ${result.totalProcessed} registros cargados. Parseo de teléfonos: ${enablePhoneParsing ? 'aplicado' : 'omitido'}.`,
       };
     } catch (error) {
       console.error("Error en servicio processMassiveCSV:", error);
@@ -594,14 +602,17 @@ const PrestadorService = {
     }
   },
 
+  // 2. MODIFICAR prestadorService.js - Método handleCSVUpload
   /**
    * Maneja la carga y procesamiento de un archivo CSV subido
    * @async
    * @param {Object} file - Objeto de archivo subido (Multer)
    * @param {Function} [progressCallback] - Función para reportar progreso
+   * @param {Object} [options] - Opciones adicionales
+   * @param {boolean} [options.enablePhoneParsing=true] - Si aplicar parseo automático de teléfonos
    * @returns {Promise<Object>} - Resultado del procesamiento
    */
-  handleCSVUpload: async (file, progressCallback) => {
+  handleCSVUpload: async (file, progressCallback, options = {}) => {
     try {
       if (!file) {
         throw new Error("No se subió ningún archivo");
@@ -617,12 +628,16 @@ const PrestadorService = {
         throw new Error("El archivo es demasiado grande (máximo 100MB)");
       }
 
+      // NUEVO: Extraer opción de parseo
+      const enablePhoneParsing = options.enablePhoneParsing !== false; // Por defecto true
+
       // Mover el archivo a la carpeta de datos
       const destPath = path.join(dataDir, `upload_${Date.now()}.csv`);
       await fs.promises.rename(file.path, destPath);
 
       console.log(`Iniciando procesamiento de CSV: ${file.originalname}`);
       console.log(`Archivo guardado en: ${destPath}`);
+      console.log(`Parseo de teléfonos: ${enablePhoneParsing ? 'HABILITADO' : 'DESHABILITADO'}`);
 
       // Procesar el archivo con notificación de progreso
       const result = await PrestadorService.processMassiveCSV(destPath, {
@@ -632,6 +647,7 @@ const PrestadorService = {
             ...progress,
             fileName: file.originalname,
             fileSize: file.size,
+            enablePhoneParsing: enablePhoneParsing, // NUEVO: Incluir en progreso
             timestamp: new Date().toISOString()
           };
 
@@ -644,8 +660,9 @@ const PrestadorService = {
             console.log(`Procesando: ${progress.successful}/${progress.totalProcessed} exitosos, ${progress.failed} fallidos`);
           }
         },
-        batchSize: 2000, // Tamaño de lote optimizado
-        delimiter: ',',   // Delimitador por defecto
+        batchSize: 2000,
+        delimiter: ',',
+        enablePhoneParsing: enablePhoneParsing // NUEVO: Pasar opción al procesamiento
       });
 
       // Eliminar el archivo después de procesarlo
@@ -662,6 +679,7 @@ const PrestadorService = {
         ...result,
         fileName: file.originalname,
         fileSize: file.size,
+        enablePhoneParsing: enablePhoneParsing, // NUEVO: Incluir en resultado
         processingTime: new Date().toISOString()
       };
     } catch (error) {

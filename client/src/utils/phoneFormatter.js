@@ -1,9 +1,10 @@
 /**
- * Utilidades para formateo y normalización de teléfonos argentinos (versión completa final)
+ * Utilidades para formateo y normalización de teléfonos argentinos (Backend - Versión Mejorada)
  * Maneja todos los patrones telefónicos argentinos incluyendo casos especiales y edge cases
+ * @module utils/phoneFormatter
  */
 
-import { phoneNumbersData } from './phoneNumbersData';
+import { phoneNumbersData } from "./phoneNumbersData.js";
 
 // ============================================================================
 // UTILIDADES BÁSICAS
@@ -67,6 +68,18 @@ function isValidAreaCode(code) {
   );
 }
 
+/**
+ * Obtiene todos los códigos de área posibles desde la base de datos
+ * @returns {Array} - Array de códigos sin el 0 inicial
+ */
+function getAllAreaCodes() {
+  if (!phoneNumbersData) return [];
+
+  return [...new Set(phoneNumbersData.map(item =>
+    item.codigo.startsWith('0') ? item.codigo.substring(1) : item.codigo
+  ))].sort((a, b) => b.length - a.length); // Ordenar por longitud descendente
+}
+
 // ============================================================================
 // DETECCIÓN DE TIPOS Y CÓDIGOS
 // ============================================================================
@@ -113,7 +126,9 @@ function detectPhoneType(areaCode, number) {
 }
 
 /**
- * Detecta código de área en un número completo con manejo de casos especiales argentinos
+ * Detecta código de área en un número completo con manejo mejorado de casos argentinos
+ * REGLA 1: Líneas gratuitas (0800/0810/0300) tienen PRIORIDAD sobre regla de "0 = fijo"
+ * REGLA 2: Si el número comienza con "0" y NO es gratuito = TELÉFONO FIJO
  * @param {string} number - Número limpio
  * @param {string} provincia - Provincia para validación (opcional)
  * @param {string} localidad - Localidad para validación (opcional)
@@ -122,32 +137,39 @@ function detectPhoneType(areaCode, number) {
 function detectAreaCodeInNumber(number, provincia = null, localidad = null) {
   const clean = cleanPhone(number);
 
-  // Casos especiales: líneas gratuitas (incluir espacios)
+  // Casos especiales: números muy cortos (incompletos)
+  if (clean.length < 6) {
+    return {
+      areaCode: '',
+      number: clean,
+      tipo: 'fijo',
+      isIncomplete: true
+    };
+  }
+
+  // PRIORIDAD 1: Casos especiales: líneas gratuitas (ANTES de la regla del 0)
   if (clean.match(/^0?(800|810|300)/)) {
     const areaCode = clean.match(/^0?(800|810|300)/)[1];
     const remainingNumber = clean.replace(/^0?(800|810|300)/, '');
     return {
       areaCode: '0' + areaCode,
       number: remainingNumber,
-      tipo: 'gratuito'
+      tipo: 'gratuito' // LÍNEA GRATUITA tiene prioridad
     };
   }
 
   // CASO ESPECIAL: Números que empiezan con 15 seguido de código (15XXXXXXXXX)
   if (clean.startsWith('15') && clean.length >= 10) {
-    // Caso: 1569935570 -> podría ser 15 + código + número
     const withoutPrefix = clean.substring(2);
 
     // Intentar detectar código de área en el resto
-    for (let len = 4; len >= 2; len--) {
-      const potentialCode = withoutPrefix.substring(0, len);
-      const remainingNumber = withoutPrefix.substring(len);
-
-      if (remainingNumber.length >= 6 && remainingNumber.length <= 8) {
-        // Validar código si tenemos base de datos
-        if (isValidAreaCode(potentialCode) || !phoneNumbersData || potentialCode === '11') {
+    const allCodes = getAllAreaCodes();
+    for (const code of allCodes) {
+      if (withoutPrefix.startsWith(code)) {
+        const remainingNumber = withoutPrefix.substring(code.length);
+        if (remainingNumber.length >= 6 && remainingNumber.length <= 8) {
           return {
-            areaCode: potentialCode,
+            areaCode: code,
             number: remainingNumber,
             tipo: 'celular'
           };
@@ -171,40 +193,40 @@ function detectAreaCodeInNumber(number, provincia = null, localidad = null) {
     }
   }
 
-  // CASO ESPECIAL: Números con formato 011 + 15 + número (01115XXXXXXXX)
-  if (clean.startsWith('011') && clean.length >= 12) {
-    const afterCode = clean.substring(3);
-    if (afterCode.startsWith('15')) {
-      const actualNumber = afterCode.substring(2);
-      return {
-        areaCode: '11',
-        number: actualNumber,
-        tipo: 'celular'
-      };
-    }
-  }
-
-  // Para números que empiezan con 0 (formato completo con código)
+  // REGLA 2: Para números que empiezan con 0 (formato completo con código)
+  // IMPORTANTE: Solo aplicar "fijo" si NO es línea gratuita (ya verificada arriba)
   if (clean.startsWith('0')) {
-    // Probar códigos de diferentes longitudes (hasta 5 dígitos)
-    for (let len = 6; len >= 3; len--) {
-      const potentialCode = clean.substring(0, len);
-      const remainingNumber = clean.substring(len);
+    const allCodes = getAllAreaCodes();
 
-      if (remainingNumber.length >= 6 && remainingNumber.length <= 10) {
-        const normalizedCode = potentialCode.startsWith('0') && potentialCode.length > 1
-          ? potentialCode.substring(1)
-          : potentialCode;
-
-        // Validar código en base de datos si está disponible
-        if (isValidAreaCode(normalizedCode) || !phoneNumbersData) {
+    // Probar códigos ordenados por longitud (más largos primero)
+    for (const code of allCodes) {
+      const fullCode = '0' + code;
+      if (clean.startsWith(fullCode)) {
+        const remainingNumber = clean.substring(fullCode.length);
+        if (remainingNumber.length >= 6 && remainingNumber.length <= 10) {
           return {
-            areaCode: normalizedCode,
+            areaCode: code, // Devolver sin el 0
             number: remainingNumber,
-            tipo: detectPhoneType(normalizedCode, remainingNumber)
+            tipo: 'fijo' // FIJO porque empieza con 0 y no es gratuito
           };
         }
       }
+    }
+
+    // Si no se encontró coincidencia exacta, usar heurística por longitud
+    if (clean.length >= 10) {
+      let areaCodeLength = 3; // Por defecto 3 dígitos después del 0
+      if (clean.length === 11) areaCodeLength = 3; // 0XXX XXXXXXX
+      if (clean.length === 12) areaCodeLength = 4; // 0XXXX XXXXXXX
+
+      const detectedCode = clean.substring(1, areaCodeLength + 1); // Sin el 0 inicial
+      const remainingNumber = clean.substring(areaCodeLength + 1);
+
+      return {
+        areaCode: detectedCode,
+        number: remainingNumber,
+        tipo: 'fijo' // FIJO porque empieza con 0 y no es gratuito
+      };
     }
   }
 
@@ -226,21 +248,29 @@ function detectAreaCodeInNumber(number, provincia = null, localidad = null) {
     };
   }
 
-  // Para números sin 0 inicial
-  for (let len = 4; len >= 2; len--) {
-    const potentialCode = clean.substring(0, len);
-    const remainingNumber = clean.substring(len);
-
-    if (remainingNumber.length >= 6 && remainingNumber.length <= 8) {
-      // Validar código si tenemos base de datos
-      if (isValidAreaCode(potentialCode) || !phoneNumbersData) {
+  // LÓGICA PRINCIPAL: Para números sin 0 inicial - usar base de datos de códigos
+  const allCodes = getAllAreaCodes();
+  for (const code of allCodes) {
+    if (clean.startsWith(code)) {
+      const remainingNumber = clean.substring(code.length);
+      if (remainingNumber.length >= 6 && remainingNumber.length <= 8) {
         return {
-          areaCode: potentialCode,
+          areaCode: code,
           number: remainingNumber,
-          tipo: detectPhoneType(potentialCode, remainingNumber)
+          tipo: detectPhoneType(code, remainingNumber)
         };
       }
     }
+  }
+
+  // Si no se pudo detectar y es un número corto, marcarlo como incompleto
+  if (clean.length < 8) {
+    return {
+      areaCode: '',
+      number: clean,
+      tipo: 'fijo',
+      isIncomplete: true
+    };
   }
 
   return null;
@@ -270,23 +300,19 @@ function processLongNumberWith15(clean, provincia = null, localidad = null) {
   }
 
   // Caso general: buscar "15" en posiciones 2-4
-  for (let pos = 2; pos <= 4 && pos < clean.length - 2; pos++) {
-    if (clean.substring(pos, pos + 2) === '15') {
-      const potentialCode = clean.substring(0, pos);
-      const actualNumber = clean.substring(0, pos) + clean.substring(pos + 2);
+  const allCodes = getAllAreaCodes();
 
-      // Validar que el código sea válido
-      if (isValidAreaCode(potentialCode) || (potentialCode === '11')) {
-        const finalNumber = clean.substring(pos + 2);
+  for (const code of allCodes) {
+    if (clean.startsWith(code + '15')) {
+      const finalNumber = clean.substring(code.length + 2); // +2 para remover "15"
 
-        // Verificar que el número restante tenga sentido (6-8 dígitos)
-        if (finalNumber.length >= 6 && finalNumber.length <= 8) {
-          return {
-            areaCode: potentialCode,
-            number: finalNumber,
-            tipo: 'celular'
-          };
-        }
+      // Verificar que el número restante tenga sentido (6-8 dígitos)
+      if (finalNumber.length >= 6 && finalNumber.length <= 8) {
+        return {
+          areaCode: code,
+          number: finalNumber,
+          tipo: 'celular'
+        };
       }
     }
   }
@@ -312,9 +338,6 @@ function processHistoricalCellularPattern(phoneText) {
         ? codePart.substring(1)
         : codePart;
 
-      // CASO ESPECIAL: 0266 15 44329679
-      // Si el número es muy largo (8+ dígitos), podríamos tener un error de tipeo
-      // Asumimos que es correcto y lo formateamos como celular del interior
       return {
         areaCode,
         number: numberPart,
@@ -325,6 +348,156 @@ function processHistoricalCellularPattern(phoneText) {
   }
 
   return null;
+}
+
+
+/**
+ * Procesa números con formato especial que incluyen puntos, comas Y números separados por espacios
+ * ACTUALIZADO: Respeta la prioridad de líneas gratuitas
+ * @param {string} phoneText - Texto con números especiales
+ * @returns {Array} - Array de objetos de teléfono
+ */
+function processComplexNumberPattern(phoneText) {
+  const results = [];
+  const clean = phoneText.trim();
+
+  // NUEVO: Patrón para números separados por espacios que empiezan con 0
+  // Ejemplo: "03466494314 03404483210" O "08005556722 08108883226"
+  const spacePattern = /0\d{9,11}/g;
+  const spaceMatches = clean.match(spacePattern);
+
+  if (spaceMatches && spaceMatches.length > 1) {
+    // Encontramos múltiples números que empiezan con 0
+    spaceMatches.forEach(numberStr => {
+      const detection = detectAreaCodeInNumber(numberStr);
+      if (detection) {
+        results.push({
+          areaCode: detection.areaCode,
+          number: detection.number,
+          tipo: detection.tipo // Usar el tipo detectado (puede ser 'gratuito' o 'fijo')
+        });
+      }
+    });
+
+    if (results.length > 0) {
+      return results;
+    }
+  }
+
+  // Patrón original para números con puntos y comas como "0114951.5842,7318"
+  const complexPattern = /0?(\d{2,4})(\d{4})\.(\d{4}),(\d{4})/g;
+  let match;
+
+  while ((match = complexPattern.exec(phoneText)) !== null) {
+    const [fullMatch, areaCode, baseNumber, firstExtension, secondExtension] = match;
+
+    // Verificar si es línea gratuita antes de asumir fijo
+    const isGratuito = fullMatch.match(/^0?(800|810|300)/);
+    const startsWith0 = fullMatch.startsWith('0');
+
+    // Normalizar código de área
+    const normalizedAreaCode = areaCode;
+
+    // Crear números completos
+    const firstNumber = baseNumber + firstExtension;
+    const secondNumber = baseNumber + secondExtension;
+
+    // Determinar tipo correctamente
+    let tipoDetectado;
+    if (isGratuito) {
+      tipoDetectado = 'gratuito';
+    } else if (startsWith0) {
+      tipoDetectado = 'fijo';
+    } else {
+      tipoDetectado = detectPhoneType(normalizedAreaCode, firstNumber);
+    }
+
+    results.push({
+      areaCode: normalizedAreaCode,
+      number: firstNumber,
+      tipo: tipoDetectado
+    });
+
+    results.push({
+      areaCode: normalizedAreaCode,
+      number: secondNumber,
+      tipo: tipoDetectado
+    });
+  }
+
+  // Si encontró el patrón de puntos/comas, devolver esos resultados
+  if (results.length > 0) {
+    return results;
+  }
+
+  // Patrón para múltiples elementos separados por espacios
+  const parts = clean.split(/\s+/).filter(p => p && /\d/.test(p));
+
+  // CASO ESPECIAL: Si hay múltiples partes y cada una empieza con 0
+  if (parts.length >= 2) {
+    const allStartWithZero = parts.every(part => part.startsWith('0') && part.length >= 10);
+
+    if (allStartWithZero) {
+      // Cada parte es un número completo con código de área
+      parts.forEach(part => {
+        const detection = detectAreaCodeInNumber(part);
+        if (detection) {
+          results.push({
+            areaCode: detection.areaCode,
+            number: detection.number,
+            tipo: detection.tipo // Usar el tipo detectado (gratuito, fijo, etc.)
+          });
+        }
+      });
+
+      if (results.length > 0) {
+        return results;
+      }
+    }
+  }
+
+  // Patrón: código + número1 + número2 + número3... (para espacios múltiples)
+  if (parts.length >= 3) {
+    const [code, ...numbers] = parts.map(cleanPhone);
+
+    if (code.length <= 5) {
+      // Determinar tipo basado en detección, no solo en si tiene 0
+      const firstPart = parts[0];
+      const sampleDetection = detectAreaCodeInNumber(firstPart + (numbers[0] || ''));
+      const detectedType = sampleDetection ? sampleDetection.tipo : 'fijo';
+
+      const areaCode = code.startsWith('0') ? code.substring(1) : code;
+
+      // Primer número completo
+      if (numbers[0] && numbers[0].length >= 6) {
+        results.push({
+          areaCode,
+          number: numbers[0],
+          tipo: detectedType
+        });
+
+        // Números adicionales (pueden ser abreviaciones)
+        for (let i = 1; i < numbers.length; i++) {
+          const num = numbers[i];
+          let fullNumber = num;
+
+          // Si es corto, podría ser abreviación del primero
+          if (num.length <= 4 && numbers[0].length >= 6) {
+            const baseLength = numbers[0].length - num.length;
+            fullNumber = numbers[0].substring(0, baseLength) + num;
+          }
+
+          results.push({
+            areaCode,
+            number: fullNumber,
+            tipo: detectedType
+          });
+        }
+      }
+    }
+  }
+
+  return results.length > 0 ? results : null;
 }
 
 /**
@@ -349,7 +522,7 @@ function processIndependentNumbers(parts, provincia = null, localidad = null) {
         const [codePart, numberPart] = spaceParts.map(cleanPhone);
 
         // Si el primer parte parece un código de área (3-4 dígitos) y el segundo un número (6-8 dígitos)
-        if (codePart.length >= 3 && codePart.length <= 4 && numberPart.length >= 6 && numberPart.length <= 8) {
+        if (codePart.length >= 3 && codePart.length <= 5 && numberPart.length >= 6 && numberPart.length <= 8) {
           const areaCode = codePart.startsWith('0') && codePart.length > 1
             ? codePart.substring(1)
             : codePart;
@@ -373,7 +546,7 @@ function processIndependentNumbers(parts, provincia = null, localidad = null) {
       results.push(detection);
 
       // Guardar el primer código de área detectado para números posteriores
-      if (index === 0) {
+      if (index === 0 && !detection.isIncomplete) {
         detectedAreaCode = detection.areaCode;
       }
     } else {
@@ -405,6 +578,15 @@ function processIndependentNumbers(parts, provincia = null, localidad = null) {
           assumedBA: true
         });
       }
+      // Números muy cortos - marcar como incompletos
+      else if (cleanPart.length < 6) {
+        results.push({
+          areaCode: '',
+          number: cleanPart,
+          tipo: 'fijo',
+          isIncomplete: true
+        });
+      }
     }
   });
 
@@ -420,6 +602,11 @@ function validateAndAdjustPhone(phoneResult) {
   if (!phoneResult) return null;
 
   const { areaCode, number, tipo } = phoneResult;
+
+  // No ajustar números incompletos
+  if (phoneResult.isIncomplete) {
+    return phoneResult;
+  }
 
   // Ajuste para números muy largos del interior
   if (tipo === 'celular' && areaCode !== '11' && number.length > 8) {
@@ -458,13 +645,20 @@ function validateAndAdjustPhone(phoneResult) {
  */
 function processComplexArgentinePattern(phoneText) {
   const clean = phoneText.trim();
+
+  // Primero verificar patrón complejo con puntos y comas
+  const complexNumbers = processComplexNumberPattern(clean);
+  if (complexNumbers.length > 0) {
+    return complexNumbers;
+  }
+
   const parts = clean.split(/\s+/).filter(p => p && /\d/.test(p));
 
   // Patrón: código + número1 + número2 + número3... (para espacios múltiples)
   if (parts.length >= 3) {
     const [code, ...numbers] = parts.map(cleanPhone);
 
-    if (code.length <= 4) {
+    if (code.length <= 5) {
       const areaCode = code.startsWith('0') && code.length > 1 ? code.substring(1) : code;
       const results = [];
 
@@ -517,7 +711,7 @@ function processComplexArgentinePattern(phoneText) {
     }
 
     // Patrón normal: código + número
-    if (firstPart.length <= 4 && secondPart.length >= 6) {
+    if (firstPart.length <= 5 && secondPart.length >= 6) {
       const areaCode = firstPart.startsWith('0') && firstPart.length > 1
         ? firstPart.substring(1)
         : firstPart;
@@ -566,6 +760,7 @@ function processAbbreviatedNumbers(fullNumber, shortDigits) {
 
 /**
  * Detecta y procesa patrones especiales en el texto de teléfono
+ * ACTUALIZADO: Mejor manejo de números separados por espacios
  * @param {string} phoneText - Texto del teléfono
  * @param {string} provincia - Provincia para contexto (opcional)
  * @param {string} localidad - Localidad para contexto (opcional)
@@ -612,8 +807,8 @@ function detectSpecialPatterns(phoneText, provincia = null, localidad = null) {
           tipo: 'gratuito'
         }));
       } else {
-        // Patrón complejo: código + número + número (011 44609032 9036)
-        const complexPattern = processComplexArgentinePattern(mainPart);
+        // CASE ESPECIAL 3: Patrón complejo ACTUALIZADO
+        const complexPattern = processComplexNumberPattern(mainPart);
         if (complexPattern) {
           complexPattern.forEach(pattern => {
             const validated = validateAndAdjustPhone(pattern);
@@ -623,7 +818,7 @@ function detectSpecialPatterns(phoneText, provincia = null, localidad = null) {
           // Patrón de múltiples números separados por comas
           const parts = mainPart.split(/[,;]+/).map(p => p.trim()).filter(p => p);
 
-          // CASO ESPECIAL 3: Verificar si son números independientes o locales
+          // CASO ESPECIAL 4: Verificar si son números independientes o locales
           const processedNumbers = processIndependentNumbers(parts, provincia, localidad);
 
           if (processedNumbers.length > 0) {
@@ -637,7 +832,7 @@ function detectSpecialPatterns(phoneText, provincia = null, localidad = null) {
             const firstPart = parts[0];
             if (firstPart) {
               const firstDetection = detectAreaCodeInNumber(cleanPhone(firstPart), provincia, localidad);
-              if (firstDetection) {
+              if (firstDetection && !firstDetection.isIncomplete) {
                 mainAreaCode = firstDetection.areaCode;
               }
             }
@@ -705,27 +900,171 @@ function detectSpecialPatterns(phoneText, provincia = null, localidad = null) {
 }
 
 /**
- * Función principal de normalización
+ * Función principal de normalización mejorada
  * @param {string} phoneText - Texto con teléfonos
  * @param {string} provincia - Provincia para contexto (opcional)
  * @param {string} localidad - Localidad para contexto (opcional)
  * @returns {string} - JSON con array de teléfonos normalizados
  */
-export function normalizePhoneWithPrefixes(phoneText, provincia = null, localidad = null) {
+function normalizePhoneWithPrefixes(phoneText, provincia = null, localidad = null) {
   if (!phoneText) return JSON.stringify([]);
 
-  const detectedPatterns = detectSpecialPatterns(phoneText, provincia, localidad);
+  try {
+    const detectedPatterns = detectSpecialPatterns(phoneText, provincia, localidad);
 
-  const phones = detectedPatterns.map((pattern, index) => ({
-    tipo: pattern.tipo || 'fijo',
-    codigoArea: pattern.areaCode || '',
-    numero: pattern.number || '',
-    extension: extractExtension(phoneText),
-    descripcion: pattern.isWhatsApp ? 'WhatsApp' :
-      index === 0 ? 'Principal' : `Teléfono ${index + 1}`
-  })).filter(phone => phone.numero);
+    const phones = detectedPatterns.map((pattern, index) => ({
+      tipo: pattern.tipo || 'fijo',
+      codigoArea: pattern.areaCode || '',
+      numero: pattern.number || '',
+      extension: extractExtension(phoneText),
+      descripcion: pattern.isWhatsApp ? 'WhatsApp' :
+        pattern.isIncomplete ? 'Incompleto' :
+          index === 0 ? 'Principal' : `Teléfono ${index + 1}`
+    })).filter(phone => phone.numero);
 
-  return JSON.stringify(phones);
+    return JSON.stringify(phones);
+  } catch (error) {
+    console.warn('Error en normalizePhoneWithPrefixes:', error);
+    // Fallback al método original si hay error
+    return normalizeOldFormatPhone(phoneText);
+  }
+}
+
+/**
+ * Normaliza un formato antiguo de teléfono al formato JSON (fallback mejorado)
+ */
+function normalizeOldFormatPhone(phone, index = 0) {
+  const cleanNumber = cleanPhone(phone);
+
+  if (!cleanNumber || cleanNumber.length < 6) {
+    return JSON.stringify([{
+      tipo: "fijo",
+      codigoArea: "",
+      numero: cleanNumber,
+      extension: extractExtension(phone),
+      descripcion: "Incompleto"
+    }]);
+  }
+
+  let tipo = "fijo";
+  let codigoArea = "";
+  let numero = cleanNumber;
+
+  // Detectar 0800/0810/0300
+  if (cleanNumber.startsWith("0800") || cleanNumber.startsWith("0810") || cleanNumber.startsWith("0300")) {
+    tipo = "gratuito";
+    codigoArea = cleanNumber.substring(0, 4);
+    numero = cleanNumber.substring(4);
+  }
+  // Detectar celular con 15 al principio
+  else if (cleanNumber.startsWith("15") && cleanNumber.length >= 10) {
+    tipo = "celular";
+    codigoArea = "11"; // Asumimos Buenos Aires
+    numero = cleanNumber.substring(2);
+  }
+  // Número que empieza con 0 (posible código de área con 0)
+  else if (cleanNumber.startsWith("0") && cleanNumber.length >= 10) {
+    const allCodes = getAllAreaCodes();
+
+    // Intentar identificar el código de área usando la base de datos
+    for (const code of allCodes) {
+      const fullCode = '0' + code;
+      if (cleanNumber.startsWith(fullCode)) {
+        const remainingNumber = cleanNumber.substring(fullCode.length);
+        if (remainingNumber.length >= 6 && remainingNumber.length <= 8) {
+          codigoArea = fullCode;
+          numero = remainingNumber;
+          tipo = detectPhoneType(code, remainingNumber);
+          break;
+        }
+      }
+    }
+
+    // Si no se encontró, usar heurística
+    if (!codigoArea) {
+      if (cleanNumber.length === 11) {
+        // Probablemente 0XX XXXX-XXXX
+        codigoArea = cleanNumber.substring(0, 3);
+        numero = cleanNumber.substring(3);
+      } else if (cleanNumber.length === 12) {
+        // Probablemente 0XXX XXXX-XXXX
+        codigoArea = cleanNumber.substring(0, 4);
+        numero = cleanNumber.substring(4);
+      }
+    }
+  }
+  // Número de 10 dígitos (posible celular)
+  else if (cleanNumber.length === 10) {
+    const allCodes = getAllAreaCodes();
+
+    // Buscar código que coincida
+    for (const code of allCodes) {
+      if (cleanNumber.startsWith(code)) {
+        const remainingNumber = cleanNumber.substring(code.length);
+        if (remainingNumber.length >= 6 && remainingNumber.length <= 8) {
+          codigoArea = code;
+          numero = remainingNumber;
+          tipo = detectPhoneType(code, remainingNumber);
+          break;
+        }
+      }
+    }
+
+    // Si no se encontró, usar heurística por longitud
+    if (!codigoArea) {
+      if (cleanNumber.startsWith('11')) {
+        codigoArea = '11';
+        numero = cleanNumber.substring(2);
+        tipo = numero.length === 8 ? "celular" : "fijo";
+      } else {
+        // Por defecto, asumir código de 2 dígitos
+        codigoArea = cleanNumber.substring(0, 2);
+        numero = cleanNumber.substring(2);
+      }
+    }
+  }
+  // Números más cortos
+  else if (cleanNumber.length >= 6) {
+    const allCodes = getAllAreaCodes();
+
+    // Intentar detectar código de área
+    for (const code of allCodes) {
+      if (cleanNumber.startsWith(code)) {
+        const remainingNumber = cleanNumber.substring(code.length);
+        if (remainingNumber.length >= 4 && remainingNumber.length <= 8) {
+          codigoArea = code;
+          numero = remainingNumber;
+          tipo = detectPhoneType(code, remainingNumber);
+          break;
+        }
+      }
+    }
+
+    // Si no se encontró, usar heurística
+    if (!codigoArea) {
+      if (cleanNumber.length === 8) {
+        // Número local sin código de área - asumir Buenos Aires
+        codigoArea = '11';
+        numero = cleanNumber;
+        tipo = cleanNumber.startsWith('4') ? 'fijo' : 'celular';
+      } else {
+        // Asumir código de 2-3 dígitos basado en la longitud
+        const codeLength = cleanNumber.length === 9 ? 2 : 3;
+        codigoArea = cleanNumber.substring(0, codeLength);
+        numero = cleanNumber.substring(codeLength);
+      }
+    }
+  }
+
+  const phoneObj = {
+    tipo,
+    codigoArea,
+    numero,
+    extension: extractExtension(phone),
+    descripcion: index === 0 ? "Principal" : `Teléfono ${index + 1}`
+  };
+
+  return JSON.stringify([phoneObj]);
 }
 
 // ============================================================================
@@ -737,10 +1076,16 @@ export function normalizePhoneWithPrefixes(phoneText, provincia = null, localida
  * @param {Object} phone - Objeto de teléfono
  * @returns {string} - Teléfono formateado
  */
-export function formatPhoneForDisplay(phone) {
+function formatPhoneForDisplay(phone) {
   if (!phone) return '';
 
-  const { tipo, codigoArea, numero, extension, descripcion, displayAreaCode, assumedBA, adjusted, isLocal } = phone;
+  const { tipo, codigoArea, numero, extension, descripcion, displayAreaCode, assumedBA, adjusted, isLocal, isIncomplete } = phone;
+
+  // Si está incompleto, mostrar tal como está
+  if (isIncomplete) {
+    return numero || '';
+  }
+
   let formatted = '';
 
   // Usar displayAreaCode si está disponible, sino usar codigoArea
@@ -776,7 +1121,7 @@ export function formatPhoneForDisplay(phone) {
         // Otros códigos celular: (123) 456-7890
         const displayCode = effectiveAreaCode;
         if (numero.length >= 6) {
-          // MEJORA: Formateo inteligente según longitud del número
+          // Formateo inteligente según longitud del número
           let splitAt;
           if (numero.length === 8) {
             splitAt = 4; // 1234-5678
@@ -799,7 +1144,7 @@ export function formatPhoneForDisplay(phone) {
         if (numero.length >= 7) {
           const splitAt = numero.length === 8 ? 4 : 3;
 
-          // AJUSTE: Si se asumió Buenos Aires, usar formato celular
+          // Si se asumió Buenos Aires, usar formato celular
           if (assumedBA) {
             formatted = `${displayCode} ${numero.substring(0, splitAt)}-${numero.substring(splitAt)}`;
           } else {
@@ -810,14 +1155,14 @@ export function formatPhoneForDisplay(phone) {
         }
       } else {
         // Otros códigos fijo: (0123) 456-789
-        // AJUSTE: Para números locales, mostrar el código con 0 inicial
+        // Para números locales, mostrar el código con 0 inicial
         const displayCode = isLocal ?
           (effectiveAreaCode.startsWith('0') ? effectiveAreaCode : '0' + effectiveAreaCode) :
           (effectiveAreaCode.startsWith('0') ? effectiveAreaCode :
             (effectiveAreaCode.length <= 3 ? '0' + effectiveAreaCode : effectiveAreaCode));
 
         if (numero.length >= 6) {
-          // MEJORA: Formateo más inteligente para números locales y códigos específicos
+          // Formateo más inteligente para números locales y códigos específicos
           let splitAt;
           if (isLocal && numero.length === 7) {
             // Para números locales de 7 dígitos: 421-9296
@@ -841,15 +1186,10 @@ export function formatPhoneForDisplay(phone) {
     formatted += ` int. ${extension}`;
   }
 
-  // Agregar prefijo de descripción si es relevante
-  if (descripcion === 'WhatsApp') {
-    formatted = `${descripcion}: ${formatted}`;
+  // Agregar prefijo de descripción si es WhatsApp (por descripción, no por tipo)
+  if (descripcion && descripcion.toLowerCase().includes('whatsapp')) {
+    formatted = `WhatsApp: ${formatted}`;
   }
-
-  // Agregar indicadores de procesamiento especial (opcional, para debug)
-  // if (assumedBA) formatted += ' (BA assumido)';
-  // if (adjusted) formatted += ' (ajustado)';
-  // if (isLocal) formatted += ' (local)';
 
   return formatted;
 }
@@ -859,14 +1199,14 @@ export function formatPhoneForDisplay(phone) {
  * @param {string|Array} phones - JSON string o array de teléfonos
  * @returns {string} - Teléfonos formateados separados por coma
  */
-export function formatPhonesForDisplay(phones) {
-  if (!phones) return '';
+function formatPhonesForDisplay(phones) {
+  if (!phones) return 'No disponible';
 
   try {
     const parsed = typeof phones === 'string' ? JSON.parse(phones) : phones;
 
     if (Array.isArray(parsed)) {
-      return parsed.map(formatPhoneForDisplay).join(', ');
+      return parsed.map(formatPhoneForDisplay).join(' | ');
     }
 
     return phones.toString();
@@ -875,323 +1215,449 @@ export function formatPhonesForDisplay(phones) {
   }
 }
 
+/**
+ * Versión simplificada para mostrar solo el primer teléfono (útil para tablas compactas)
+ * @param {string} phones - JSON de teléfonos o string con formato antiguo
+ * @returns {string} - Primer teléfono formateado
+ */
+function formatFirstPhoneForDisplay(phones) {
+  if (!phones) return 'No disponible';
+
+  try {
+    const parsed = typeof phones === 'string' ? JSON.parse(phones) : phones;
+
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      const firstPhone = formatPhoneForDisplay(parsed[0]);
+      const additionalCount = parsed.length - 1;
+
+      if (additionalCount > 0) {
+        return `${firstPhone} (+${additionalCount} más)`;
+      }
+      return firstPhone;
+    }
+
+    return phones || 'No disponible';
+  } catch (e) {
+    // Formato antiguo - tomar solo el primer número
+    if (typeof phones === 'string' && phones.trim()) {
+      const firstPhone = phones.split(/[,;\/]+/)[0].trim();
+      return firstPhone || 'No disponible';
+    }
+    return 'No disponible';
+  }
+}
+
+/**
+ * Formatea teléfonos para visualización en PDF
+ * @param {string} phoneValue - Valor de teléfono (puede ser JSON o formato antiguo)
+ * @returns {string} - Teléfono formateado para PDF
+ */
+function formatPhoneForPDF(phoneValue) {
+  if (!phoneValue) return '';
+
+  try {
+    // Si parece ser JSON, procesar como tal
+    if (phoneValue.startsWith('[') ||
+      (phoneValue.startsWith('"') && phoneValue.indexOf('[') === 1)) {
+      // Si está envuelto en comillas adicionales, extraer el JSON interno
+      let jsonStr = phoneValue;
+      if (phoneValue.startsWith('"')) {
+        jsonStr = JSON.parse(phoneValue);
+      }
+
+      // Parsear el JSON
+      const phones = JSON.parse(jsonStr);
+
+      if (!Array.isArray(phones) || phones.length === 0) return '';
+
+      // Formatear cada teléfono
+      return phones.map(phone => {
+        // Si está incompleto, solo mostrar el número
+        if (phone.descripcion === 'Incompleto') {
+          return phone.numero || '';
+        }
+
+        // Determinar el prefijo según el tipo
+        let tipo = '';
+        if (phone.tipo === 'celular') {
+          tipo = 'Cel:';
+        } else if (phone.tipo === 'whatsapp') {
+          tipo = 'WhatsApp:';
+        } else if (phone.tipo === 'gratuito') {
+          tipo = ''; // Las líneas gratuitas no llevan prefijo
+        } else {
+          tipo = 'Tel:'; // Fijo y otros tipos
+        }
+
+        // Formatear según tipo
+        let numero = '';
+        if (phone.tipo === 'gratuito' && phone.codigoArea && phone.codigoArea.startsWith('0')) {
+          // Líneas gratuitas: 0800-123-4567
+          const n = phone.numero || '';
+          if (n.length >= 6) {
+            numero = `${phone.codigoArea}-${n.slice(0,3)}-${n.slice(3)}`;
+          } else {
+            numero = `${phone.codigoArea}-${n}`;
+          }
+        } else {
+          // Otros tipos: código área número
+          const n = phone.numero || '';
+          const area = phone.codigoArea || '';
+
+          if (n && n.length > 4) {
+            // Formatear como: 11 1234-5678
+            numero = `${area} ${n.slice(0, n.length-4)}-${n.slice(-4)}`;
+          } else if (n && n.length > 0) {
+            // Para números más cortos
+            numero = `${area} ${n}`;
+          } else {
+            numero = area;
+          }
+        }
+
+        // Añadir extensión si existe
+        if (phone.extension) {
+          numero += ` int:${phone.extension}`;
+        }
+
+        // No agregar descripción adicional si ya está incluida en el prefijo
+        let desc = '';
+        if (phone.descripcion && !phone.descripcion.toLowerCase().includes('whatsapp') && phone.descripcion !== 'Principal' && phone.descripcion !== 'Incompleto') {
+          desc = ` (${phone.descripcion})`;
+        }
+
+        return `${tipo} ${numero}${desc}`.trim();
+      }).join(' | ');
+    } else {
+      // Si no es JSON, formatear texto plano básico
+      // Dividir por separadores comunes
+      const parts = phoneValue.split(/[,;\/]+/).map(p => p.trim()).filter(p => p);
+      return parts.join(' | ');
+    }
+  } catch (e) {
+    console.warn(`Error al formatear teléfono para PDF: ${e.message}`);
+    // Si hay error, devolver el valor original
+    return phoneValue;
+  }
+}
+
 // ============================================================================
-// FUNCIONES DE COMPATIBILIDAD Y UTILIDADES
+// FUNCIONES DE COMPATIBILIDAD Y CONVERSIÓN
 // ============================================================================
 
-export function phoneJsonToCSVFormat(phoneJson) {
+/**
+ * Convierte un JSON de teléfonos al formato estructurado para CSV
+ * @param {string} phoneJson - JSON de teléfonos o string con formato antiguo
+ * @returns {string} - Formato estructurado para CSV
+ */
+function phoneJsonToCSVFormat(phoneJson) {
   if (!phoneJson) return '';
 
   try {
     const phones = typeof phoneJson === 'string' ? JSON.parse(phoneJson) : phoneJson;
-    if (!Array.isArray(phones)) return phoneJson;
+    if (!Array.isArray(phones)) return phoneJson; // Si no es array, devolver como está
 
-    return phones.map(p =>
-      `type:${p.tipo||'fijo'}|area:${p.codigoArea||''}|num:${p.numero||''}|ext:${p.extension||''}|desc:${p.descripcion||''}`
-    ).join(';');
+    return phones.map(phone => {
+      return `type:${phone.tipo || 'fijo'}|area:${phone.codigoArea || ''}|num:${phone.numero || ''}|ext:${phone.extension || ''}|desc:${phone.descripcion || ''}`;
+    }).join(';');
   } catch (e) {
+    // Si hay error en el parsing, devolver el valor original
     return phoneJson;
   }
 }
 
-export function csvFormatToPhoneJson(csvValue) {
+/**
+ * Convierte un formato CSV estructurado a JSON de teléfonos
+ * @param {string} csvValue - Valor del CSV (puede ser formato estructurado o antiguo)
+ * @returns {string} - JSON de teléfonos
+ */
+function csvFormatToPhoneJson(csvValue) {
   if (!csvValue) return JSON.stringify([]);
 
+  // Primero verificar si ya es JSON
   try {
     const parsed = JSON.parse(csvValue);
-    if (Array.isArray(parsed)) return csvValue;
-  } catch (e) {}
+    if (Array.isArray(parsed)) {
+      // Ya está en formato JSON, devolverlo tal cual
+      return csvValue;
+    }
+  } catch (e) {
+    // No es JSON, continuar con el procesamiento
+  }
 
+  // Verificar si tiene el formato estructurado
   if (csvValue.includes('type:') && csvValue.includes('|area:')) {
     const phones = csvValue.split(';').map(phoneStr => {
+      const parts = phoneStr.split('|');
       const phone = {};
-      phoneStr.split('|').forEach(part => {
+
+      parts.forEach(part => {
         const [key, value] = part.split(':');
-        const mapping = {
-          type: 'tipo',
-          area: 'codigoArea',
-          num: 'numero',
-          ext: 'extension',
-          desc: 'descripcion'
-        };
-        if (mapping[key]) phone[mapping[key]] = value || null;
+        switch (key) {
+          case 'type': phone.tipo = value; break;
+          case 'area': phone.codigoArea = value; break;
+          case 'num': phone.numero = value; break;
+          case 'ext': phone.extension = value || null; break;
+          case 'desc': phone.descripcion = value || null; break;
+        }
       });
+
       return phone;
     });
+
     return JSON.stringify(phones);
   }
 
+  // Si no tiene el formato estructurado, usar la función de normalización mejorada
   return normalizePhoneWithPrefixes(csvValue);
 }
 
-export function isPhoneJsonFormat(value) {
+/**
+ * Comprueba si un valor de teléfono está en formato JSON
+ * @param {string} value - Valor a comprobar
+ * @returns {boolean} - true si es formato JSON, false si es formato antiguo
+ */
+function isPhoneJsonFormat(value) {
+  if (!value) return false;
+
   try {
-    return Array.isArray(JSON.parse(value));
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed);
   } catch (e) {
     return false;
   }
 }
 
-export function validatePhone(phone) {
+/**
+ * Valida un número de teléfono según su tipo
+ * @param {Object} phone - Objeto con datos del teléfono
+ * @returns {Object} - Resultado de la validación {isValid, errors}
+ */
+function validatePhone(phone) {
   const errors = [];
-  if (!phone.tipo) errors.push("Tipo requerido");
-  if (!phone.numero) errors.push("Número requerido");
 
-  const rules = {
-    gratuito: { area: /^0(800|810|300)$/, num: /^\d{6,8}$/ },
-    celular: { area: /^\d{2,3}$/, num: /^\d{7,8}$/ },
-    fijo: { area: /^\d{2,4}$/, num: /^\d{6,8}$/ }
-  };
-
-  const rule = rules[phone.tipo];
-  if (rule) {
-    if (!rule.area.test(phone.codigoArea)) errors.push("Código de área inválido");
-    if (!rule.num.test(phone.numero)) errors.push("Número inválido");
+  if (!phone.tipo) {
+    errors.push("El tipo de teléfono es requerido");
   }
 
-  return { isValid: errors.length === 0, errors };
+  // Si está marcado como incompleto, es válido pero con advertencia
+  if (phone.descripcion === 'Incompleto') {
+    return {
+      isValid: true,
+      errors: ['Número incompleto - requiere código de área'],
+      isIncomplete: true
+    };
+  }
+
+  if (!phone.numero) {
+    errors.push("El número de teléfono es requerido");
+  }
+
+  // Validación específica según tipo
+  switch (phone.tipo) {
+    case 'gratuito':
+      if (!phone.codigoArea || !['0800', '0810', '0300'].includes(phone.codigoArea)) {
+        errors.push("El código de área debe ser 0800, 0810 o 0300 para teléfonos gratuitos");
+      }
+      if (!/^\d{6,8}$/.test(phone.numero)) {
+        errors.push("El número debe tener entre 6 y 8 dígitos");
+      }
+      break;
+
+    case 'celular':
+      if (!phone.codigoArea || !/^\d{2,3}$/.test(phone.codigoArea)) {
+        errors.push("El código de área debe tener 2 o 3 dígitos para celulares");
+      }
+      if (!/^\d{7,8}$/.test(phone.numero)) {
+        errors.push("El número debe tener entre 7 y 8 dígitos para celulares");
+      }
+      break;
+
+    case 'fijo':
+    default:
+      if (!phone.codigoArea || !/^\d{2,4}$/.test(phone.codigoArea)) {
+        errors.push("El código de área debe tener entre 2 y 4 dígitos");
+      }
+      if (!/^\d{6,8}$/.test(phone.numero)) {
+        errors.push("El número debe tener entre 6 y 8 dígitos");
+      }
+      break;
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors
+  };
 }
 
-export const PHONE_TYPES = [
+/**
+ * Tipos de teléfono disponibles
+ */
+const PHONE_TYPES = [
   { value: 'fijo', label: 'Teléfono Fijo' },
-  { value: 'celular', label: 'Teléfono Celular' },
+  { value: 'celular', label: 'Celular' },
   { value: 'gratuito', label: 'Línea Gratuita (0800/0810/0300)' },
-  { value: 'whatsapp', label: 'Teléfono WhatsApp' },
-  { value: 'fax', label: 'Fax' }
+  { value: 'fax', label: 'Fax' },
+  { value: 'otro', label: 'Otro' }
 ];
 
-// Aliases para compatibilidad
-export const normalizeOldPhoneFormat = normalizePhoneWithPrefixes;
-export const normalizePhoneWithLocation = normalizePhoneWithPrefixes;
-
 // ============================================================================
-// FUNCIONES DE PRUEBA COMPLETAS
+// FUNCIONES DE COMPATIBILIDAD LEGACY
 // ============================================================================
 
 /**
- * Función de prueba COMPLETA para validar TODOS los casos argentinos
- * @returns {void}
+ * Normaliza un formato antiguo de teléfono al formato JSON
+ * @param {string} oldFormat - Formato antiguo (puede tener múltiples teléfonos separados por comas)
+ * @returns {string} - JSON de teléfonos
  */
-export function testAllArgentineCases() {
-  const allTestCases = [
-    // Casos básicos originales
-    { input: "02357420437 , 2355525847", expected: "(2357) 420-437, (2355) 525-847" },
-    { input: "3835 15523028", expected: "(3835) 523-028" },
-    { input: "2346434583,84", expected: "(2346) 434-583, (2346) 434-584" },
-    { input: "11 65673584", expected: "11 6567-3584" },
-
-    // Casos complejos adicionales
-    { input: "011 44609032 9036", expected: "(011) 4460-9032, (011) 4460-9036" },
-    { input: "1127773208,39840800 , 1168265802", expected: "11 2777-3208, 11 3984-0800, 11 6826-5802" },
-    { input: "11 5365 9800", expected: "11 5365-9800" },
-    { input: "2284442300", expected: "(2284) 442-300" },
-    { input: "02364407303, 02364430101", expected: "(2364) 407-303, (2364) 430-101" },
-    { input: "3329422852", expected: "(3329) 422-852" },
-
-    // Casos especiales implementados
-    { input: "0266 15 44329679", expected: "(266) 4432-9679" },
-    { input: "0221 4219296, 4259296,4257404", expected: "(0221) 421-9296, (0221) 425-9296, (0221) 425-7404" },
-    { input: "111544496593", expected: "11 4449-6593" },
-    { input: "011 42294646, 1122610506 WSP , 011 42294600", expected: "(011) 4229-4646, WhatsApp: 11 2261-0506, (011) 4229-4600" },
-    { input: "034 89463200", expected: "(034) 8946-3200" },
-    { input: "3484432636", expected: "(3484) 432-636" },
-    { input: "1137301900 ,11 63998356", expected: "11 3730-1900, 11 6399-8356" },
-    { input: "011 1569935570 , 02320536459", expected: "11 6993-5570, (02320) 536-459" },
-    { input: "08108881122 , 02374620062", expected: "0810-888-1122, (02374) 620-062" },
-    { input: "(011)58721804", expected: "(011) 5872-1804" },
-    { input: "0810 122 2424 , 11 22836909", expected: "0810-122-2424, 11 2283-6909" },
-    { input: "1150879200 , 11 65673584", expected: "11 5087-9200, 11 6567-3584" },
-    { input: "02296452099, 02296452143 ,02296453973", expected: "(02296) 452-099, (02296) 452-143, (02296) 453-973" },
-    { input: "0291 4522610", expected: "(0291) 452-2610" },
-    { input: "46459000, 0810 999 9700", expected: "11 4645-9000, 0810-999-9700" },
-    { input: "0291 4502799 ,0291 4516531", expected: "(0291) 450-2799, (0291) 451-6531" },
-    { input: "12 1569935570 , 02320536459", expected: "11 6993-5570, (02320) 536-459" }
-  ];
-
-  console.log("=== PRUEBA COMPLETA DE TODOS LOS CASOS ARGENTINOS ===\n");
-
-  let correctCount = 0;
-  let totalCount = allTestCases.length;
-
-  allTestCases.forEach((testCase, index) => {
-    console.log(`Caso ${index + 1}/${totalCount}: "${testCase.input}"`);
-    console.log(`Esperado: ${testCase.expected}`);
-
-    try {
-      const normalized = normalizePhoneWithPrefixes(testCase.input);
-      const formatted = formatPhonesForDisplay(normalized);
-
-      const isCorrect = formatted === testCase.expected;
-      console.log(`Resultado: ${formatted}`);
-      console.log(`${isCorrect ? '✅ CORRECTO' : '❌ DIFERENTE'}`);
-
-      if (!isCorrect) {
-        console.log(`JSON: ${normalized}`);
-      }
-
-      if (isCorrect) correctCount++;
-
-    } catch (error) {
-      console.log(`❌ ERROR: ${error.message}`);
-    }
-
-    console.log('');
-  });
-
-  console.log("=== RESUMEN FINAL ===");
-  console.log(`✅ Casos correctos: ${correctCount}/${totalCount}`);
-  console.log(`❌ Casos incorrectos: ${totalCount - correctCount}/${totalCount}`);
-  console.log(`📈 Precisión: ${Math.round((correctCount/totalCount)*100)}%`);
-
-  if (correctCount === totalCount) {
-    console.log("🎉 ¡TODOS LOS CASOS FUNCIONAN CORRECTAMENTE!");
-  } else {
-    console.log(`⚠️ Quedan ${totalCount - correctCount} casos por ajustar`);
-  }
+function normalizeOldPhoneFormat(oldFormat) {
+  // Usar la función avanzada por defecto
+  return normalizePhoneWithPrefixes(oldFormat);
 }
 
-/**
- * Función de prueba para casos específicos problemáticos
- * @returns {void}
- */
-export function testProblematicCases() {
-  const problematicCases = [
-    {
-      input: "0221 4219296, 4259296,4257404",
-      description: "Números locales con mismo código",
-      expected: "(0221) 421-9296, (0221) 425-9296, (0221) 425-7404"
-    },
-    {
-      input: "011 1569935570",
-      description: "Número con '15' después del código",
-      expected: "11 6993-5570"
-    },
-    {
-      input: "0810 122 2424",
-      description: "Línea gratuita con espacios",
-      expected: "0810-122-2424"
-    },
-    {
-      input: "(011)58721804",
-      description: "Número con paréntesis sin espacios",
-      expected: "(011) 5872-1804"
-    },
-    {
-      input: "02296452099, 02296452143",
-      description: "Códigos de área de 5 dígitos",
-      expected: "(02296) 452-099, (02296) 452-143"
-    }
-  ];
+// ============================================================================
+// EXPORTACIONES
+// ============================================================================
 
-  console.log("=== PRUEBA DE CASOS PROBLEMÁTICOS ===\n");
+// Para compatibilidad con CommonJS (Node.js)
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    // Funciones principales de normalización
+    normalizePhoneWithPrefixes,
+    normalizeOldPhoneFormat,
 
-  problematicCases.forEach((testCase, index) => {
-    console.log(`Caso problemático ${index + 1}: "${testCase.input}"`);
-    console.log(`Descripción: ${testCase.description}`);
-    console.log(`Esperado: ${testCase.expected}`);
+    // Funciones de conversión entre formatos
+    phoneJsonToCSVFormat,
+    csvFormatToPhoneJson,
 
-    try {
-      const normalized = normalizePhoneWithPrefixes(testCase.input);
-      const formatted = formatPhonesForDisplay(normalized);
+    // Funciones de formateo para visualización
+    formatPhoneForDisplay,
+    formatPhonesForDisplay,
+    formatFirstPhoneForDisplay,
+    formatPhoneForPDF,
 
-      console.log(`Resultado: ${formatted}`);
-      console.log(`${formatted === testCase.expected ? '✅ CORRECTO' : '❌ NECESITA AJUSTE'}`);
+    // Funciones de validación y utilidades
+    isPhoneJsonFormat,
+    validatePhone,
+    PHONE_TYPES,
 
-      if (formatted !== testCase.expected) {
-        console.log(`JSON: ${normalized}`);
-      }
-
-    } catch (error) {
-      console.log(`❌ ERROR: ${error.message}`);
-    }
-
-    console.log('');
-  });
+    // Funciones auxiliares expuestas para casos avanzados
+    findAreaCodeByLocation,
+    detectPhoneType,
+    extractExtension,
+    extractLabel,
+    detectAreaCodeInNumber,
+    processLongNumberWith15,
+    processHistoricalCellularPattern,
+    processIndependentNumbers,
+    validateAndAdjustPhone,
+    processComplexArgentinePattern,
+    processAbbreviatedNumbers,
+    detectSpecialPatterns,
+    isValidAreaCode,
+    cleanPhone,
+    getAllAreaCodes
+  };
 }
 
-/**
- * Función de prueba específica para validar los casos especiales argentinos implementados
- * @returns {void}
- */
-export function testSpecialArgentineCases() {
-  const specialCases = [
-    {
-      input: "111544496593",
-      expected: "11 4449-6593",
-      description: "Número largo con '15' embebido"
-    },
-    {
-      input: "0266 15 44329679",
-      expected: "(266) 4432-9679",
-      description: "Patrón histórico celular del interior"
-    },
-    {
-      input: "1127773208,39840800 , 1168265802",
-      expected: "11 2777-3208, 11 3984-0800, 11 6826-5802",
-      description: "Números independientes mixtos"
-    },
-    {
-      input: "011 44609032 9036",
-      expected: "(011) 4460-9032, (011) 4460-9036",
-      description: "Buenos Aires fijo con abreviación"
-    },
-    {
-      input: "08108881122 , 02374620062",
-      expected: "0810-888-1122, (02374) 620-062",
-      description: "Línea gratuita y fijo con código largo"
-    },
-    {
-      input: "011 42294646, 1122610506 WSP , 011 42294600",
-      expected: "(011) 4229-4646, WhatsApp: 11 2261-0506, (011) 4229-4600",
-      description: "Múltiples con WhatsApp"
-    }
-  ];
-
-  console.log("=== PRUEBAS DE CASOS ESPECIALES ARGENTINOS ===\n");
-
-  specialCases.forEach((testCase, index) => {
-    console.log(`Caso ${index + 1}: "${testCase.input}"`);
-    console.log(`Descripción: ${testCase.description}`);
-    console.log(`Esperado: ${testCase.expected}`);
-
-    try {
-      const normalized = normalizePhoneWithPrefixes(testCase.input);
-      const formatted = formatPhonesForDisplay(normalized);
-
-      console.log(`Resultado: ${formatted}`);
-      console.log(`JSON: ${normalized}`);
-      console.log(`✓ ${formatted === testCase.expected ? 'CORRECTO' : 'DIFERENTE'}\n`);
-
-    } catch (error) {
-      console.log(`✗ ERROR: ${error.message}\n`);
-    }
-  });
-
-  // Casos adicionales de validación
-  const additionalCases = [
-    "2284442300",
-    "02364407303, 02364430101",
-    "3329422852",
-    "0221 4219296, 4259296,4257404",
-    "034 89463200",
-    "3484432636"
-  ];
-
-  console.log("=== CASOS ADICIONALES DE VALIDACIÓN ===\n");
-
-  additionalCases.forEach((testCase, index) => {
-    console.log(`Caso adicional ${index + 1}: "${testCase}"`);
-
-    try {
-      const normalized = normalizePhoneWithPrefixes(testCase);
-      const formatted = formatPhonesForDisplay(normalized);
-
-      console.log(`Resultado: ${formatted}`);
-      console.log(`JSON: ${normalized}`);
-      console.log('');
-
-    } catch (error) {
-      console.log(`✗ ERROR: ${error.message}\n`);
-    }
-  });
+// Para compatibilidad con ES Modules (navegadores modernos)
+if (typeof window !== 'undefined') {
+  // Exportar como propiedades globales para uso en el navegador
+  window.phoneFormatter = {
+    normalizePhoneWithPrefixes,
+    normalizeOldPhoneFormat,
+    phoneJsonToCSVFormat,
+    csvFormatToPhoneJson,
+    formatPhoneForDisplay,
+    formatPhonesForDisplay,
+    formatFirstPhoneForDisplay,
+    formatPhoneForPDF,
+    isPhoneJsonFormat,
+    validatePhone,
+    PHONE_TYPES,
+    findAreaCodeByLocation,
+    detectPhoneType,
+    extractExtension,
+    extractLabel,
+    detectAreaCodeInNumber,
+    processLongNumberWith15,
+    processHistoricalCellularPattern,
+    processIndependentNumbers,
+    validateAndAdjustPhone,
+    processComplexArgentinePattern,
+    processAbbreviatedNumbers,
+    detectSpecialPatterns,
+    isValidAreaCode,
+    cleanPhone,
+    getAllAreaCodes
+  };
 }
+
+// Exportaciones named para ES modules
+export {
+  // Funciones principales de normalización
+  normalizePhoneWithPrefixes,
+  normalizeOldPhoneFormat,
+
+  // Funciones de conversión entre formatos
+  phoneJsonToCSVFormat,
+  csvFormatToPhoneJson,
+
+  // Funciones de formateo para visualización
+  formatPhoneForDisplay,
+  formatPhonesForDisplay,
+  formatFirstPhoneForDisplay,
+  formatPhoneForPDF,
+
+  // Funciones de validación y utilidades
+  isPhoneJsonFormat,
+  validatePhone,
+  PHONE_TYPES,
+
+  // Funciones auxiliares expuestas para casos avanzados
+  findAreaCodeByLocation,
+  detectPhoneType,
+  extractExtension,
+  extractLabel,
+  detectAreaCodeInNumber,
+  processLongNumberWith15,
+  processHistoricalCellularPattern,
+  processIndependentNumbers,
+  validateAndAdjustPhone,
+  processComplexArgentinePattern,
+  processAbbreviatedNumbers,
+  detectSpecialPatterns,
+  isValidAreaCode,
+  cleanPhone,
+  getAllAreaCodes
+};
+
+// Exportación default para facilidad de uso
+export default {
+  normalizePhoneWithPrefixes,
+  normalizeOldPhoneFormat,
+  phoneJsonToCSVFormat,
+  csvFormatToPhoneJson,
+  formatPhoneForDisplay,
+  formatPhonesForDisplay,
+  formatFirstPhoneForDisplay,
+  formatPhoneForPDF,
+  isPhoneJsonFormat,
+  validatePhone,
+  PHONE_TYPES,
+  findAreaCodeByLocation,
+  detectPhoneType,
+  extractExtension,
+  extractLabel,
+  detectAreaCodeInNumber,
+  processLongNumberWith15,
+  processHistoricalCellularPattern,
+  processIndependentNumbers,
+  validateAndAdjustPhone,
+  processComplexArgentinePattern,
+  processAbbreviatedNumbers,
+  detectSpecialPatterns,
+  isValidAreaCode,
+  cleanPhone,
+  getAllAreaCodes
+};

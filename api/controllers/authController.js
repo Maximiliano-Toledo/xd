@@ -130,7 +130,7 @@ const AuthController = {
     try {
       // Generar el token y obtener la URL base desde las variables de entorno
       const response = await AuthService.forgotPassword(email);
-      const resetUrl = process.env.PASSWORD_RESET_URL + 'restablecer-contrasena' || 'http://localhost:5173/restablecer-contrasena';
+      const resetUrl = process.env.PASSWORD_RESET_URL + 'restablecer-contrasena';
       
       // Enviar el correo electrónico
       await EmailService.sendPasswordResetEmail(email, response.token, resetUrl);
@@ -138,7 +138,7 @@ const AuthController = {
       // Registrar el evento
       await auditLogger.logAction(
         response.userId,
-        'password_reset_request',
+        'restablecer contraseña',
         'users',
         response.userId,
         { email, timestamp: new Date() }

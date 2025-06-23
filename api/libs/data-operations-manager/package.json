@@ -1,0 +1,11 @@
+{
+  "name": "@fourdynam/data-operations-manager",
+  "version": "1.0.0",
+  "description": "Advanced database operations manager with CRUD and batch processing capabilities",
+  "main": "index.js",
+  "dependencies": {},
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "keywords": ["database", "operations", "crud", "batch", "data", "manager"]
+}

@@ -80,7 +80,6 @@ const EditarPlan = () => {
       setEstadoSeleccionado(null);
       setMostrarOpcionesEstado(false);
     } catch (error) {
-      console.error("Error al cargar el plan:", error);
       Swal.fire({
         title: "Error",
         text: "No se pudo cargar la información del plan",
@@ -134,7 +133,6 @@ const EditarPlan = () => {
           const planActualizado = await getPlanById(formData.plan);
           setPlanSeleccionado(planActualizado);
         } catch (error) {
-          console.error("Error al cambiar el estado:", error);
           throw error;
         }
       }
@@ -171,7 +169,6 @@ const EditarPlan = () => {
       setEstadoSeleccionado(null);
       setMostrarOpcionesEstado(false);
     } catch (error) {
-      console.error("Error al editar el plan:", error);
       Swal.fire({
         title: "Error al editar el plan",
         text:

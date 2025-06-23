@@ -11,7 +11,7 @@ const useCartillaCSV = () => {
   const [uploadResult, setUploadResult] = useState(null);
   const [uploadError, setUploadError] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
-  
+
   // Estados para la descarga
   const [downloadStatus, setDownloadStatus] = useState('idle'); // idle, downloading, success, error
   const [downloadError, setDownloadError] = useState(null);
@@ -29,32 +29,35 @@ const useCartillaCSV = () => {
   /**
    * Maneja la subida de un archivo CSV de prestadores
    * @param {File} file - Archivo CSV a subir
+   * @param {Object} options - Opciones de configuración
+   * @param {boolean} [options.enablePhoneParsing=true] - Si aplicar parseo automático de teléfonos
    * @returns {Promise<Object>} Resultado de la operación
    */
-  const uploadCSV = useCallback(async (file) => {
+  const uploadCSV = useCallback(async (file, options = {}) => {
     if (!file) {
       setUploadError('No se seleccionó ningún archivo');
       return { status: 400, message: 'No se seleccionó ningún archivo' };
     }
-    
+
     if (!file.name.toLowerCase().endsWith('.csv')) {
       setUploadError('Solo se permiten archivos CSV');
       return { status: 400, message: 'Solo se permiten archivos CSV' };
     }
-    
+
     try {
       setIsUploading(true);
       setUploadProgress(0);
       setUploadError(null);
       setUploadResult(null);
 
-      const result = await CartillaService.subirCartilla(file);
+      // MODIFICADO: Pasar las opciones al servicio
+      const result = await CartillaService.subirCartilla(file, options);
 
       if (isMounted.current) {
         setUploadResult(result);
         setUploadProgress(100);
       }
-      
+
       return result;
     } catch (error) {
       const errorMessage = error.message || 'Error al subir el archivo';
@@ -62,10 +65,10 @@ const useCartillaCSV = () => {
         setUploadError(errorMessage);
       }
       // Retornamos un objeto similar al de error para consistencia
-      return { 
-        status: error.response?.status || 500, 
+      return {
+        status: error.response?.status || 500,
         message: errorMessage,
-        error: true 
+        error: true
       };
     } finally {
       if (isMounted.current) {
@@ -82,13 +85,13 @@ const useCartillaCSV = () => {
     try {
       setDownloadStatus('downloading');
       setDownloadError(null);
-      
+
       const result = await CartillaService.descargarCartilla();
-      
+
       if (isMounted.current) {
         setDownloadStatus('success');
       }
-      
+
       return result;
     } catch (error) {
       if (isMounted.current) {
@@ -130,17 +133,17 @@ const useCartillaCSV = () => {
     uploadResult,
     uploadError,
     isUploading,
-    
+
     // Estados de descarga
     downloadStatus,
     downloadError,
-    
+
     // Métodos
     uploadCSV,
     downloadCSV,
     resetUploadStatus,
     resetDownloadStatus,
-    
+
     // Helpers
     isDownloading: downloadStatus === 'downloading',
     hasDownloadError: downloadStatus === 'error',

@@ -55,6 +55,30 @@ export const Info = () => {
                                 </div>
                               </div>
                          </div>
+
+                          <div className="card shadow border-0 rounded-3 w-75 w-md-75 mx-auto mb-4">
+                              <div className="card-body">
+                                <div className="bg-light-success rounded p-3">
+                                  <div className="d-flex flex-column flex-md-row align-items-center justify-content-center gap-3">
+                                    <div className="d-flex align-items-center mb-3 mb-md-0">
+                                      <GrDocumentText className="fs-4 me-3 subtitle-dashboard" />
+                                      <h5 className="subtitle-dashboard mb-0">Anexo manual de usuario - Carga Masiva</h5>
+                                    </div>
+
+                                    
+                                    <a
+                                      href="/anexo-carga-masiva"
+                                      rel="noopener noreferrer"
+                                      className="text-uppercase text-decoration-none text-white fw-bold link-card-2"
+                                    >
+                                      Ir <FaRegArrowAltCircleRight />
+                                    </a>
+
+                                    
+                                  </div>
+                                </div>
+                              </div>
+                         </div>
                              
                    </div>
              </div>

@@ -1,6 +1,7 @@
 node_modules/
 .env
 *.local
+api-dist/
 
 .vscode/*
 !.vscode/extensions.json

@@ -23,7 +23,6 @@ const PanelUsuario = () => {
     };
     const {user} = useAuthStore();
     const lastLogin = (user.last_login).slice(0, 10).split('-').reverse().join('/')
-    console.log(user);
 
     // Datos del usuario (en un caso real vendrían del store/contexto)
     const userData = {

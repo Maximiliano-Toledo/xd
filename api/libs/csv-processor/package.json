@@ -1,0 +1,13 @@
+{
+  "name": "@fourdynam/csv-processor",
+  "version": "1.0.0",
+  "description": "Advanced CSV processing library for medical providers",
+  "main": "index.js",
+  "dependencies": {
+    "csv-parser": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "keywords": ["csv", "medical", "processing", "stream"]
+}

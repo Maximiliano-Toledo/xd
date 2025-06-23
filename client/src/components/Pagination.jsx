@@ -68,7 +68,6 @@ const Pagination = ({
                         value={itemsPerPage}
                         onChange={(e) => {
                             const newSize = Number(e.target.value);
-                            console.log("Cambiando tamaño de página a:", newSize);
                             onItemsPerPageChange(newSize);
                         }}
                     >

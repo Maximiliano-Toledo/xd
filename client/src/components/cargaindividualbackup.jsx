@@ -115,7 +115,6 @@ export const CargaIndividual = () => {
 
           limpiarFormulario()
         } catch (error) {
-          console.error("Error al crear el prestador:", error)
           Swal.fire({
             title: "Error al cargar el prestador",
             text: error.message || "Ha ocurrido un error al intentar crear el prestador.",
@@ -209,8 +208,6 @@ export const CargaIndividual = () => {
       planes: formData.plan.map((id) => Number.parseInt(id)), // Convertir array de strings a array de números
       atencionVirtual: profesional ? data.atencionVirtual : false, // Añadimos este dato solo si es profesional
     }
-
-    console.log("Datos a enviar:", datosFormateados)
     confirmarCarga(datosFormateados)
   })
 

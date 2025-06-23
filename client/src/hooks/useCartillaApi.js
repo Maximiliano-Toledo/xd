@@ -92,7 +92,7 @@ export const useCartillaApi = (edit = false) => {
 
       setFormData((prev) => ({ ...prev, ...resetFields }))
     } catch (error) {
-      console.error(`Error fetching ${optionsKey}:`, error)
+      throw error
     } finally {
       setLoading((prev) => ({ ...prev, [loadingKey]: false }))
     }
@@ -314,8 +314,6 @@ export const useCartillaApi = (edit = false) => {
           pageSize,
         )
 
-        console.log("Respuesta completa de getPrestadores:", response)
-
         // Manejar diferentes estructuras de respuesta
         let items = []
         let paginationInfo = {
@@ -373,9 +371,6 @@ export const useCartillaApi = (edit = false) => {
           }
         }
 
-        console.log("Items procesados:", items)
-        console.log("Información de paginación:", paginationInfo)
-
         setPrestadores(items)
         setPagination((prev) => ({
           ...prev,
@@ -384,7 +379,6 @@ export const useCartillaApi = (edit = false) => {
 
         setShowResults(true)
       } catch (error) {
-        console.error("Error fetching prestadores:", error)
         setPrestadores([])
         setPagination({
           currentPage: 1,
@@ -426,8 +420,6 @@ export const useCartillaApi = (edit = false) => {
           formData.especialidad,
         )
 
-        console.log("Respuesta completa de getPrestadoresVirtuales:", response)
-
         // Manejar diferentes estructuras de respuesta
         let items = []
         let paginationInfo = {
@@ -485,9 +477,6 @@ export const useCartillaApi = (edit = false) => {
           }
         }
 
-        console.log("Items procesados:", items)
-        console.log("Información de paginación:", paginationInfo)
-
         setPrestadores(items)
         setPagination((prev) => ({
           ...prev,
@@ -496,7 +485,6 @@ export const useCartillaApi = (edit = false) => {
 
         setShowResults(true)
       } catch (error) {
-        console.error("Error fetching prestadores virtuales:", error)
         setPrestadores([])
         setPagination({
           currentPage: 1,
@@ -544,8 +532,6 @@ export const useCartillaApi = (edit = false) => {
           pageSize,
         )
 
-        console.log("Respuesta completa de getPrestadoresPorNombre:", response)
-
         // Manejar diferentes estructuras de respuesta
         let items = []
         let paginationInfo = {
@@ -603,9 +589,6 @@ export const useCartillaApi = (edit = false) => {
           }
         }
 
-        console.log("Items procesados:", items)
-        console.log("Información de paginación:", paginationInfo)
-
         setPrestadores(items)
         setPagination((prev) => ({
           ...prev,
@@ -614,7 +597,6 @@ export const useCartillaApi = (edit = false) => {
 
         setShowResults(true)
       } catch (error) {
-        console.error("Error fetching prestadores por nombre:", error)
         setPrestadores([])
         setPagination({
           currentPage: 1,

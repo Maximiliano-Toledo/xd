@@ -380,10 +380,10 @@ const EditStep = ({
                 value={editForm.estado}
                 onChange={handleEditChange}
               >
-                <option value="" selected hidden>
+                <option defaultValue={""} hidden>
                   Seleccionar un estado
                 </option>
-                {editForm.estado === "Activo" ? (
+                {selectedPrestador.estado === "Activo" ? (
                   <option value="Inactivo">Deshabilitar</option>
                 ) : (
                   <option value="Activo">Habilitar</option>

@@ -4,11 +4,10 @@ import { MdLocalPhone } from 'react-icons/md';
 import { FiPhone } from 'react-icons/fi';
 import "../styles/phone-input.css";
 
-// Importar funciones del phoneFormatter optimizado
+// FIXED: Import the correct functions from phoneFormatter
 import {
   isPhoneJsonFormat,
-  normalizePhoneWithLocation,
-  normalizePhoneWithPrefixes,
+  normalizePhoneWithPrefixes, // This is the correct function name
   validatePhone,
   formatPhoneForDisplay,
   PHONE_TYPES
@@ -45,23 +44,20 @@ const PhoneInput = ({
   });
   const [validationErrors, setValidationErrors] = useState([]);
 
-  // Función para normalizar teléfonos con contexto de ubicación
+  // FIXED: Function to normalize phones with location context
   const normalizePhoneInput = (phoneValue, context = null) => {
     if (!phoneValue) return JSON.stringify([]);
 
-    if (context?.provincia) {
-      try {
-        return normalizePhoneWithLocation(
-          phoneValue,
-          context.provincia,
-          context.localidad
-        );
-      } catch (error) {
-        console.error("Error en normalización con ubicación:", error);
-      }
+    // Use normalizePhoneWithPrefixes with provincia and localidad parameters
+    try {
+      return normalizePhoneWithPrefixes(
+        phoneValue,
+        context?.provincia || null,
+        context?.localidad || null
+      );
+    } catch (error) {
+      return JSON.stringify([]);
     }
-
-    return normalizePhoneWithPrefixes(phoneValue);
   };
 
   // MODIFICACIÓN: Función para convertir teléfono antes de guardar
@@ -115,14 +111,12 @@ const PhoneInput = ({
         setPhones(parsedPhones.map(convertPhoneFromStorage));
       } else if (skipAutoNormalization) {
         setPhones([]);
-        console.log("Saltando normalización automática - modo manual activado");
       } else {
         const normalizedValue = normalizePhoneInput(value, ubicacionContext);
         const parsedPhones = JSON.parse(normalizedValue);
         setPhones(parsedPhones.map(convertPhoneFromStorage));
       }
     } catch (e) {
-      console.error("Error al parsear teléfonos:", e);
       setPhones([]);
     }
   }, [value, ubicacionContext, skipAutoNormalization]);

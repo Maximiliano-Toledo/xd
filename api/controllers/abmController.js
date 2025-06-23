@@ -74,25 +74,31 @@ const ABMController = {
 
                     case 'create':
                         result = await ABMService.create(entityName, req.body);
-                        // Registrar la acción
-                        await auditLogger.logAction(
-                            req.user?.id || 0,
-                            'create',
-                            entityName,
-                            result.id,
-                            { requestData: req.body, result }
+                        // Registrar la creación con información completa
+                        await auditLogger.logEntityCreation(
+                          req.user?.id || 0,
+                          entityName,
+                          result.id,
+                          result,
+                          req.ip,
+                          req.get('User-Agent')
                         );
                         return res.status(201).json({ success: true, data: result });
 
                     case 'update':
+                        // Obtener datos originales antes de la actualización
+                        const originalData = await ABMService.getById(entityName, req.params.id);
                         result = await ABMService.update(entityName, req.params.id, req.body);
-                        // Registrar la acción
-                        await auditLogger.logAction(
-                            req.user?.id || 0,
-                            'update',
-                            entityName,
-                            req.params.id,
-                            { requestData: req.body, result }
+
+                        // Registrar la actualización con cambios detallados
+                        await auditLogger.logEntityUpdate(
+                          req.user?.id || 0,
+                          entityName,
+                          req.params.id,
+                          originalData,
+                          result,
+                          req.ip,
+                          req.get('User-Agent')
                         );
                         return res.status(200).json({ success: true, data: result });
 
@@ -100,21 +106,49 @@ const ABMController = {
                         await ABMService.delete(entityName, req.params.id);
                         // Registrar la acción
                         await auditLogger.logAction(
-                            req.user?.id || 0,
-                            'delete',
-                            entityName,
-                            req.params.id,
-                            { requestData: req.body }
+                          req.user?.id || 0,
+                          'delete',
+                          entityName,
+                          req.params.id,
+                          { requestData: req.body },
+                          req.ip,
+                          req.get('User-Agent')
                         );
                         return res.status(200).json({
                             success: true,
                             message: `${ABMService.getEntityConfig(entityName).displayName} eliminado correctamente`
                         });
+
                     case 'toggleStatus':
-                        return this.toggleStatusHandler(entityName)(req, res);
+                        // Obtener datos antes del cambio
+                        const originalStatusData = await ABMService.getById(entityName, req.params.id);
+                        result = await ABMService.toggleStatus(entityName, req.params.id);
+
+                        // Registrar con información mejorada
+                        await auditLogger.logStatusChange(
+                          req.user?.id || 0,
+                          entityName,
+                          req.params.id,
+                          originalStatusData.estado,
+                          result.newState,
+                          {
+                              entityName: originalStatusData.nombre || null,
+                              entityConfig: ABMService.getEntityConfig(entityName).displayName
+                          },
+                          req.ip,
+                          req.get('User-Agent')
+                        );
+
+                        return res.status(200).json({
+                            success: true,
+                            message: `Estado actualizado a ${result.newState}`,
+                            newState: result.newState
+                        });
+
                     case 'getLocalidadesByProvincia':
                         result = await ABMService.getLocalidadesByProvincia(req.params.id);
                         return res.status(200).json({ success: true, data: result });
+
                     case 'updateOrder':
                         if (!req.body.orders || !Array.isArray(req.body.orders)) {
                             return res.status(400).json({
@@ -123,24 +157,19 @@ const ABMController = {
                             });
                         }
 
-                        console.log(req.body)
+                        result = await ABMService.updateOrder(entityName, req.body.orders);
 
-                        result = await ABMService.updateOrder("planes", req.body.orders);
-
-                        // Registrar la acción
-                        await auditLogger.logAction(
+                        // Registrar el cambio de orden con información detallada
+                        await auditLogger.logOrderChange(
                           req.user?.id || 0,
-                          'updateOrder',
                           entityName,
-                          `bulk-update`,
-                          {
-                              requestData: req.body.orders,
-                              result,
-                              totalUpdated: req.body.orders.length
-                          }
+                          req.body.orders,
+                          req.ip,
+                          req.get('User-Agent')
                         );
 
                         return res.status(200).json({ success: true, data: result });
+
                     default:
                         return res.status(400).json({ success: false, error: 'Operación no soportada' });
                 }
@@ -223,7 +252,144 @@ const ABMController = {
                 handleError(res, error, entityName);
             }
         };
+    },
+
+    /**
+     * Crea un manejador mejorado para cambiar el estado de una entidad
+     * @param {string} entityName - Nombre de la entidad
+     * @returns {Function} - Función middleware para Express
+     */
+    toggleStatusHandlerImproved(entityName) {
+        return async (req, res) => {
+            try {
+                // Obtener datos antes del cambio
+                const originalData = await ABMService.getById(entityName, req.params.id);
+
+                const result = await ABMService.toggleStatus(entityName, req.params.id);
+
+                // Registrar con información mejorada
+                await auditLogger.logStatusChange(
+                  req.user?.id || 0,
+                  entityName,
+                  req.params.id,
+                  originalData.estado,
+                  result.newState,
+                  {
+                      entityName: originalData.nombre || null,
+                      entityConfig: ABMService.getEntityConfig(entityName).displayName
+                  },
+                  req.ip,
+                  req.get('User-Agent')
+                );
+
+                return res.status(200).json({
+                    success: true,
+                    message: `Estado actualizado a ${result.newState}`,
+                    newState: result.newState
+                });
+            } catch (error) {
+                handleError(res, error, entityName);
+            }
+        };
+    },
+
+    /**
+     * Crea un manejador mejorado para crear entidades
+     * @param {string} entityName - Nombre de la entidad
+     * @returns {Function} - Función middleware para Express
+     */
+    createHandlerImproved(entityName) {
+        return async (req, res) => {
+            try {
+                const result = await ABMService.create(entityName, req.body);
+
+                // Registrar la creación con información completa
+                await auditLogger.logEntityCreation(
+                  req.user?.id || 0,
+                  entityName,
+                  result.id,
+                  result,
+                  req.ip,
+                  req.get('User-Agent')
+                );
+
+                return res.status(201).json({ success: true, data: result });
+            } catch (error) {
+                handleError(res, error, entityName);
+            }
+        };
+    },
+
+    /**
+     * Crea un manejador mejorado para actualizar entidades
+     * @param {string} entityName - Nombre de la entidad
+     * @returns {Function} - Función middleware para Express
+     */
+    updateHandlerImproved(entityName) {
+        return async (req, res) => {
+            try {
+                // Obtener datos originales antes de la actualización
+                const originalData = await ABMService.getById(entityName, req.params.id);
+
+                const result = await ABMService.update(entityName, req.params.id, req.body);
+
+                // Registrar la actualización con cambios detallados
+                await auditLogger.logEntityUpdate(
+                  req.user?.id || 0,
+                  entityName,
+                  req.params.id,
+                  originalData,
+                  result,
+                  req.ip,
+                  req.get('User-Agent')
+                );
+
+                return res.status(200).json({ success: true, data: result });
+            } catch (error) {
+                handleError(res, error, entityName);
+            }
+        };
+    },
+
+    /**
+     * Crea un manejador mejorado para cambio de orden
+     * @param {string} entityName - Nombre de la entidad
+     * @returns {Function} - Función middleware para Express
+     */
+    updateOrderHandlerImproved(entityName) {
+        return async (req, res) => {
+            try {
+                const { orders } = req.body;
+
+                if (!Array.isArray(orders)) {
+                    return res.status(400).json({
+                        success: false,
+                        error: 'Los datos de orden deben ser un array'
+                    });
+                }
+
+                const result = await ABMService.updateOrder(entityName, orders);
+
+                // Registrar el cambio de orden con información detallada
+                await auditLogger.logOrderChange(
+                  req.user?.id || 0,
+                  entityName,
+                  orders,
+                  req.ip,
+                  req.get('User-Agent')
+                );
+
+                return res.status(200).json({
+                    success: true,
+                    message: `Orden de ${ABMService.getEntityConfig(entityName).displayName} actualizado correctamente`,
+                    data: result
+                });
+            } catch (error) {
+                handleError(res, error, entityName);
+            }
+        };
     }
 };
 
 module.exports = ABMController;
+

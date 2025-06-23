@@ -42,7 +42,7 @@ app.use(helmet.frameguard({ action: 'deny' }));
 app.use(helmet.referrerPolicy({ policy: 'same-origin' }));
 app.use(helmet.permittedCrossDomainPolicies());
 
-const allowedOrigins = process.env.CORS_ORIGINS?.split(',') || [];
+const allowedOrigins = process.env.CORS_ORIGINS.split(',') || [];
 
 const corsOptions = {
     origin: (origin, callback) => {

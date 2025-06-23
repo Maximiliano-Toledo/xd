@@ -1,106 +1,74 @@
 /**
- * Utilidades para formateo y normalización de teléfonos argentinos (versión backend completa)
+ * Utilidades para formateo y normalización de teléfonos argentinos
  * @module utils/phoneFormatter
+ *
+ * NOTA: Este archivo ahora usa la librería phone-formatter ofuscada
+ * Mantiene la misma API pública para compatibilidad
  */
 
+const { PhoneFormatter } = require("../libs/phone-formatter");
 const { phoneNumbersData } = require('./phoneNumbersData');
 
-// ============================================================================
-// UTILIDADES BÁSICAS
-// ============================================================================
-
-const cleanPhone = (phone) => phone?.replace(/\D/g, '') || '';
-
-const extractExtension = (text) => text?.match(/int:?\s*(\d+)/i)?.[1] || null;
-
-const extractLabel = (text) => {
-  const match = text?.match(/^(WSP|TEL|CEL|FAX|WHATSAPP|TELEFONO|CELULAR)[\s:]+/i);
-  return match?.[1]?.toUpperCase() || null;
-};
+// Crear instancia única reutilizable
+const formatter = new PhoneFormatter(phoneNumbersData);
 
 // ============================================================================
-// BÚSQUEDA EN BASE DE DATOS DE CÓDIGOS
-// ============================================================================
-
-function findAreaCodeData(phone) {
-  for (const data of phoneNumbersData) {
-    if (phone.startsWith(data.codigoArea)) {
-      return data;
-    }
-  }
-  return null;
-}
-
-// ============================================================================
-// FORMATEO PRINCIPAL
-// ============================================================================
-
-function parsePhoneLine(rawText) {
-  const cleaned = cleanPhone(rawText);
-  const label = extractLabel(rawText);
-  const extension = extractExtension(rawText);
-
-  if (!cleaned) return null;
-
-  const data = findAreaCodeData(cleaned);
-  if (!data) return {
-    tipo: label || 'desconocido',
-    codigoArea: '',
-    numero: cleaned,
-    extension,
-    descripcion: rawText
-  };
-
-  const phoneBody = cleaned.slice(data.codigoArea.length);
-
-  return {
-    tipo: data.tipo || label || 'desconocido',
-    codigoArea: data.codigoArea,
-    numero: phoneBody,
-    extension,
-    descripcion: rawText
-  };
-}
-
-function parsePhoneTextToArray(text) {
-  if (!text) return [];
-  return text
-    .split(/[;|\n]/)
-    .map(t => t.trim())
-    .map(parsePhoneLine)
-    .filter(Boolean);
-}
-
-function formatPhonesToCSV(phones) {
-  return phones.map(phone => {
-    return `type:${phone.tipo || 'fijo'}|area:${phone.codigoArea || ''}|num:${phone.numero || ''}|ext:${phone.extension || ''}|desc:${phone.descripcion || ''}`;
-  }).join(';');
-}
-
-function phoneJsonToCSVFormat(phoneJson) {
-  if (!phoneJson) return '';
-
-  try {
-    const phones = typeof phoneJson === 'string' ? JSON.parse(phoneJson) : phoneJson;
-    if (!Array.isArray(phones)) return phoneJson;
-
-    return formatPhonesToCSV(phones);
-  } catch (e) {
-    return phoneJson;
-  }
-}
-
-// ============================================================================
-// EXPORTS
+// EXPORTAR TODAS LAS FUNCIONES CON LA MISMA API QUE ANTES
 // ============================================================================
 
 module.exports = {
-  cleanPhone,
-  extractExtension,
-  extractLabel,
-  findAreaCodeData,
-  parsePhoneLine,
-  parsePhoneTextToArray,
-  formatPhonesToCSV,
-  phoneJsonToCSVFormat,
+  // Funciones básicas
+  cleanPhone: (phone) => formatter.cleanPhone(phone),
+  extractExtension: (text) => formatter.extractExtension(text),
+  extractLabel: (text) => formatter.extractLabel(text),
+
+  // Búsqueda de códigos
+  findAreaCodeData: (phone) => formatter.findAreaCodeByLocation(phone),
+  findAreaCodeByLocation: (provincia, localidad) => formatter.findAreaCodeByLocation(provincia, localidad),
+  isValidAreaCode: (code) => formatter.isValidAreaCode(code),
+  getAllAreaCodes: () => formatter.getAllAreaCodes(),
+
+  // Detección y procesamiento
+  detectPhoneType: (areaCode, number) => formatter.detectPhoneType(areaCode, number),
+  detectAreaCodeInNumber: (number, provincia, localidad) => formatter.detectAreaCodeInNumber(number, provincia, localidad),
+
+  // Procesamiento de patrones especiales
+  parsePhoneLine: (rawText) => formatter.parsePhoneLine(rawText),
+  parsePhoneTextToArray: (text) => formatter.parsePhoneTextToArray(text),
+  formatPhonesToCSV: (phones) => formatter.formatPhonesToCSV(phones),
+  processLongNumberWith15: (clean, provincia, localidad) => formatter.processLongNumberWith15(clean, provincia, localidad),
+  processHistoricalCellularPattern: (phoneText) => formatter.processHistoricalCellularPattern(phoneText),
+  processIndependentNumbers: (parts, provincia, localidad) => formatter.processIndependentNumbers(parts, provincia, localidad),
+  validateAndAdjustPhone: (phoneResult) => formatter.validateAndAdjustPhone(phoneResult),
+  processComplexArgentinePattern: (phoneText) => formatter.processComplexArgentinePattern(phoneText),
+  processAbbreviatedNumbers: (fullNumber, shortDigits) => formatter.processAbbreviatedNumbers(fullNumber, shortDigits),
+  detectSpecialPatterns: (phoneText, provincia, localidad) => formatter.detectSpecialPatterns(phoneText, provincia, localidad),
+
+  // Conversiones entre formatos
+  phoneJsonToCSVFormat: (phoneJson) => formatter.phoneJsonToCSVFormat(phoneJson),
+  csvFormatToPhoneJson: (csvFormat) => formatter.csvFormatToPhoneJson(csvFormat),
+
+  // Normalización principal - FUNCIONES MÁS IMPORTANTES
+  normalizePhoneWithPrefixes: (phoneText, provincia, localidad) => formatter.normalizePhoneWithPrefixes(phoneText, provincia, localidad),
+  normalizeOldPhoneFormat: (phoneText) => formatter.normalizeOldPhoneFormat(phoneText),
+
+  // Formateo para visualización
+  formatPhoneForDisplay: (phone) => formatter.formatPhoneForDisplay(phone),
+  formatPhonesForDisplay: (phones) => formatter.formatPhonesForDisplay(phones),
+  formatFirstPhoneForDisplay: (phones) => formatter.formatFirstPhoneForDisplay(phones),
+  formatPhoneForPDF: (phoneValue) => formatter.formatPhoneForPDF(phoneValue),
+
+  // Validación y utilidades
+  isPhoneJsonFormat: (value) => formatter.isPhoneJsonFormat(value),
+  validatePhone: (phone) => formatter.validatePhone(phone),
+
+  // Exportación/importación
+  exportPhonesToCSV: (phoneJson) => formatter.exportPhonesToCSV(phoneJson),
+  importPhonesFromCSV: (csvText) => formatter.importPhonesFromCSV(csvText),
+
+  // Constantes
+  PHONE_TYPES: formatter.getPhoneTypes(),
+
+  // Acceso directo a la instancia del formatter (por si se necesita)
+  _formatter: formatter
 };

@@ -12,7 +12,6 @@ const ProtectedRoute = () => {
       try {
         await checkAuth();
       } catch (error) {
-        console.error('Session verification failed:', error);
         navigate('/');
       }
     };
@@ -23,7 +22,6 @@ const ProtectedRoute = () => {
     const verifyRefresh = () => {
       if (isAuthenticated) {
         refreshToken().catch(error => {
-          console.error('Token refresh failed:', error);
           navigate('/');
         });
       }

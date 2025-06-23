@@ -22,7 +22,6 @@ export const useAuditApi = () => {
             err.message ||
             'Error desconocido';
 
-        console.error('Error de API:', err);
         setError(errorMessage);
         // En lugar de devolver un error, simplemente lo almacenamos en el estado
         return null;

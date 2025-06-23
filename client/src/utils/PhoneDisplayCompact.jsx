@@ -21,7 +21,6 @@ const PhoneDisplayCompact = ({ phones }) => {
 
       return [];
     } catch (error) {
-      console.error('Error parsing phones:', error);
       return [];
     }
   };

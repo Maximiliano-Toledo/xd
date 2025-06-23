@@ -296,6 +296,12 @@ const PrestadorController = {
    * @param {Object} req - Objeto de solicitud Express
    * @param {Object} res - Objeto de respuesta Express
    */
+  /**
+   * Crea un nuevo prestador
+   * @async
+   * @param {Object} req - Objeto de solicitud Express
+   * @param {Object} res - Objeto de respuesta Express
+   */
   async postCrearPrestador(req, res) {
     await handlePostResponse(
       res,
@@ -305,8 +311,12 @@ const PrestadorController = {
         // Registrar la acción en el sistema de auditoría con formato mejorado
         await auditLogger.logIndividualUpload(
           req.user?.id || 0,
-          result.id,
-          result,
+          result.id || result.total || 'multiple',
+          {
+            ...result,
+            totalCreated: result.total || 1,
+            entityName: req.body.nombre || 'Prestador'
+          },
           req.ip,
           req.get('User-Agent')
         );
@@ -329,7 +339,7 @@ const PrestadorController = {
           req.body
         );
 
-        // Registrar la edición con detalles de cambios
+        // Registrar la edición con detalles de cambios mejorados
         await auditLogger.logProviderEdit(
           req.user?.id || 0,
           req.params.id,
@@ -361,16 +371,16 @@ const PrestadorController = {
           req.body.estado
         );
 
-        // Registrar con detalles específicos de cambio de estado
-        await auditLogger.logAction(
+        // Registrar con detalles específicos de cambio de estado mejorado
+        await auditLogger.logStatusChange(
           req.user?.id || 0,
-          auditLogger.OPERATION_TYPES.TOGGLE_STATUS,
           auditLogger.ENTITY_TYPES.PROVIDER,
           "nombre-" + req.body.nombre,
+          result.previousStatus || 'Desconocido',
+          req.body.estado,
           {
-            nombre: req.body.nombre,
-            previousStatus: result.previousStatus || 'Desconocido',
-            newStatus: req.body.estado,
+            entityName: req.body.nombre,
+            changeMethod: 'byName',
             customDescription: `Cambio de estado de prestador "${req.body.nombre}" a "${req.body.estado}"`
           },
           req.ip,
@@ -394,9 +404,11 @@ const PrestadorController = {
     await handlePostResponse(
       res,
       async () => {
+        // Obtener datos del prestador antes de la baja
+        const prestadorData = await PrestadorService.getPrestadorById(req.params.id);
         const result = await PrestadorService.postBajaPrestador(req.params.id);
 
-        // Registrar con descripción específica
+        // Registrar con descripción específica mejorada
         await auditLogger.logAction(
           req.user?.id || 0,
           auditLogger.OPERATION_TYPES.DELETE,
@@ -405,7 +417,9 @@ const PrestadorController = {
           {
             action: "baja",
             result,
-            customDescription: `Baja de prestador #${req.params.id}`
+            originalData: prestadorData,
+            entityName: prestadorData.nombre || null,
+            customDescription: `Baja de prestador: ${prestadorData.nombre || `ID ${req.params.id}`}`
           },
           req.ip,
           req.get('User-Agent')
@@ -435,10 +449,14 @@ const PrestadorController = {
 
       res.status(200).send(csvData);
 
-      // Registrar descarga CSV con método específico
+      // Registrar descarga CSV con método específico mejorado
       await auditLogger.logCartillaCSVDownload(
         req.user?.id || 0,
-        { format: 'CSV' },
+        {
+          format: 'CSV',
+          downloadSize: csvData.length,
+          timestamp: new Date().toISOString()
+        },
         req.ip,
         req.get('User-Agent')
       );
@@ -472,12 +490,12 @@ const PrestadorController = {
         try {
           // Leer el archivo subido como buffer
           const pdfBuffer = await fs.promises.readFile(req.file.path);
-          
+
           // Eliminar el archivo temporal después de leerlo
           await fs.promises.unlink(req.file.path);
 
           const { idPlan, idProvincia } = req.body;
-          
+
           if (!idPlan || !idProvincia) {
             throw new Error('Se requieren idPlan e idProvincia');
           }
@@ -488,17 +506,22 @@ const PrestadorController = {
             pdfBuffer
           );
 
-          // Registrar la acción en el sistema de auditoría
+          nombrePlan = result.data.plan;
+          nombreProvincia = result.data.provincia;
+
+          // Registrar la acción en el sistema de auditoría con información mejorada
           await auditLogger.logAction(
             req.user?.id || 0,
             auditLogger.OPERATION_TYPES.UPDATE,
             auditLogger.ENTITY_TYPES.PROVIDER,
             `${idPlan}-${idProvincia}`,
             {
-              idPlan,
-              idProvincia,
+              nombrePlan,
+              nombreProvincia,
               fileSize: pdfBuffer.length,
-              customDescription: `Actualización de portada PDF para plan ${idPlan} y provincia ${idProvincia}`
+              fileName: req.file.originalname,
+              uploadTimestamp: new Date().toISOString(),
+              customDescription: `Actualización de portada PDF para plan: ${nombrePlan} y provincia: ${nombreProvincia}`
             },
             req.ip,
             req.get('User-Agent')
@@ -551,13 +574,16 @@ const PrestadorController = {
       });
       res.send(Buffer.from(pdfData.pdfBytes));
 
-      // Registrar descarga PDF con método específico
+      // Registrar descarga PDF con método específico mejorado
       await auditLogger.logCartillaPDFDownload(
         req.user?.id || 0,
         {
           idPlan: req.params.idPlan,
           idProvincia: req.params.idProvincia,
-          format: 'PDF'
+          format: 'PDF',
+          fileName: pdfData.nombreArchivo,
+          fileSize: pdfData.pdfBytes.length,
+          downloadTimestamp: new Date().toISOString()
         },
         req.ip,
         req.get('User-Agent')
@@ -590,6 +616,11 @@ const PrestadorController = {
         }
 
         try {
+          // NUEVO: Obtener la opción de parseo automático desde el body
+          const enablePhoneParsing = req.body.enablePhoneParsing === 'true' || req.body.enablePhoneParsing === true;
+
+          console.log(`Parseo automático de teléfonos: ${enablePhoneParsing ? 'HABILITADO' : 'DESHABILITADO'}`);
+
           let lastProgressUpdate = Date.now();
           const progressCallback = (progress) => {
             const now = Date.now();
@@ -599,9 +630,12 @@ const PrestadorController = {
             }
           };
 
-          const result = await PrestadorService.handleCSVUpload(req.file, progressCallback);
+          // MODIFICADO: Pasar la opción de parseo al servicio
+          const result = await PrestadorService.handleCSVUpload(req.file, progressCallback, {
+            enablePhoneParsing: enablePhoneParsing
+          });
 
-          // Registrar carga masiva con método específico
+          // Registrar carga masiva con información del parseo
           await auditLogger.logBulkUpload(
             req.user?.id || 0,
             {
@@ -610,7 +644,11 @@ const PrestadorController = {
               totalProcessed: result.totalProcessed,
               successful: result.successful,
               failed: result.failed,
-              warnings: result.warnings || []
+              warnings: result.warnings || [],
+              enablePhoneParsing: enablePhoneParsing, // NUEVO: Registrar si se usó parseo
+              uploadTimestamp: new Date().toISOString(),
+              processingTime: result.processingTime,
+              customDescription: `Carga masiva: ${result.successful} registros exitosos de ${result.totalProcessed} procesados (Parseo teléfonos: ${enablePhoneParsing ? 'SÍ' : 'NO'})`
             },
             req.ip,
             req.get('User-Agent')
@@ -622,7 +660,8 @@ const PrestadorController = {
               totalProcessed: result.totalProcessed,
               successful: result.successful,
               failed: result.failed,
-              warnings: result.warnings || []
+              warnings: result.warnings || [],
+              phoneParsing: enablePhoneParsing // NUEVO: Incluir en respuesta
             }
           });
         } catch (error) {
@@ -639,10 +678,10 @@ const PrestadorController = {
       {
         action: "importar",
         successStatus: StatusCodes.OK,
-        includeDataInResponse: true // Para incluir los detalles del procesamiento
+        includeDataInResponse: true
       }
     );
-  },
+  }
 };
 
 module.exports = PrestadorController;

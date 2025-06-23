@@ -41,7 +41,6 @@ export const DescargarCartillaPDF = () => {
         const planes = await CartillaService.getPlanes()
         setOptions((prev) => ({ ...prev, planes }))
       } catch (error) {
-        console.error("Error al cargar planes:", error)
       } finally {
         setLoading((prev) => ({ ...prev, planes: false }))
       }
@@ -63,7 +62,6 @@ export const DescargarCartillaPDF = () => {
         const provincias = await CartillaService.getProvincias(formData.plan)
         setOptions((prev) => ({ ...prev, provincias }))
       } catch (error) {
-        console.error("Error al cargar provincias:", error)
       } finally {
         setLoading((prev) => ({ ...prev, provincias: false }))
       }
@@ -125,8 +123,6 @@ export const DescargarCartillaPDF = () => {
         window.URL.revokeObjectURL(url)
       }, 100)
     } catch (error) {
-      // console.error("Error al descargar PDF:", error)
-      // alert(error.message || "No se pudo descargar el PDF. Intente nuevamente.")
       Swal.fire({
         icon: "error",
         title: "Error en la descarga",

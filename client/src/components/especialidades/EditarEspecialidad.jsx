@@ -82,7 +82,6 @@ const EditarEspecialidad = () => {
       setEstadoSeleccionado(null);
       setMostrarOpcionesEstado(false);
     } catch (error) {
-      console.error("Error al cargar la especialidad:", error);
       Swal.fire({
         title: "Error",
         text: "No se pudo cargar la información de la especialidad",
@@ -136,7 +135,6 @@ const EditarEspecialidad = () => {
           const especialidadActualizada = await getEspecialidadById(formData.especialidad);
           setEspecialidadSeleccionada(especialidadActualizada);
         } catch (error) {
-          console.error("Error al cambiar el estado:", error);
           throw error;
         }
       }
@@ -174,7 +172,6 @@ const EditarEspecialidad = () => {
       setMostrarOpcionesEstado(false);
       
     } catch (error) {
-      console.error("Error al editar la especialidad:", error);
       Swal.fire({
         title: "Error al editar la especialidad",
         text: error.message || "Ha ocurrido un error al intentar editar la especialidad.",

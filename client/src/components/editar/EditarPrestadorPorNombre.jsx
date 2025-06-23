@@ -106,7 +106,6 @@ const EditarPrestadorPorNombre = () => {
     try {
       // Verificar si se seleccionó cambiar el estado
       if (estadoSeleccionado) {
-        console.log("Estado seleccionado:", estadoSeleccionado);
         try {
           await updatePrestadorStatus({
             nombre: prestadorSeleccionado.nombre,
@@ -119,7 +118,6 @@ const EditarPrestadorPorNombre = () => {
             estado: estadoSeleccionado
           }));
         } catch (error) {
-          console.error("Error al cambiar el estado:", error);
           throw error;
         }
       }
@@ -145,7 +143,6 @@ const EditarPrestadorPorNombre = () => {
       setEstadoSeleccionado(null);
       setMostrarOpcionesEstado(false);
     } catch (error) {
-      console.error("Error al editar el prestador:", error);
       Swal.fire({
         title: "Error al editar el prestador",
         text:

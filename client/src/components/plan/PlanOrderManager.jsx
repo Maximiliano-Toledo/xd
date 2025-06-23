@@ -222,8 +222,6 @@ const PlanOrderManager = () => {
         orden: index + 1
       }));
 
-      console.log(orderData)
-      console.log(orderData.filter(p => !p.id_plan || !p.orden));
       // Llamar a la API para actualizar el orden
       await updatePlanOrder(orderData);
 
@@ -238,7 +236,6 @@ const PlanOrderManager = () => {
       // Recargar los planes para obtener el orden actualizado
       await getPlanes();
     } catch (error) {
-      console.error('Error al guardar el orden:', error);
       Swal.fire({
         title: 'Error',
         text: 'No se pudo guardar el orden de los planes',

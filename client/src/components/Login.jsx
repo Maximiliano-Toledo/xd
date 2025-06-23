@@ -68,7 +68,6 @@ const Login = () => {
     } catch (error) {
       // Manejar errores de red o del servidor
       setError(error.message || "Error de conexión. Por favor intente nuevamente.");
-      console.error("Login error:", error);
     } finally {
       setIsLoading(false);
     }

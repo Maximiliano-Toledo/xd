@@ -1,0 +1,11 @@
+{
+  "name": "@fourdynam/supplier-processor",
+  "version": "1.0.0",
+  "description": "Advanced entity management operations for medical providers",
+  "main": "index.js",
+  "dependencies": {},
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "keywords": ["medical", "entity", "management", "operations", "crud"]
+}

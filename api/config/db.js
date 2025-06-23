@@ -1,4 +1,5 @@
 const mysql = require('mysql2/promise');
+require('dotenv').config();
 
 console.log('Variables de entorno para la base de datos:');
 console.log('DB_HOST:', process.env.DB_HOST);

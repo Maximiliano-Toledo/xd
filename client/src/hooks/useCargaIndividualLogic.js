@@ -175,7 +175,6 @@ export const useCargaIndividualLogic = () => {
 
           limpiarFormulario(reset, setFormStep)
         } catch (error) {
-          console.error("Error al crear el prestador:", error)
           Swal.fire({
             title: "Error al cargar el prestador",
             text: error.message || "Ha ocurrido un error al intentar crear el prestador.",

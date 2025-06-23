@@ -52,7 +52,6 @@ const CrearEspecialidad = () => {
                     reset({ especialidad: '' });
                     
                 } catch (error) {
-                    console.error("Error al crear la especialidad:", error);
                     Swal.fire({
                         title: 'Error al cargar la especialidad',
                         text: error.message || 'Ha ocurrido un error al intentar crear la especialidad.',

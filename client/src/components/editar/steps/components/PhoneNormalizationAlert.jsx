@@ -12,7 +12,8 @@ import {
   FiCheck
 } from 'react-icons/fi';
 import "../../../../styles/phone-normalization.css";
-import { normalizePhoneWithLocation, normalizePhoneWithPrefixes } from "../../../../utils/phoneFormatter.js";
+// FIXED: Import only the functions that actually exist
+import { normalizePhoneWithPrefixes } from "../../../../utils/phoneFormatter.js";
 import PhoneInput from "../../../../utils/PhoneInput.jsx";
 
 const PhoneNormalizationAlert = ({
@@ -30,22 +31,16 @@ const PhoneNormalizationAlert = ({
     if (!originalPhones) return;
 
     try {
-      let normalizedPhones;
-
       // Guardar los datos originales para mostrar en la verificación
       setOriginalData(originalPhones);
 
-      // Si tenemos información de ubicación, usarla para normalización mejorada
-      if (prestadorUbicacion?.provincia) {
-        normalizedPhones = normalizePhoneWithLocation(
-          originalPhones,
-          prestadorUbicacion.provincia,
-          prestadorUbicacion.localidad
-        );
-      } else {
-        // Fallback al método anterior
-        normalizedPhones = normalizePhoneWithPrefixes(originalPhones);
-      }
+      // FIXED: Use normalizePhoneWithPrefixes with location parameters
+      // The function signature is: normalizePhoneWithPrefixes(phoneText, provincia, localidad)
+      const normalizedPhones = normalizePhoneWithPrefixes(
+        originalPhones,
+        prestadorUbicacion?.provincia || null,
+        prestadorUbicacion?.localidad || null
+      );
 
       // Guardar el resultado normalizado
       setNormalizedResult(normalizedPhones);
@@ -53,12 +48,16 @@ const PhoneNormalizationAlert = ({
       // Mostrar el card de verificación
       setShowVerificationCard(true);
     } catch (error) {
-      console.error("Error al normalizar teléfonos:", error);
-      // Fallback al método anterior
-      const fallbackNormalized = normalizePhoneWithPrefixes(originalPhones);
-      setOriginalData(originalPhones);
-      setNormalizedResult(fallbackNormalized);
-      setShowVerificationCard(true);
+      // Fallback sin parámetros de ubicación
+      try {
+        const fallbackNormalized = normalizePhoneWithPrefixes(originalPhones);
+        setOriginalData(originalPhones);
+        setNormalizedResult(fallbackNormalized);
+        setShowVerificationCard(true);
+      } catch (fallbackError) {
+        // Si todo falla, mostrar el modo manual
+        setShowManualEditMode(true);
+      }
     }
   };
 
