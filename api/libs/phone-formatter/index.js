@@ -1,1 +1,1786 @@
-const _0x5b0305=_0x5341;(function(_0x5f0b56,_0x482f9d){const _0x5ec4f3=_0x5341,_0xb6d19e=_0x5f0b56();while(!![]){try{const _0x9399af=-parseInt(_0x5ec4f3(0x1d0))/0x1+parseInt(_0x5ec4f3(0x1c2))/0x2*(-parseInt(_0x5ec4f3(0x19d))/0x3)+-parseInt(_0x5ec4f3(0x1ec))/0x4+parseInt(_0x5ec4f3(0x1a9))/0x5*(-parseInt(_0x5ec4f3(0x1e0))/0x6)+parseInt(_0x5ec4f3(0x1e3))/0x7+parseInt(_0x5ec4f3(0x1d2))/0x8*(-parseInt(_0x5ec4f3(0x1f5))/0x9)+parseInt(_0x5ec4f3(0x1e5))/0xa*(parseInt(_0x5ec4f3(0x1e9))/0xb);if(_0x9399af===_0x482f9d)break;else _0xb6d19e['push'](_0xb6d19e['shift']());}catch(_0x2edba8){_0xb6d19e['push'](_0xb6d19e['shift']());}}}(_0xf3d4,0x88857));function _0xf3d4(){const _0x29fd41=['toLowerCase','OmjKn','385','areaCode','dIzHD','isIncomplete','264','Otro','380','jEOWd','string','GSpDR','codigoArea','latjq','normalizePhoneWithPrefixes','iBCOf','log','match','cEasG','filter','num','EWzIO','isArray','every','Zrixu','numero','localidad','codigo','EmrKe','aTNoU','21849KSOuHz','GtVtD','parse','ndyqE','processAbbreviatedNumbers','toString','replace','max','cleanPhone','11\x20','celular','\x20|\x20','341400zFiclA','isWhatsApp','ZLWss','PtCEj','qNOvz','291','Teléfono\x20','383','find','join','\x20(+','substring','detectSpecialPatterns','Principal','Fax','CEOrG','includes','warn','YRwKt','number','detectPhoneType','phoneJsonToCSVFormat','BMFPX','whatsapp','jGeaz','276CGrRPJ','normalize','El\x20número\x20debe\x20tener\x20entre\x207\x20y\x208\x20dígitos\x20para\x20celulares','354','ySiCE','importPhonesFromCSV','HAnLl','split','MIebZ','Campo\x20desconocido\x20en\x20formato\x20CSV:\x20','gJfGZ','processIndependentNumbers','WufGn','351','1109614jhCdIW','extractExtension','8kqSYds','map','processComplexNumberPattern','No\x20disponible','otro','0300','Incompleto','findAreaCodeByLocation','El\x20código\x20de\x20área\x20debe\x20tener\x202\x20o\x203\x20dígitos\x20para\x20celulares','type:','toUpperCase','getAllAreaCodes','test','huIPl','66SwouDF','011','processHistoricalCellularPattern','7752465RbjFMO','indexOf','30nJVXVq','processComplexArgentinePattern','length','csvFormatToPhoneJson','11552662deqIMJ','area','stringify','3047796uvOCtc','detectAreaCodeInNumber','VZPFj','Teléfono\x20Fijo','El\x20código\x20de\x20área\x20debe\x20ser\x200800,\x200810\x20o\x200300\x20para\x20teléfonos\x20gratuitos','Línea\x20Gratuita\x20(0800/0810/0300)','getPhoneTypes','CDyyn','XOEPt','641997ktaNbr','slice','npQDy','forEach','processLongNumberWith15','\x20int:','266','push','QSMIy','isValidAreaCode','362','mmkTj','NFD','0800','gratuito','RwJUu','validateAndAdjustPhone','fijo','normalizeOldPhoneFormat','|num:','LWDnf','DSFsS','trim','PWzyQ','formatPhoneForDisplay','261','fax','daxvw','formatPhoneForPDF','extractLabel','phoneNumbersData','startsWith','376','WTrxf','GwXVo','descripcion','\x20teléfono(s)','kxoby'];_0xf3d4=function(){return _0x29fd41;};return _0xf3d4();}function _0x5341(_0x5f3a0d,_0x12bb7c){const _0xf3d48e=_0xf3d4();return _0x5341=function(_0x5341d5,_0x3762a5){_0x5341d5=_0x5341d5-0x164;let _0x2dad58=_0xf3d48e[_0x5341d5];return _0x2dad58;},_0x5341(_0x5f3a0d,_0x12bb7c);}class PhoneFormatter{constructor(_0x5d2e7a){const _0x481824=_0x5341;this[_0x481824(0x177)]=_0x5d2e7a;}[_0x5b0305(0x1a5)](_0x5f166c){const _0x40a6c1=_0x5b0305;return _0x5f166c?.[_0x40a6c1(0x1a3)](/\D/g,'')||'';}['extractExtension'](_0x55a58c){const _0x4d841a=_0x5b0305;return _0x55a58c?.[_0x4d841a(0x190)](/int:?\s*(\d+)/i)?.[0x1]||null;}['extractLabel'](_0x3eea12){const _0x1e0758=_0x5b0305,_0x4e16fc=_0x3eea12?.['match'](/^(WSP|TEL|CEL|FAX|WHATSAPP|TELEFONO|CELULAR)[\s:]+/i);return _0x4e16fc?.[0x1]?.[_0x1e0758(0x1dc)]()||null;}[_0x5b0305(0x1d9)](_0x517c31,_0x138eaf){const _0x2332cb=_0x5b0305,_0x274a55={'RWQNA':function(_0x546be0,_0x144c3b){return _0x546be0(_0x144c3b);}};if(!_0x517c31||!this['phoneNumbersData'])return null;const _0x1a4220=_0x29b247=>_0x29b247?.[_0x2332cb(0x17f)]()[_0x2332cb(0x1c3)](_0x2332cb(0x165))['replace'](/[\u0300-\u036f]/g,'')[_0x2332cb(0x1a3)](/[^\w\s]/g,'')['trim']()||'',_0x19aed8=_0x274a55['RWQNA'](_0x1a4220,_0x517c31),_0x4f72bb=_0x1a4220(_0x138eaf),_0x200b3d=this['phoneNumbersData'][_0x2332cb(0x1b1)](_0x515661=>{const _0x324f59=_0x2332cb,_0x516f5f=_0x1a4220(_0x515661['provincia']),_0x3cb2e9=_0x1a4220(_0x515661[_0x324f59(0x199)]),_0x58f3aa=_0x516f5f['includes'](_0x19aed8)||_0x19aed8['includes'](_0x516f5f),_0x4cb304=!_0x4f72bb||_0x3cb2e9['includes'](_0x4f72bb)||_0x4f72bb['includes'](_0x3cb2e9);return _0x58f3aa&&_0x4cb304;});return _0x200b3d?_0x200b3d['codigo']['startsWith']('0')?_0x200b3d['codigo']['substring'](0x1):_0x200b3d['codigo']:null;}['isValidAreaCode'](_0x345ba2){const _0x597f5a=_0x5b0305;if(!this['phoneNumbersData']||!_0x345ba2)return![];const _0x2fedd3=_0x345ba2[_0x597f5a(0x178)]('0')?_0x345ba2['substring'](0x1):_0x345ba2;return this['phoneNumbersData']['some'](_0x56afeb=>_0x56afeb[_0x597f5a(0x19a)]===_0x2fedd3||_0x56afeb['codigo']==='0'+_0x2fedd3);}[_0x5b0305(0x1dd)](){const _0xb3f136=_0x5b0305,_0x5d346e={'onYaT':'224','latjq':'225','PuqRs':'227','npQDy':'228','daxvw':'260','CDyyn':_0xb3f136(0x172),'wJvOV':'263','YRwKt':_0xb3f136(0x1ae),'BMFPX':'299','EWzIO':'341','kLizT':_0xb3f136(0x1cf),'PDOCF':'353','nSMrn':_0xb3f136(0x1c5),'mdEMK':_0xb3f136(0x1ff),'Zrixu':'379','EmrKe':_0xb3f136(0x187)};if(this[_0xb3f136(0x177)]&&Array['isArray'](this[_0xb3f136(0x177)]))return[...new Set(this[_0xb3f136(0x177)][_0xb3f136(0x1d3)](_0x429189=>_0x429189[_0xb3f136(0x19a)][_0xb3f136(0x178)]('0')?_0x429189[_0xb3f136(0x19a)]['substring'](0x1):_0x429189['codigo']))]['sort']((_0x492dae,_0xa65993)=>_0xa65993['length']-_0x492dae[_0xb3f136(0x1e7)]);const _0x124d4f=['11','220','221','223',_0x5d346e['onYaT'],_0x5d346e[_0xb3f136(0x18c)],'226',_0x5d346e['PuqRs'],_0x5d346e[_0xb3f136(0x1f7)],'229','237','249',_0x5d346e[_0xb3f136(0x174)],_0x5d346e[_0xb3f136(0x1f3)],_0x5d346e['wJvOV'],_0xb3f136(0x185),'265',_0xb3f136(0x1fb),'280',_0x5d346e[_0xb3f136(0x1bb)],_0x5d346e[_0xb3f136(0x1bf)],_0x5d346e[_0xb3f136(0x194)],'342','343',_0x5d346e['kLizT'],_0x5d346e['PDOCF'],_0x5d346e['nSMrn'],'358',_0x5d346e['mdEMK'],'364','370',_0xb3f136(0x179),_0x5d346e[_0xb3f136(0x197)],_0x5d346e[_0xb3f136(0x19b)],'381','382',_0xb3f136(0x1b0),_0xb3f136(0x181),'387','388'];return _0x124d4f['sort']((_0x511e28,_0x5871f1)=>_0x5871f1['length']-_0x511e28['length']);}['detectPhoneType'](_0x453efe,_0x139875){const _0x2a6e68=_0x5b0305,_0x44ebb2={'hqOfE':_0x2a6e68(0x1a7),'vCyqO':'fijo'};if(_0x453efe[_0x2a6e68(0x190)](/^0?(800|810|300)$/))return _0x2a6e68(0x167);if(_0x453efe==='11'||_0x453efe==='011'){if(_0x139875['startsWith']('15'))return'celular';if(_0x139875['length']===0x8)return _0x44ebb2['hqOfE'];return'fijo';}if(_0x139875[_0x2a6e68(0x178)]('15'))return _0x2a6e68(0x1a7);if(_0x139875['length']===0x8)return _0x44ebb2['hqOfE'];return _0x44ebb2['vCyqO'];}[_0x5b0305(0x1ed)](_0x51af40,_0x110c3c=null,_0x2df5c5=null){const _0x4d9573=_0x5b0305,_0x24fae9={'VJDrN':function(_0x3de6e8,_0x1286a7){return _0x3de6e8<_0x1286a7;},'KSGWH':function(_0x48ebec,_0x304887){return _0x48ebec+_0x304887;},'cEasG':function(_0x50b848,_0x5ae8d5){return _0x50b848>=_0x5ae8d5;},'GtVtD':function(_0x59f2d0,_0x319aae){return _0x59f2d0>=_0x319aae;},'WjYLK':function(_0x4e258d,_0x4adc13){return _0x4e258d===_0x4adc13;},'dIzHD':'fijo'},_0x2b8847=this['cleanPhone'](_0x51af40);if(_0x24fae9['VJDrN'](_0x2b8847['length'],0x6))return{'areaCode':'','number':_0x2b8847,'tipo':_0x4d9573(0x16a),'isIncomplete':!![]};if(_0x2b8847['match'](/^0?(800|810|300)/)){const _0x7a2b88=_0x2b8847[_0x4d9573(0x190)](/^0?(800|810|300)/)[0x1],_0xe69027=_0x2b8847['replace'](/^0?(800|810|300)/,'');return{'areaCode':_0x24fae9['KSGWH']('0',_0x7a2b88),'number':_0xe69027,'tipo':'gratuito'};}if(_0x2b8847['startsWith']('15')&&_0x2b8847[_0x4d9573(0x1e7)]>=0xa){const _0x2eb817=_0x2b8847['substring'](0x2),_0x421694=this['getAllAreaCodes']();for(const _0x317a6f of _0x421694){if(_0x2eb817[_0x4d9573(0x178)](_0x317a6f)){const _0x372b87=_0x2eb817['substring'](_0x317a6f['length']);if(_0x24fae9[_0x4d9573(0x191)](_0x372b87['length'],0x6)&&_0x372b87['length']<=0x8)return{'areaCode':_0x317a6f,'number':_0x372b87,'tipo':'celular'};}}return{'areaCode':'11','number':_0x2eb817,'tipo':_0x4d9573(0x1a7)};}if(_0x2b8847[_0x4d9573(0x1e7)]>=0xb&&_0x2b8847[_0x4d9573(0x1e7)]<=0xd){const _0x1a22f5=this[_0x4d9573(0x1f9)](_0x2b8847,_0x110c3c,_0x2df5c5);if(_0x1a22f5)return _0x1a22f5;}if(_0x2b8847[_0x4d9573(0x178)]('011')&&_0x2b8847['length']>=0xc){const _0x49b78c=_0x2b8847[_0x4d9573(0x1b4)](0x3);if(_0x49b78c[_0x4d9573(0x178)]('15')){const _0x3a9939=_0x49b78c['substring'](0x2);return{'areaCode':'11','number':_0x3a9939,'tipo':'celular'};}}if(_0x2b8847['startsWith']('0')){const _0x5d8d9c=this['getAllAreaCodes']();for(const _0x1fa404 of _0x5d8d9c){const _0x4e9272='0'+_0x1fa404;if(_0x2b8847[_0x4d9573(0x178)](_0x4e9272)){const _0x325adc=_0x2b8847['substring'](_0x4e9272[_0x4d9573(0x1e7)]);if(_0x325adc['length']>=0x6&&_0x325adc[_0x4d9573(0x1e7)]<=0xa)return{'areaCode':_0x1fa404,'number':_0x325adc,'tipo':_0x4d9573(0x16a)};}}if(_0x24fae9[_0x4d9573(0x19e)](_0x2b8847['length'],0xa)){let _0x420f82=0x3;if(_0x2b8847[_0x4d9573(0x1e7)]===0xb)_0x420f82=0x3;if(_0x2b8847['length']===0xc)_0x420f82=0x4;const _0x501272=_0x2b8847['substring'](0x1,_0x420f82+0x1),_0x672508=_0x2b8847['substring'](_0x420f82+0x1);return{'areaCode':_0x501272,'number':_0x672508,'tipo':'fijo'};}}if(_0x24fae9['WjYLK'](_0x2b8847['length'],0x8))return{'areaCode':'11','number':_0x2b8847,'tipo':_0x2b8847[_0x4d9573(0x178)]('4')?_0x24fae9[_0x4d9573(0x183)]:'celular'};if(_0x2b8847[_0x4d9573(0x1e7)]===0x7)return{'areaCode':'11','number':_0x2b8847,'tipo':_0x24fae9[_0x4d9573(0x183)]};const _0x330b3d=this['getAllAreaCodes']();for(const _0x4163f7 of _0x330b3d){if(_0x2b8847['startsWith'](_0x4163f7)){const _0x52e574=_0x2b8847['substring'](_0x4163f7['length']);if(_0x52e574['length']>=0x6&&_0x52e574[_0x4d9573(0x1e7)]<=0x8)return{'areaCode':_0x4163f7,'number':_0x52e574,'tipo':this['detectPhoneType'](_0x4163f7,_0x52e574)};}}if(_0x2b8847[_0x4d9573(0x1e7)]<0x8)return{'areaCode':'','number':_0x2b8847,'tipo':_0x4d9573(0x16a),'isIncomplete':!![]};return null;}['processLongNumberWith15'](_0x5d2130,_0xa6a7b4=null,_0x1e9306=null){const _0x42734c=_0x5b0305,_0x157f48={'VxBUj':function(_0x224255,_0x4e3cbf){return _0x224255===_0x4e3cbf;},'ndyqE':function(_0x5f2d08,_0x5bd23d){return _0x5f2d08+_0x5bd23d;},'EuviO':function(_0x4624c6,_0x5ede55){return _0x4624c6>=_0x5ede55;},'pywRK':function(_0x5398df,_0x3a4a39){return _0x5398df<=_0x3a4a39;}};if(_0x157f48['VxBUj'](_0x5d2130[_0x42734c(0x1e7)],0xc)&&_0x5d2130['startsWith']('11')&&_0x5d2130['substring'](0x2,0x4)==='15'){const _0x3a8ae1=_0x5d2130[_0x42734c(0x1b4)](0x4);return{'areaCode':'11','number':_0x3a8ae1,'tipo':'celular'};}const _0x298649=this['getAllAreaCodes']();for(const _0x3675ff of _0x298649){if(_0x5d2130[_0x42734c(0x178)](_0x157f48['ndyqE'](_0x3675ff,'15'))){const _0x425541=_0x5d2130['substring'](_0x157f48[_0x42734c(0x1a0)](_0x3675ff[_0x42734c(0x1e7)],0x2));if(_0x157f48['EuviO'](_0x425541['length'],0x6)&&_0x157f48['pywRK'](_0x425541['length'],0x8))return{'areaCode':_0x3675ff,'number':_0x425541,'tipo':'celular'};}}return null;}['processHistoricalCellularPattern'](_0x2dc70b){const _0x46d8c8=_0x5b0305,_0xae0f74={'ZeyoN':function(_0x49d234,_0x5bf296){return _0x49d234===_0x5bf296;},'kHpAx':function(_0x261c13,_0x2e78d2){return _0x261c13>_0x2e78d2;},'PWzyQ':'celular'},_0x127edb=_0x2dc70b['trim'](),_0x384664=_0x127edb[_0x46d8c8(0x1c9)](/\s+/)['filter'](_0x4a654d=>_0x4a654d&&/\d/['test'](_0x4a654d));if(_0xae0f74['ZeyoN'](_0x384664['length'],0x3)){const [_0x141443,_0x4b5907,_0x1d5707]=_0x384664['map'](_0x1596a0=>this[_0x46d8c8(0x1a5)](_0x1596a0));if(_0xae0f74['ZeyoN'](_0x4b5907,'15')){const _0x468aae=_0x141443[_0x46d8c8(0x178)]('0')&&_0xae0f74['kHpAx'](_0x141443[_0x46d8c8(0x1e7)],0x1)?_0x141443['substring'](0x1):_0x141443;return{'areaCode':_0x468aae,'number':_0x1d5707,'tipo':_0xae0f74[_0x46d8c8(0x170)],'isHistoricalCellular':!![]};}}return null;}[_0x5b0305(0x1d4)](_0x44f1f6){const _0x43f026=_0x5b0305,_0x370f5c={'axENt':_0x43f026(0x16a),'ISSPq':function(_0x39e038,_0x257e70){return _0x39e038+_0x257e70;},'LWDnf':function(_0x1a4613,_0x2a5f37){return _0x1a4613>_0x2a5f37;}},_0x2efd8a=[],_0x18a942=_0x44f1f6['trim'](),_0x452503=/0\d{9,11}/g,_0x58476=_0x18a942[_0x43f026(0x190)](_0x452503);if(_0x58476&&_0x58476['length']>0x1){_0x58476['forEach'](_0x2db584=>{const _0x50fdc8=_0x43f026,_0x1e9421=this[_0x50fdc8(0x1ed)](_0x2db584);_0x1e9421&&_0x2efd8a[_0x50fdc8(0x1fc)]({'areaCode':_0x1e9421['areaCode'],'number':_0x1e9421[_0x50fdc8(0x1bc)],'tipo':_0x1e9421['tipo']});});if(_0x2efd8a['length']>0x0)return _0x2efd8a;}const _0x141c33=/0?(\d{2,4})(\d{4})\.(\d{4}),(\d{4})/g;let _0xd7ece9;while((_0xd7ece9=_0x141c33['exec'](_0x44f1f6))!==null){const [_0x21ddb3,_0x2bd194,_0x503fad,_0x4cde63,_0x5852b6]=_0xd7ece9,_0x5e3a2f=_0x21ddb3[_0x43f026(0x190)](/^0?(800|810|300)/),_0xb97c31=_0x21ddb3['startsWith']('0'),_0x2e8fdc=_0x2bd194,_0x2e17e3=_0x503fad+_0x4cde63,_0x5f11a2=_0x503fad+_0x5852b6;let _0x3aab74;if(_0x5e3a2f)_0x3aab74=_0x43f026(0x167);else _0xb97c31?_0x3aab74=_0x43f026(0x16a):_0x3aab74=this[_0x43f026(0x1bd)](_0x2e8fdc,_0x2e17e3);_0x2efd8a['push']({'areaCode':_0x2e8fdc,'number':_0x2e17e3,'tipo':_0x3aab74}),_0x2efd8a[_0x43f026(0x1fc)]({'areaCode':_0x2e8fdc,'number':_0x5f11a2,'tipo':_0x3aab74});}if(_0x2efd8a[_0x43f026(0x1e7)]>0x0)return _0x2efd8a;const _0x2db6f5=_0x18a942['split'](/\s+/)['filter'](_0x1caa3d=>_0x1caa3d&&/\d/[_0x43f026(0x1de)](_0x1caa3d));if(_0x2db6f5[_0x43f026(0x1e7)]>=0x2){const _0x58a339=_0x2db6f5[_0x43f026(0x196)](_0x5b93c8=>_0x5b93c8['startsWith']('0')&&_0x5b93c8[_0x43f026(0x1e7)]>=0xa);if(_0x58a339){_0x2db6f5['forEach'](_0x3e7d7e=>{const _0x2e79b8=_0x43f026,_0x2f6bc6=this[_0x2e79b8(0x1ed)](_0x3e7d7e);_0x2f6bc6&&_0x2efd8a['push']({'areaCode':_0x2f6bc6['areaCode'],'number':_0x2f6bc6[_0x2e79b8(0x1bc)],'tipo':_0x2f6bc6['tipo']});});if(_0x2efd8a['length']>0x0)return _0x2efd8a;}}if(_0x2db6f5['length']>=0x3){const [_0x4438b9,..._0x20d461]=_0x2db6f5['map'](_0x34486e=>this['cleanPhone'](_0x34486e));if(_0x4438b9[_0x43f026(0x1e7)]<=0x5){const _0xb2f31c=_0x2db6f5[0x0],_0x45fc32=this['detectAreaCodeInNumber'](_0xb2f31c+(_0x20d461[0x0]||'')),_0x3f067c=_0x45fc32?_0x45fc32['tipo']:_0x370f5c['axENt'],_0x4bcd52=_0x4438b9[_0x43f026(0x178)]('0')?_0x4438b9['substring'](0x1):_0x4438b9;if(_0x20d461[0x0]&&_0x20d461[0x0]['length']>=0x6){_0x2efd8a[_0x43f026(0x1fc)]({'areaCode':_0x4bcd52,'number':_0x20d461[0x0],'tipo':_0x3f067c});for(let _0x28149f=0x1;_0x28149f<_0x20d461[_0x43f026(0x1e7)];_0x28149f++){const _0x5731b8=_0x20d461[_0x28149f];let _0x2e7b7e=_0x5731b8;if(_0x5731b8['length']<=0x4&&_0x20d461[0x0]['length']>=0x6){const _0x17912b=_0x20d461[0x0][_0x43f026(0x1e7)]-_0x5731b8['length'];_0x2e7b7e=_0x370f5c['ISSPq'](_0x20d461[0x0]['substring'](0x0,_0x17912b),_0x5731b8);}_0x2efd8a['push']({'areaCode':_0x4bcd52,'number':_0x2e7b7e,'tipo':_0x3f067c});}}}}return _0x370f5c[_0x43f026(0x16d)](_0x2efd8a[_0x43f026(0x1e7)],0x0)?_0x2efd8a:null;}['processIndependentNumbers'](_0x50c98f,_0x5c3710=null,_0x3c2359=null){const _0x386559=_0x5b0305,_0x183633={'ySiCE':function(_0x28cfc9,_0x546ad7){return _0x28cfc9>_0x546ad7;},'kxoby':function(_0x210100,_0x10a09c){return _0x210100===_0x10a09c;},'tzcFD':_0x386559(0x1a7),'ZLWss':'fijo'},_0x9ce70c=[];let _0x254cb6=null;return _0x50c98f['forEach']((_0x3090e9,_0x78b7bf)=>{const _0x297128=_0x386559,_0x5232c1=this['cleanPhone'](_0x3090e9);if(_0x3090e9['includes']('\x20')&&_0x78b7bf===0x0){const _0x3c6d91=_0x3090e9[_0x297128(0x16f)]()[_0x297128(0x1c9)](/\s+/);if(_0x3c6d91['length']===0x2){const [_0x528008,_0x1ebb20]=_0x3c6d91['map'](_0x54f7fd=>this[_0x297128(0x1a5)](_0x54f7fd));if(_0x528008['length']>=0x3&&_0x528008[_0x297128(0x1e7)]<=0x5&&_0x1ebb20[_0x297128(0x1e7)]>=0x6&&_0x1ebb20['length']<=0x8){const _0x506c02=_0x528008[_0x297128(0x178)]('0')&&_0x183633[_0x297128(0x1c6)](_0x528008['length'],0x1)?_0x528008[_0x297128(0x1b4)](0x1):_0x528008;_0x9ce70c[_0x297128(0x1fc)]({'areaCode':_0x506c02,'number':_0x1ebb20,'tipo':this[_0x297128(0x1bd)](_0x506c02,_0x1ebb20)}),_0x254cb6=_0x506c02;return;}}}const _0x2aa3d7=this['detectAreaCodeInNumber'](_0x5232c1,_0x5c3710,_0x3c2359);if(_0x2aa3d7)_0x9ce70c[_0x297128(0x1fc)](_0x2aa3d7),_0x183633[_0x297128(0x17e)](_0x78b7bf,0x0)&&!_0x2aa3d7['isIncomplete']&&(_0x254cb6=_0x2aa3d7[_0x297128(0x182)]);else{if(_0x254cb6&&_0x5232c1['length']>=0x6&&_0x5232c1['length']<=0x8)_0x9ce70c[_0x297128(0x1fc)]({'areaCode':_0x254cb6,'number':_0x5232c1,'tipo':this['detectPhoneType'](_0x254cb6,_0x5232c1),'isLocal':!![]});else{if(_0x183633[_0x297128(0x17e)](_0x5232c1[_0x297128(0x1e7)],0x8))_0x9ce70c['push']({'areaCode':'11','number':_0x5232c1,'tipo':_0x5232c1[_0x297128(0x178)]('4')?'fijo':_0x183633['tzcFD'],'assumedBA':!![]});else{if(_0x5232c1['length']===0x7)_0x9ce70c[_0x297128(0x1fc)]({'areaCode':'11','number':_0x5232c1,'tipo':_0x183633[_0x297128(0x1ab)],'assumedBA':!![]});else _0x5232c1[_0x297128(0x1e7)]<0x6&&_0x9ce70c['push']({'areaCode':'','number':_0x5232c1,'tipo':'fijo','isIncomplete':!![]});}}}}),_0x9ce70c;}[_0x5b0305(0x169)](_0x23aa04){const _0x4ccabe=_0x5b0305,_0x5996fa={'GwXVo':function(_0x3262fc,_0x52cbd7){return _0x3262fc===_0x52cbd7;}};if(!_0x23aa04)return null;const {areaCode:_0x3b4cb2,number:_0x241cf6,tipo:_0x2c7b28}=_0x23aa04;if(_0x23aa04[_0x4ccabe(0x184)])return _0x23aa04;if(_0x5996fa[_0x4ccabe(0x17b)](_0x2c7b28,'celular')&&_0x3b4cb2!=='11'&&_0x241cf6['length']>0x8){const _0x16ec22=_0x241cf6['substring'](0x0,0x8);return{..._0x23aa04,'number':_0x16ec22,'adjusted':!![]};}if(_0x2c7b28==='fijo'&&_0x3b4cb2!=='11'&&!_0x3b4cb2[_0x4ccabe(0x178)]('0'))return{..._0x23aa04,'displayAreaCode':'0'+_0x3b4cb2,'normalized':!![]};return _0x23aa04;}['processComplexArgentinePattern'](_0x3095b1){const _0x5e25a4=_0x5b0305,_0x4d1235={'QSMIy':function(_0x1e2e56,_0x5bd5a9){return _0x1e2e56>_0x5bd5a9;},'WTrxf':function(_0x2bc21b,_0x1ca25c){return _0x2bc21b<=_0x1ca25c;},'OmjKn':function(_0x33b058,_0x171e1e){return _0x33b058+_0x171e1e;},'NoKuH':function(_0x22c7a8,_0x28e62c){return _0x22c7a8>_0x28e62c;}},_0x4a135e=_0x3095b1[_0x5e25a4(0x16f)](),_0x117720=this['processComplexNumberPattern'](_0x4a135e);if(_0x117720&&_0x4d1235[_0x5e25a4(0x1fd)](_0x117720['length'],0x0))return _0x117720;const _0x285fde=_0x4a135e['split'](/\s+/)['filter'](_0x4fa1d1=>_0x4fa1d1&&/\d/['test'](_0x4fa1d1));if(_0x285fde['length']>=0x3){const [_0x379d80,..._0x257e74]=_0x285fde['map'](_0x462bd0=>this[_0x5e25a4(0x1a5)](_0x462bd0));if(_0x379d80['length']<=0x5){const _0x313012=_0x379d80[_0x5e25a4(0x178)]('0')&&_0x379d80[_0x5e25a4(0x1e7)]>0x1?_0x379d80[_0x5e25a4(0x1b4)](0x1):_0x379d80,_0xca144=[];if(_0x257e74[0x0]&&_0x257e74[0x0][_0x5e25a4(0x1e7)]>=0x6){_0xca144['push']({'areaCode':_0x313012,'number':_0x257e74[0x0],'tipo':this['detectPhoneType'](_0x313012,_0x257e74[0x0])});for(let _0x5ede0d=0x1;_0x5ede0d<_0x257e74['length'];_0x5ede0d++){const _0x3778d5=_0x257e74[_0x5ede0d];let _0x3417a7=_0x3778d5;if(_0x4d1235[_0x5e25a4(0x17a)](_0x3778d5['length'],0x4)&&_0x257e74[0x0][_0x5e25a4(0x1e7)]>=0x6){const _0x2c797a=_0x257e74[0x0]['length']-_0x3778d5['length'];_0x3417a7=_0x4d1235[_0x5e25a4(0x180)](_0x257e74[0x0][_0x5e25a4(0x1b4)](0x0,_0x2c797a),_0x3778d5);}_0xca144[_0x5e25a4(0x1fc)]({'areaCode':_0x313012,'number':_0x3417a7,'tipo':this['detectPhoneType'](_0x313012,_0x3417a7)});}}return _0x4d1235['NoKuH'](_0xca144['length'],0x0)?_0xca144:null;}}if(_0x285fde[_0x5e25a4(0x1e7)]===0x2){const [_0x2e24f8,_0x20a47b]=_0x285fde[_0x5e25a4(0x1d3)](_0x8b5374=>this['cleanPhone'](_0x8b5374));if(_0x20a47b[_0x5e25a4(0x178)]('15')){const _0x2d3cba=_0x2e24f8[_0x5e25a4(0x178)]('0')&&_0x2e24f8['length']>0x1?_0x2e24f8[_0x5e25a4(0x1b4)](0x1):_0x2e24f8,_0x20ca42=_0x20a47b[_0x5e25a4(0x1b4)](0x2);return[{'areaCode':_0x2d3cba,'number':_0x20ca42,'tipo':'celular'}];}if(_0x2e24f8['length']<=0x5&&_0x20a47b['length']>=0x6){const _0x2d8cc3=_0x2e24f8['startsWith']('0')&&_0x2e24f8[_0x5e25a4(0x1e7)]>0x1?_0x2e24f8[_0x5e25a4(0x1b4)](0x1):_0x2e24f8;return[{'areaCode':_0x2d8cc3,'number':_0x20a47b,'tipo':this['detectPhoneType'](_0x2d8cc3,_0x20a47b)}];}}return null;}[_0x5b0305(0x1a1)](_0x171cfc,_0x3a17ba){const _0x34559c=_0x5b0305,_0x45c1dd={'PtCEj':function(_0x5d3b50,_0x54e2e0){return _0x5d3b50+_0x54e2e0;}},_0xd17a54=this['cleanPhone'](_0x171cfc),_0x12d0bd=this['cleanPhone'](_0x3a17ba),_0x5023e1=this['detectAreaCodeInNumber'](_0xd17a54);if(_0x5023e1){const {areaCode:_0x1d910f,number:_0x37b285,tipo:_0x3b0747}=_0x5023e1,_0xd60b9d=_0x12d0bd[_0x34559c(0x1e7)],_0x468bd6=_0x45c1dd[_0x34559c(0x1ac)](_0x37b285[_0x34559c(0x1b4)](0x0,_0x37b285['length']-_0xd60b9d),_0x12d0bd);return[{'areaCode':_0x1d910f,'number':_0x37b285,'tipo':_0x3b0747},{'areaCode':_0x1d910f,'number':_0x468bd6,'tipo':_0x3b0747}];}return[{'raw':_0x171cfc}];}['detectSpecialPatterns'](_0x2588fb,_0x27a53a=null,_0x58013a=null){const _0x33b84e=_0x5b0305,_0x28977f={'WufGn':'$1\x20','mmkTj':_0x33b84e(0x167)},_0x1e21a4=_0x2588fb['trim']()[_0x33b84e(0x1a3)](/\s*\([^)]*\)\s*/g,'\x20')['replace'](/^\((\d+)\)/,_0x28977f[_0x33b84e(0x1ce)])['replace'](/\s+/g,'\x20'),_0xb25df2=_0x1e21a4['match'](/(WhatsApp|WSP)[\s:]+([0-9\s,]+)/i);let _0x31ae16=null,_0x579913=_0x1e21a4;_0xb25df2&&(_0x31ae16=_0xb25df2[0x2]['trim'](),_0x579913=_0x1e21a4['replace'](_0xb25df2[0x0],'')[_0x33b84e(0x16f)]());const _0x16035e=[];if(_0x579913){const _0x23c702=this['processHistoricalCellularPattern'](_0x579913);if(_0x23c702){const _0x42d8e9=this['validateAndAdjustPhone'](_0x23c702);_0x42d8e9&&_0x16035e['push'](_0x42d8e9);}else{const _0x2c080a=_0x579913[_0x33b84e(0x190)](/^(0?800|0?810|0?300)\s+(.+)/);if(_0x2c080a){const [,_0x41567e,_0x5c1f8f]=_0x2c080a,_0x48bbcc='0'+_0x41567e['replace'](/^0/,''),_0x35479a=this['cleanPhone'](_0x5c1f8f);_0x16035e['push'](this[_0x33b84e(0x169)]({'areaCode':_0x48bbcc,'number':_0x35479a,'tipo':_0x28977f[_0x33b84e(0x164)]}));}else{const _0x2835dc=this['processComplexArgentinePattern'](_0x579913);if(_0x2835dc)_0x2835dc['forEach'](_0x22a4ad=>{const _0x26cf35=_0x33b84e,_0x511604=this[_0x26cf35(0x169)](_0x22a4ad);if(_0x511604)_0x16035e['push'](_0x511604);});else{const _0x29a4b7=_0x579913['split'](/[,;]+/)['map'](_0x57609c=>_0x57609c['trim']())[_0x33b84e(0x192)](_0x4d3f5f=>_0x4d3f5f),processedNumbers=this[_0x33b84e(0x1cd)](_0x29a4b7,_0x27a53a,_0x58013a);if(processedNumbers[_0x33b84e(0x1e7)]>0x0)processedNumbers['forEach'](_0x3f0a5a=>{const _0x5f0700=this['validateAndAdjustPhone'](_0x3f0a5a);if(_0x5f0700)_0x16035e['push'](_0x5f0700);});else{let _0xe29c4b=null;const _0x3810c5=_0x29a4b7[0x0];if(_0x3810c5){const _0x3e6720=this['detectAreaCodeInNumber'](this[_0x33b84e(0x1a5)](_0x3810c5),_0x27a53a,_0x58013a);_0x3e6720&&!_0x3e6720['isIncomplete']&&(_0xe29c4b=_0x3e6720['areaCode']);}_0x29a4b7[_0x33b84e(0x1f8)](_0x21f161=>{const _0x2d6d9b=_0x33b84e,_0x871c8d=_0x21f161[_0x2d6d9b(0x190)](/^(\d{8,11}),(\d{1,4})$/);if(_0x871c8d){const [,_0x20bab0,_0x358c74]=_0x871c8d,_0x56afee=this[_0x2d6d9b(0x1a1)](_0x20bab0,_0x358c74);_0x56afee['forEach'](_0x4e5e40=>{const _0x20d776=_0x2d6d9b;if(_0x4e5e40[_0x20d776(0x182)]){const _0x35cf60=this['validateAndAdjustPhone'](_0x4e5e40);if(_0x35cf60)_0x16035e[_0x20d776(0x1fc)](_0x35cf60);}});return;}const _0x1d03ee=this['detectAreaCodeInNumber'](this['cleanPhone'](_0x21f161),_0x27a53a,_0x58013a);if(_0x1d03ee){const _0x2314b6=this[_0x2d6d9b(0x169)](_0x1d03ee);if(_0x2314b6)_0x16035e[_0x2d6d9b(0x1fc)](_0x2314b6);}else{if(_0xe29c4b){const _0x27e992=this[_0x2d6d9b(0x1a5)](_0x21f161);if(_0x27e992['length']>=0x6&&_0x27e992['length']<=0x8){const _0x340072={'areaCode':_0xe29c4b,'number':_0x27e992,'tipo':this['detectPhoneType'](_0xe29c4b,_0x27e992),'isLocal':!![]},_0xfc6995=this[_0x2d6d9b(0x169)](_0x340072);if(_0xfc6995)_0x16035e[_0x2d6d9b(0x1fc)](_0xfc6995);}}}});}}}}}if(_0x31ae16){const _0x3468ed=_0x31ae16['split'](/[,;]+/)['map'](_0x175c05=>_0x175c05[_0x33b84e(0x16f)]())['filter'](_0x3ffa82=>_0x3ffa82);_0x3468ed['forEach'](_0x1b7283=>{const _0x411e25=_0x33b84e,_0x23016a=this[_0x411e25(0x1ed)](this['cleanPhone'](_0x1b7283),_0x27a53a,_0x58013a);if(_0x23016a){const _0x389ba9=this['validateAndAdjustPhone'](_0x23016a);_0x389ba9&&_0x16035e['push']({..._0x389ba9,'isWhatsApp':!![]});}});}return _0x16035e;}['normalizePhoneWithPrefixes'](_0x2efb94,_0x4ea351=null,_0x2324ab=null){const _0xebea0d=_0x5b0305;if(!_0x2efb94)return JSON[_0xebea0d(0x1eb)]([]);try{const _0x39378d=this['detectSpecialPatterns'](_0x2efb94,_0x4ea351,_0x2324ab),_0x48605e=_0x39378d['map']((_0x13b59b,_0x4b45da)=>({'tipo':_0x13b59b['tipo']||'fijo','codigoArea':_0x13b59b[_0xebea0d(0x182)]||'','numero':_0x13b59b['number']||'','extension':this[_0xebea0d(0x1d1)](_0x2efb94),'descripcion':_0x13b59b[_0xebea0d(0x1aa)]?'WhatsApp':_0x13b59b['isIncomplete']?_0xebea0d(0x1d8):_0x4b45da===0x0?'Principal':_0xebea0d(0x1af)+(_0x4b45da+0x1)}))[_0xebea0d(0x192)](_0x2bf3cd=>_0x2bf3cd[_0xebea0d(0x198)]);return JSON['stringify'](_0x48605e);}catch(_0x15a08f){return console[_0xebea0d(0x1ba)]('Error\x20en\x20normalizePhoneWithPrefixes:',_0x15a08f),this[_0xebea0d(0x16b)](_0x2efb94);}}['normalizeOldPhoneFormat'](_0x24ce94,_0x4863b0=0x0){const _0x296a56=_0x5b0305,_0x1f7bdc={'SbhjN':'0300','tsjGi':_0x296a56(0x167),'RwJUu':'celular','MIebZ':function(_0x6dd535,_0x38e267){return _0x6dd535<=_0x38e267;},'aTNoU':function(_0x2a5368,_0x2fbee4){return _0x2a5368<=_0x2fbee4;},'RgLUP':function(_0x413c9e,_0x36719b){return _0x413c9e>=_0x36719b;},'NcZoe':function(_0x463af5,_0x3e3d3c){return _0x463af5===_0x3e3d3c;},'hrTDJ':_0x296a56(0x1b6)},_0x50c849=this[_0x296a56(0x1a5)](_0x24ce94);if(!_0x50c849||_0x50c849[_0x296a56(0x1e7)]<0x6)return JSON['stringify']([{'tipo':'fijo','codigoArea':'','numero':_0x50c849,'extension':this[_0x296a56(0x1d1)](_0x24ce94),'descripcion':'Incompleto'}]);let _0x29bacb='fijo',_0x33f491='',_0x1548f7=_0x50c849;if(_0x50c849['startsWith']('0800')||_0x50c849['startsWith']('0810')||_0x50c849[_0x296a56(0x178)](_0x1f7bdc['SbhjN']))_0x29bacb=_0x1f7bdc['tsjGi'],_0x33f491=_0x50c849['substring'](0x0,0x4),_0x1548f7=_0x50c849['substring'](0x4);else{if(_0x50c849['startsWith']('15')&&_0x50c849['length']>=0xa)_0x29bacb=_0x1f7bdc[_0x296a56(0x168)],_0x33f491='11',_0x1548f7=_0x50c849[_0x296a56(0x1b4)](0x2);else{if(_0x50c849['startsWith']('0')&&_0x50c849['length']>=0xa){const _0x3777bb=this['getAllAreaCodes']();for(const _0x16b727 of _0x3777bb){const _0x3bb651='0'+_0x16b727;if(_0x50c849[_0x296a56(0x178)](_0x3bb651)){const _0x3c0959=_0x50c849[_0x296a56(0x1b4)](_0x3bb651[_0x296a56(0x1e7)]);if(_0x3c0959[_0x296a56(0x1e7)]>=0x6&&_0x1f7bdc[_0x296a56(0x1ca)](_0x3c0959['length'],0x8)){_0x33f491=_0x3bb651,_0x1548f7=_0x3c0959,_0x29bacb=this['detectPhoneType'](_0x16b727,_0x3c0959);break;}}}if(!_0x33f491){if(_0x50c849[_0x296a56(0x1e7)]===0xb)_0x33f491=_0x50c849['substring'](0x0,0x3),_0x1548f7=_0x50c849['substring'](0x3);else _0x50c849['length']===0xc&&(_0x33f491=_0x50c849[_0x296a56(0x1b4)](0x0,0x4),_0x1548f7=_0x50c849['substring'](0x4));}}else{if(_0x50c849[_0x296a56(0x1e7)]===0xa){const _0x354d9a=this['getAllAreaCodes']();for(const _0x1e2e1a of _0x354d9a){if(_0x50c849['startsWith'](_0x1e2e1a)){const _0x2e0fe5=_0x50c849[_0x296a56(0x1b4)](_0x1e2e1a[_0x296a56(0x1e7)]);if(_0x2e0fe5['length']>=0x6&&_0x1f7bdc[_0x296a56(0x19c)](_0x2e0fe5[_0x296a56(0x1e7)],0x8)){_0x33f491=_0x1e2e1a,_0x1548f7=_0x2e0fe5,_0x29bacb=this['detectPhoneType'](_0x1e2e1a,_0x2e0fe5);break;}}}!_0x33f491&&(_0x50c849[_0x296a56(0x178)]('11')?(_0x33f491='11',_0x1548f7=_0x50c849[_0x296a56(0x1b4)](0x2),_0x29bacb=_0x1548f7[_0x296a56(0x1e7)]===0x8?'celular':'fijo'):(_0x33f491=_0x50c849['substring'](0x0,0x2),_0x1548f7=_0x50c849[_0x296a56(0x1b4)](0x2)));}else{if(_0x1f7bdc['RgLUP'](_0x50c849[_0x296a56(0x1e7)],0x6)){const _0x5dca6f=this[_0x296a56(0x1dd)]();for(const _0x224e79 of _0x5dca6f){if(_0x50c849[_0x296a56(0x178)](_0x224e79)){const _0x59290b=_0x50c849['substring'](_0x224e79['length']);if(_0x59290b['length']>=0x4&&_0x59290b['length']<=0x8){_0x33f491=_0x224e79,_0x1548f7=_0x59290b,_0x29bacb=this['detectPhoneType'](_0x224e79,_0x59290b);break;}}}if(!_0x33f491){if(_0x1f7bdc['NcZoe'](_0x50c849['length'],0x8))_0x33f491='11',_0x1548f7=_0x50c849,_0x29bacb=_0x50c849['startsWith']('4')?'fijo':_0x296a56(0x1a7);else{const _0x30d0f9=_0x50c849['length']===0x9?0x2:0x3;_0x33f491=_0x50c849['substring'](0x0,_0x30d0f9),_0x1548f7=_0x50c849['substring'](_0x30d0f9);}}}}}}}const _0x5c62ed={'tipo':_0x29bacb,'codigoArea':_0x33f491,'numero':_0x1548f7,'extension':this[_0x296a56(0x1d1)](_0x24ce94),'descripcion':_0x4863b0===0x0?_0x1f7bdc['hrTDJ']:_0x296a56(0x1af)+(_0x4863b0+0x1)};return JSON['stringify']([_0x5c62ed]);}['formatPhoneForDisplay'](_0xba7aa0){const _0x467e3e=_0x5b0305,_0x134cac={'LbWEk':'gratuito','HAnLl':function(_0x2095d1,_0x415ce8){return _0x2095d1===_0x415ce8;},'yyXOz':_0x467e3e(0x1e1),'huIPl':function(_0x2eae34,_0x4872da){return _0x2eae34+_0x4872da;}};if(!_0xba7aa0)return'';const {tipo:_0x1fa6a7,codigoArea:_0x5416e3,numero:_0x1b52e3,extension:_0x3fe577,descripcion:_0x5b0772,displayAreaCode:_0x11ed36,assumedBA:_0x35c2c6,adjusted:_0x13d637,isLocal:_0x44f162,isIncomplete:_0x465fec}=_0xba7aa0;if(_0x465fec)return _0x1b52e3||'';let _0x37121d='';const _0x54f76f=_0x11ed36||_0x5416e3,_0x14dc77=_0x5416e3?.['replace'](/^0+/,'')||'';switch(_0x1fa6a7){case _0x134cac['LbWEk']:const _0x355032=_0x54f76f['startsWith']('0')?_0x54f76f:'0'+_0x54f76f;if(_0x1b52e3[_0x467e3e(0x1e7)]===0x7)_0x37121d=_0x355032+'-'+_0x1b52e3[_0x467e3e(0x1b4)](0x0,0x3)+'-'+_0x1b52e3['substring'](0x3);else _0x1b52e3[_0x467e3e(0x1e7)]===0x6?_0x37121d=_0x355032+'-'+_0x1b52e3['substring'](0x0,0x3)+'-'+_0x1b52e3[_0x467e3e(0x1b4)](0x3):_0x37121d=_0x355032+'-'+_0x1b52e3;break;case _0x467e3e(0x1a7):if(_0x14dc77==='11'){if(_0x1b52e3[_0x467e3e(0x1e7)]===0x8)_0x37121d=_0x467e3e(0x1a6)+_0x1b52e3['substring'](0x0,0x4)+'-'+_0x1b52e3['substring'](0x4);else _0x134cac['HAnLl'](_0x1b52e3[_0x467e3e(0x1e7)],0x7)?_0x37121d=_0x467e3e(0x1a6)+_0x1b52e3['substring'](0x0,0x3)+'-'+_0x1b52e3[_0x467e3e(0x1b4)](0x3):_0x37121d=_0x467e3e(0x1a6)+_0x1b52e3;}else{const _0x2fa0ce=_0x54f76f;if(_0x1b52e3['length']>=0x6){let _0x1df977;if(_0x1b52e3['length']===0x8)_0x1df977=0x4;else _0x1b52e3[_0x467e3e(0x1e7)]===0x7?_0x1df977=0x3:_0x1df977=Math['max'](0x3,_0x1b52e3['length']-0x3);_0x37121d='('+_0x2fa0ce+')\x20'+_0x1b52e3['substring'](0x0,_0x1df977)+'-'+_0x1b52e3['substring'](_0x1df977);}else _0x37121d='('+_0x2fa0ce+')\x20'+_0x1b52e3;}break;default:if(_0x134cac[_0x467e3e(0x1c8)](_0x14dc77,'11')){const _0x3eed1d=_0x35c2c6?'11':_0x54f76f['startsWith']('0')?_0x54f76f:_0x134cac['yyXOz'];if(_0x1b52e3[_0x467e3e(0x1e7)]>=0x7){const _0x541217=_0x1b52e3['length']===0x8?0x4:0x3;_0x35c2c6?_0x37121d=_0x3eed1d+'\x20'+_0x1b52e3[_0x467e3e(0x1b4)](0x0,_0x541217)+'-'+_0x1b52e3['substring'](_0x541217):_0x37121d='('+_0x3eed1d+')\x20'+_0x1b52e3[_0x467e3e(0x1b4)](0x0,_0x541217)+'-'+_0x1b52e3[_0x467e3e(0x1b4)](_0x541217);}else _0x37121d=_0x35c2c6?_0x3eed1d+'\x20'+_0x1b52e3:'('+_0x3eed1d+')\x20'+_0x1b52e3;}else{const _0xe708f7=_0x44f162?_0x54f76f['startsWith']('0')?_0x54f76f:_0x134cac['huIPl']('0',_0x54f76f):_0x54f76f[_0x467e3e(0x178)]('0')?_0x54f76f:_0x54f76f['length']<=0x3?_0x134cac[_0x467e3e(0x1df)]('0',_0x54f76f):_0x54f76f;if(_0x1b52e3['length']>=0x6){let _0x242afa;if(_0x44f162&&_0x1b52e3[_0x467e3e(0x1e7)]===0x7)_0x242afa=0x3;else{if(_0x1b52e3['length']===0x8)_0x242afa=0x4;else _0x1b52e3[_0x467e3e(0x1e7)]===0x7?_0x242afa=0x3:_0x242afa=Math[_0x467e3e(0x1a4)](0x3,_0x1b52e3[_0x467e3e(0x1e7)]-0x3);}_0x37121d='('+_0xe708f7+')\x20'+_0x1b52e3['substring'](0x0,_0x242afa)+'-'+_0x1b52e3['substring'](_0x242afa);}else _0x37121d='('+_0xe708f7+')\x20'+_0x1b52e3;}}return _0x3fe577&&(_0x37121d+='\x20int.\x20'+_0x3fe577),_0x5b0772&&_0x5b0772['toLowerCase']()[_0x467e3e(0x1b9)](_0x467e3e(0x1c0))&&(_0x37121d='WhatsApp:\x20'+_0x37121d),_0x37121d;}['formatPhonesForDisplay'](_0x47259f){const _0xdfe0bb=_0x5b0305;if(!_0x47259f)return _0xdfe0bb(0x1d5);try{const _0x5af59b=typeof _0x47259f==='string'?JSON['parse'](_0x47259f):_0x47259f;if(Array[_0xdfe0bb(0x195)](_0x5af59b))return _0x5af59b['map'](_0x364726=>this[_0xdfe0bb(0x171)](_0x364726))['join'](_0xdfe0bb(0x1a8));return _0x47259f[_0xdfe0bb(0x1a2)]();}catch(_0x37a466){return _0x47259f['toString']();}}['formatFirstPhoneForDisplay'](_0x1dd20f){const _0x168c94=_0x5b0305,_0x569847={'XOEPt':_0x168c94(0x189),'DfJvj':function(_0x5e5b23,_0x35097b){return _0x5e5b23>_0x35097b;},'MCpcG':function(_0x42ae2c,_0x2c6a73){return _0x42ae2c||_0x2c6a73;}};if(!_0x1dd20f)return _0x168c94(0x1d5);try{const _0x3fff7c=typeof _0x1dd20f===_0x569847[_0x168c94(0x1f4)]?JSON['parse'](_0x1dd20f):_0x1dd20f;if(Array['isArray'](_0x3fff7c)&&_0x569847['DfJvj'](_0x3fff7c['length'],0x0)){const _0x2b792a=this['formatPhoneForDisplay'](_0x3fff7c[0x0]),_0x57f57d=_0x3fff7c['length']-0x1;if(_0x57f57d>0x0)return _0x2b792a+_0x168c94(0x1b3)+_0x57f57d+'\x20más)';return _0x2b792a;}return _0x1dd20f||_0x168c94(0x1d5);}catch(_0x3ca45f){if(typeof _0x1dd20f==='string'&&_0x1dd20f[_0x168c94(0x16f)]()){const _0x59161b=_0x1dd20f['split'](/[,;\/]+/)[0x0]['trim']();return _0x569847['MCpcG'](_0x59161b,_0x168c94(0x1d5));}return _0x168c94(0x1d5);}}[_0x5b0305(0x175)](_0x4e520e){const _0x514792=_0x5b0305,_0x49a4d3={'xBbyx':function(_0x412a47,_0x3f15fc){return _0x412a47===_0x3f15fc;},'GSpDR':'celular','gJfGZ':function(_0x52b4f6,_0x5b6257){return _0x52b4f6===_0x5b6257;},'LAEPy':'gratuito','qNOvz':'Tel:','iBCOf':function(_0x58e28d,_0x25c7fb){return _0x58e28d>_0x25c7fb;},'lnfyc':function(_0x51c919,_0x495615){return _0x51c919!==_0x495615;},'CEOrG':function(_0x2d8839,_0xc7f65d){return _0x2d8839===_0xc7f65d;},'VZPFj':'\x20|\x20'};if(!_0x4e520e)return'';try{if(_0x4e520e['startsWith']('[')||_0x4e520e[_0x514792(0x178)]('\x22')&&_0x4e520e[_0x514792(0x1e4)]('[')===0x1){let _0x54ebe2=_0x4e520e;_0x4e520e['startsWith']('\x22')&&(_0x54ebe2=JSON[_0x514792(0x19f)](_0x4e520e));const _0x12fa91=JSON['parse'](_0x54ebe2);if(!Array['isArray'](_0x12fa91)||_0x49a4d3[_0x514792(0x1b8)](_0x12fa91[_0x514792(0x1e7)],0x0))return'';return _0x12fa91['map'](_0x1df174=>{const _0x1309a7=_0x514792;if(_0x49a4d3['xBbyx'](_0x1df174['descripcion'],'Incompleto'))return _0x1df174[_0x1309a7(0x198)]||'';let _0x1f923b='';if(_0x1df174['tipo']===_0x49a4d3[_0x1309a7(0x18a)])_0x1f923b='Cel:';else{if(_0x49a4d3[_0x1309a7(0x1cc)](_0x1df174['tipo'],'whatsapp'))_0x1f923b='WhatsApp:';else _0x1df174['tipo']===_0x49a4d3['LAEPy']?_0x1f923b='':_0x1f923b=_0x49a4d3[_0x1309a7(0x1ad)];}let _0x32bd3c='';if(_0x1df174['tipo']===_0x1309a7(0x167)&&_0x1df174['codigoArea']&&_0x1df174['codigoArea']['startsWith']('0')){const _0x4ca8e9=_0x1df174['numero']||'';_0x4ca8e9['length']>=0x6?_0x32bd3c=_0x1df174['codigoArea']+'-'+_0x4ca8e9['slice'](0x0,0x3)+'-'+_0x4ca8e9['slice'](0x3):_0x32bd3c=_0x1df174['codigoArea']+'-'+_0x4ca8e9;}else{const _0x49f24b=_0x1df174[_0x1309a7(0x198)]||'',_0x46e348=_0x1df174['codigoArea']||'';if(_0x49f24b&&_0x49f24b['length']>0x4)_0x32bd3c=_0x46e348+'\x20'+_0x49f24b[_0x1309a7(0x1f6)](0x0,_0x49f24b['length']-0x4)+'-'+_0x49f24b['slice'](-0x4);else _0x49f24b&&_0x49a4d3[_0x1309a7(0x18e)](_0x49f24b[_0x1309a7(0x1e7)],0x0)?_0x32bd3c=_0x46e348+'\x20'+_0x49f24b:_0x32bd3c=_0x46e348;}_0x1df174['extension']&&(_0x32bd3c+=_0x1309a7(0x1fa)+_0x1df174['extension']);let _0xbb3c96='';return _0x1df174['descripcion']&&!_0x1df174['descripcion']['toLowerCase']()[_0x1309a7(0x1b9)]('whatsapp')&&_0x1df174['descripcion']!=='Principal'&&_0x49a4d3['lnfyc'](_0x1df174[_0x1309a7(0x17c)],_0x1309a7(0x1d8))&&(_0xbb3c96='\x20('+_0x1df174[_0x1309a7(0x17c)]+')'),(_0x1f923b+'\x20'+_0x32bd3c+_0xbb3c96)['trim']();})['join']('\x20|\x20');}else{const _0x25045b=_0x4e520e['split'](/[,;\/]+/)[_0x514792(0x1d3)](_0x5244c7=>_0x5244c7['trim']())['filter'](_0x3ab540=>_0x3ab540);return _0x25045b['join'](_0x49a4d3[_0x514792(0x1ee)]);}}catch(_0x557739){return console['warn']('Error\x20al\x20formatear\x20teléfono\x20para\x20PDF:\x20'+_0x557739['message']),_0x4e520e;}}[_0x5b0305(0x1be)](_0x3a0d81){const _0x11be15=_0x5b0305,_0x30a5e4={'cRkCX':_0x11be15(0x189)};if(!_0x3a0d81)return'';try{const _0x181273=typeof _0x3a0d81===_0x30a5e4['cRkCX']?JSON['parse'](_0x3a0d81):_0x3a0d81;if(!Array['isArray'](_0x181273))return _0x3a0d81;return _0x181273[_0x11be15(0x1d3)](_0x9915d5=>{const _0x20e880=_0x11be15;return _0x20e880(0x1db)+(_0x9915d5['tipo']||_0x20e880(0x16a))+'|area:'+(_0x9915d5['codigoArea']||'')+_0x20e880(0x16c)+(_0x9915d5['numero']||'')+'|ext:'+(_0x9915d5['extension']||'')+'|desc:'+(_0x9915d5['descripcion']||'');})[_0x11be15(0x1b2)](';');}catch(_0x21d2ee){return _0x3a0d81;}}['csvFormatToPhoneJson'](_0x4efaa9){const _0x1c692b=_0x5b0305;if(!_0x4efaa9||_0x4efaa9[_0x1c692b(0x16f)]()==='')return JSON['stringify']([]);try{const _0x4cdd50=JSON['parse'](_0x4efaa9);if(Array['isArray'](_0x4cdd50))return _0x4efaa9;}catch(_0x230f7d){}if(_0x4efaa9[_0x1c692b(0x1b9)](_0x1c692b(0x1db))&&_0x4efaa9[_0x1c692b(0x1b9)]('|'))try{const _0x2ce8e2=_0x4efaa9[_0x1c692b(0x1c9)](';')['filter'](_0x344997=>_0x344997['trim']()),_0x12ddb7=[];_0x2ce8e2['forEach'](_0x1d96c7=>{const _0x529686=_0x1c692b,_0x4f3c86={'jEOWd':function(_0x116419,_0xd74e09){return _0x116419||_0xd74e09;},'qVUzv':'ext','DSFsS':'desc'},_0xf74dc4=_0x1d96c7[_0x529686(0x1c9)]('|'),_0x2d2cbd={};_0xf74dc4[_0x529686(0x1f8)](_0x240f86=>{const _0x146924=_0x529686;if(_0x240f86['includes'](':')){const [_0x1ee2ad,_0x5c6420]=_0x240f86[_0x146924(0x1c9)](':',0x2),_0x32e2df=_0x5c6420?.[_0x146924(0x16f)]();switch(_0x1ee2ad[_0x146924(0x16f)]()){case'type':_0x2d2cbd['tipo']=_0x4f3c86[_0x146924(0x188)](_0x32e2df,_0x146924(0x16a));break;case _0x146924(0x1ea):_0x2d2cbd['codigoArea']=_0x32e2df||'';break;case _0x146924(0x193):_0x2d2cbd[_0x146924(0x198)]=_0x4f3c86[_0x146924(0x188)](_0x32e2df,'');break;case _0x4f3c86['qVUzv']:_0x2d2cbd['extension']=_0x4f3c86[_0x146924(0x188)](_0x32e2df,null);break;case _0x4f3c86[_0x146924(0x16e)]:_0x2d2cbd['descripcion']=_0x32e2df||null;break;default:console['warn'](_0x146924(0x1cb)+_0x1ee2ad);}}}),_0x2d2cbd['numero']&&_0x12ddb7[_0x529686(0x1fc)](_0x2d2cbd);});if(_0x12ddb7['length']>0x0){const _0xdf34ed=JSON[_0x1c692b(0x1eb)](_0x12ddb7);return console[_0x1c692b(0x18f)]('✅\x20Conversión\x20CSV\x20estructurado\x20exitosa:\x20'+_0x12ddb7[_0x1c692b(0x1e7)]+_0x1c692b(0x17d)),_0xdf34ed;}}catch(_0x297496){console['warn']('Error\x20procesando\x20formato\x20CSV\x20estructurado:',_0x297496);}return this['normalizePhoneWithPrefixes'](_0x4efaa9);}['isPhoneJsonFormat'](_0x2116f4){const _0x2ae15d=_0x5b0305;if(!_0x2116f4)return![];try{const _0x443450=JSON[_0x2ae15d(0x19f)](_0x2116f4);return Array['isArray'](_0x443450);}catch(_0x978358){return![];}}['validatePhone'](_0x1f24d9){const _0x120e0b=_0x5b0305,_0x3225cc={'ggekd':'Incompleto','AfTiD':'Número\x20incompleto\x20-\x20requiere\x20código\x20de\x20área','GreKK':'0810','jGeaz':'El\x20número\x20debe\x20tener\x20entre\x206\x20y\x208\x20dígitos','zeOLA':'El\x20código\x20de\x20área\x20debe\x20tener\x20entre\x202\x20y\x204\x20dígitos'},_0x110e22=[];!_0x1f24d9['tipo']&&_0x110e22['push']('El\x20tipo\x20de\x20teléfono\x20es\x20requerido');if(_0x1f24d9[_0x120e0b(0x17c)]===_0x3225cc['ggekd'])return{'isValid':!![],'errors':[_0x3225cc['AfTiD']],'isIncomplete':!![]};!_0x1f24d9[_0x120e0b(0x198)]&&_0x110e22[_0x120e0b(0x1fc)]('El\x20número\x20de\x20teléfono\x20es\x20requerido');switch(_0x1f24d9['tipo']){case'gratuito':(!_0x1f24d9[_0x120e0b(0x18b)]||![_0x120e0b(0x166),_0x3225cc['GreKK'],_0x120e0b(0x1d7)]['includes'](_0x1f24d9['codigoArea']))&&_0x110e22['push'](_0x120e0b(0x1f0));!/^\d{6,8}$/[_0x120e0b(0x1de)](_0x1f24d9[_0x120e0b(0x198)])&&_0x110e22['push'](_0x3225cc[_0x120e0b(0x1c1)]);break;case'celular':(!_0x1f24d9[_0x120e0b(0x18b)]||!/^\d{2,3}$/['test'](_0x1f24d9[_0x120e0b(0x18b)]))&&_0x110e22[_0x120e0b(0x1fc)](_0x120e0b(0x1da));!/^\d{7,8}$/['test'](_0x1f24d9[_0x120e0b(0x198)])&&_0x110e22['push'](_0x120e0b(0x1c4));break;case'fijo':default:(!_0x1f24d9['codigoArea']||!/^\d{2,4}$/[_0x120e0b(0x1de)](_0x1f24d9[_0x120e0b(0x18b)]))&&_0x110e22['push'](_0x3225cc['zeOLA']);!/^\d{6,8}$/['test'](_0x1f24d9['numero'])&&_0x110e22[_0x120e0b(0x1fc)](_0x3225cc[_0x120e0b(0x1c1)]);break;}return{'isValid':_0x110e22['length']===0x0,'errors':_0x110e22};}[_0x5b0305(0x1f2)](){const _0x33ade6=_0x5b0305,_0x3baebe={'SPtsJ':_0x33ade6(0x1a7),'nJrCm':'Celular','vzDJg':_0x33ade6(0x1b7),'RvuYU':_0x33ade6(0x186)};return[{'value':_0x33ade6(0x16a),'label':_0x33ade6(0x1ef)},{'value':_0x3baebe['SPtsJ'],'label':_0x3baebe['nJrCm']},{'value':'gratuito','label':'Línea\x20Gratuita\x20(0800/0810/0300)'},{'value':_0x33ade6(0x173),'label':_0x3baebe['vzDJg']},{'value':_0x33ade6(0x1d6),'label':_0x3baebe['RvuYU']}];}['normalizeOldPhoneFormat'](_0xaf5d7f){const _0x2b0029=_0x5b0305;return this[_0x2b0029(0x18d)](_0xaf5d7f);}['exportPhonesToCSV'](_0x594211){return this['phoneJsonToCSVFormat'](_0x594211);}[_0x5b0305(0x1c7)](_0x599788){const _0x145c36=_0x5b0305;return this[_0x145c36(0x1e8)](_0x599788);}}const normalizePhoneWithPrefixes=(_0x5da07b,_0x25fb90=null,_0x4d0963=null)=>{const _0x5c96b8=_0x5b0305,_0x91c671=new PhoneFormatter();return _0x91c671[_0x5c96b8(0x18d)](_0x5da07b,_0x25fb90,_0x4d0963);},normalizeOldPhoneFormat=_0x1d2eab=>{const _0x4dd670=new PhoneFormatter();return _0x4dd670['normalizeOldPhoneFormat'](_0x1d2eab);},phoneJsonToCSVFormat=_0x8c41ae=>{const _0x252768=new PhoneFormatter();return _0x252768['phoneJsonToCSVFormat'](_0x8c41ae);},csvFormatToPhoneJson=_0x34c6fd=>{const _0x547540=new PhoneFormatter();return _0x547540['csvFormatToPhoneJson'](_0x34c6fd);},formatPhoneForDisplay=_0x2c31da=>{const _0x1e329a=_0x5b0305,_0x55a6b7=new PhoneFormatter();return _0x55a6b7[_0x1e329a(0x171)](_0x2c31da);},formatPhonesForDisplay=_0x346e71=>{const _0x1085e8=new PhoneFormatter();return _0x1085e8['formatPhonesForDisplay'](_0x346e71);},formatFirstPhoneForDisplay=_0x4df23b=>{const _0x39e492=new PhoneFormatter();return _0x39e492['formatFirstPhoneForDisplay'](_0x4df23b);},formatPhoneForPDF=_0xb89330=>{const _0x336621=_0x5b0305,_0xb8b98a=new PhoneFormatter();return _0xb8b98a[_0x336621(0x175)](_0xb89330);},isPhoneJsonFormat=_0x5688b5=>{const _0x4f11ae=new PhoneFormatter();return _0x4f11ae['isPhoneJsonFormat'](_0x5688b5);},validatePhone=_0x1a00c3=>{const _0x3bb97b=new PhoneFormatter();return _0x3bb97b['validatePhone'](_0x1a00c3);},PHONE_TYPES=[{'value':_0x5b0305(0x16a),'label':'Teléfono\x20Fijo'},{'value':_0x5b0305(0x1a7),'label':'Celular'},{'value':'gratuito','label':_0x5b0305(0x1f1)},{'value':_0x5b0305(0x173),'label':'Fax'},{'value':_0x5b0305(0x1d6),'label':_0x5b0305(0x186)}],findAreaCodeByLocation=(_0x3dbbdd,_0x473d38)=>{const _0xaae65b=new PhoneFormatter();return _0xaae65b['findAreaCodeByLocation'](_0x3dbbdd,_0x473d38);},detectPhoneType=(_0x1771df,_0x4baa3b)=>{const _0x20506f=_0x5b0305,_0x30b105=new PhoneFormatter();return _0x30b105[_0x20506f(0x1bd)](_0x1771df,_0x4baa3b);},extractExtension=_0x14dec3=>{const _0xfbe751=new PhoneFormatter();return _0xfbe751['extractExtension'](_0x14dec3);},extractLabel=_0x1293ac=>{const _0x223cbc=_0x5b0305,_0x401fb6=new PhoneFormatter();return _0x401fb6[_0x223cbc(0x176)](_0x1293ac);},detectAreaCodeInNumber=(_0x1f0d27,_0x10c2a6=null,_0x197add=null)=>{const _0x429e4f=new PhoneFormatter();return _0x429e4f['detectAreaCodeInNumber'](_0x1f0d27,_0x10c2a6,_0x197add);},processLongNumberWith15=(_0x524dc2,_0x389bce=null,_0x162caa=null)=>{const _0x34e659=_0x5b0305,_0xf27ddc=new PhoneFormatter();return _0xf27ddc[_0x34e659(0x1f9)](_0x524dc2,_0x389bce,_0x162caa);},processHistoricalCellularPattern=_0x5bc462=>{const _0x2a9310=_0x5b0305,_0x41146d=new PhoneFormatter();return _0x41146d[_0x2a9310(0x1e2)](_0x5bc462);},processIndependentNumbers=(_0x4ccef6,_0x2c9666=null,_0x244c2d=null)=>{const _0x3a416d=_0x5b0305,_0x34b777=new PhoneFormatter();return _0x34b777[_0x3a416d(0x1cd)](_0x4ccef6,_0x2c9666,_0x244c2d);},validateAndAdjustPhone=_0x3b73a7=>{const _0xffd1db=new PhoneFormatter();return _0xffd1db['validateAndAdjustPhone'](_0x3b73a7);},processComplexArgentinePattern=_0x46da16=>{const _0x4f1c83=_0x5b0305,_0x42a1fb=new PhoneFormatter();return _0x42a1fb[_0x4f1c83(0x1e6)](_0x46da16);},processAbbreviatedNumbers=(_0xa79075,_0x3e2e88)=>{const _0x333ba2=new PhoneFormatter();return _0x333ba2['processAbbreviatedNumbers'](_0xa79075,_0x3e2e88);},detectSpecialPatterns=(_0x3952aa,_0x40e219=null,_0x27ebf8=null)=>{const _0x1a675e=_0x5b0305,_0x26a349=new PhoneFormatter();return _0x26a349[_0x1a675e(0x1b5)](_0x3952aa,_0x40e219,_0x27ebf8);},isValidAreaCode=_0x40d580=>{const _0x4c468a=_0x5b0305,_0x46e9f9=new PhoneFormatter();return _0x46e9f9[_0x4c468a(0x1fe)](_0x40d580);},cleanPhone=_0xd63df5=>{const _0x19bcbc=new PhoneFormatter();return _0x19bcbc['cleanPhone'](_0xd63df5);},getAllAreaCodes=()=>{const _0x5dd8a5=new PhoneFormatter();return _0x5dd8a5['getAllAreaCodes']();};module['exports']={'PhoneFormatter':PhoneFormatter,'normalizePhoneWithPrefixes':normalizePhoneWithPrefixes,'normalizeOldPhoneFormat':normalizeOldPhoneFormat,'phoneJsonToCSVFormat':phoneJsonToCSVFormat,'csvFormatToPhoneJson':csvFormatToPhoneJson,'formatPhoneForDisplay':formatPhoneForDisplay,'formatPhonesForDisplay':formatPhonesForDisplay,'formatFirstPhoneForDisplay':formatFirstPhoneForDisplay,'formatPhoneForPDF':formatPhoneForPDF,'isPhoneJsonFormat':isPhoneJsonFormat,'validatePhone':validatePhone,'PHONE_TYPES':PHONE_TYPES,'findAreaCodeByLocation':findAreaCodeByLocation,'detectPhoneType':detectPhoneType,'extractExtension':extractExtension,'extractLabel':extractLabel,'detectAreaCodeInNumber':detectAreaCodeInNumber,'processLongNumberWith15':processLongNumberWith15,'processHistoricalCellularPattern':processHistoricalCellularPattern,'processIndependentNumbers':processIndependentNumbers,'validateAndAdjustPhone':validateAndAdjustPhone,'processComplexArgentinePattern':processComplexArgentinePattern,'processAbbreviatedNumbers':processAbbreviatedNumbers,'detectSpecialPatterns':detectSpecialPatterns,'isValidAreaCode':isValidAreaCode,'cleanPhone':cleanPhone,'getAllAreaCodes':getAllAreaCodes};
+// libs/phone-formatter/index.js
+/**
+ * Phone Formatter Library
+ * Utilidades para formateo y normalización de teléfonos argentinos (Backend - Versión Completa)
+ * Maneja todos los patrones telefónicos argentinos incluyendo casos especiales y edge cases
+ */
+
+// const { phoneNumbersData } = require('../../utils/phoneNumbersData');
+
+class PhoneFormatter {
+  constructor(phoneNumbersData) {
+    this.phoneNumbersData = phoneNumbersData;
+    // console.log(phoneNumbersData)
+  }
+
+  // ============================================================================
+  // UTILIDADES BÁSICAS
+  // ============================================================================
+
+  cleanPhone(phone) {
+    return phone?.replace(/\D/g, '') || '';
+  }
+
+  extractExtension(text) {
+    return text?.match(/int:?\s*(\d+)/i)?.[1] || null;
+  }
+
+  extractLabel(text) {
+    const match = text?.match(/^(WSP|TEL|CEL|FAX|WHATSAPP|TELEFONO|CELULAR)[\s:]+/i);
+    return match?.[1]?.toUpperCase() || null;
+  }
+
+  // ============================================================================
+  // BÚSQUEDA EN BASE DE DATOS DE CÓDIGOS
+  // ============================================================================
+
+  /**
+   * Busca un código de área en la base de datos por provincia y localidad
+   * @param {string} provincia - Nombre de la provincia
+   * @param {string} localidad - Nombre de la localidad
+   * @returns {string|null} - Código de área encontrado
+   */
+  findAreaCodeByLocation(provincia, localidad) {
+    if (!provincia || !this.phoneNumbersData) return null;
+
+    const normalizeText = (text) => text?.toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^\w\s]/g, '')
+      .trim() || '';
+
+    const searchProv = normalizeText(provincia);
+    const searchLoc = normalizeText(localidad);
+
+    // Buscar coincidencia exacta
+    const match = this.phoneNumbersData.find(item => {
+      const itemProv = normalizeText(item.provincia);
+      const itemLoc = normalizeText(item.localidad);
+
+      const provMatch = itemProv.includes(searchProv) || searchProv.includes(itemProv);
+      const locMatch = !searchLoc || itemLoc.includes(searchLoc) || searchLoc.includes(itemLoc);
+
+      return provMatch && locMatch;
+    });
+
+    return match ? (match.codigo.startsWith('0') ? match.codigo.substring(1) : match.codigo) : null;
+  }
+
+  /**
+   * Valida si un código de área existe en la base de datos
+   * @param {string} code - Código a validar
+   * @returns {boolean} - true si existe
+   */
+  isValidAreaCode(code) {
+    if (!this.phoneNumbersData || !code) return false;
+
+    const normalizedCode = code.startsWith('0') ? code.substring(1) : code;
+    return this.phoneNumbersData.some(item =>
+      item.codigo === normalizedCode ||
+      item.codigo === '0' + normalizedCode
+    );
+  }
+
+  /**
+   * Obtiene todos los códigos de área posibles desde la base de datos
+   * @returns {Array} - Array de códigos sin el 0 inicial
+   */
+  getAllAreaCodes() {
+    if (this.phoneNumbersData && Array.isArray(this.phoneNumbersData)) {
+      return [...new Set(this.phoneNumbersData.map(item =>
+        item.codigo.startsWith('0') ? item.codigo.substring(1) : item.codigo
+      ))].sort((a, b) => b.length - a.length);
+    }
+
+    // Fallback a códigos básicos si no hay data
+    const BASIC_AREA_CODES = [
+      '11', '220', '221', '223', '224', '225', '226', '227', '228', '229',
+      '237', '249', '260', '261', '263', '264', '265', '266', '280', '291', '299',
+      '341', '342', '343', '351', '353', '354', '358', '362', '364', '370', '376', '379',
+      '380', '381', '382', '383', '385', '387', '388'
+    ];
+    return BASIC_AREA_CODES.sort((a, b) => b.length - a.length);
+  }
+
+  // ============================================================================
+  // DETECCIÓN DE TIPOS Y CÓDIGOS
+  // ============================================================================
+
+  /**
+   * Detecta el tipo de teléfono según código de área y número
+   * @param {string} areaCode - Código de área
+   * @param {string} number - Número sin código
+   * @returns {string} - 'fijo', 'celular', o 'gratuito'
+   */
+  detectPhoneType(areaCode, number) {
+    // Líneas gratuitas
+    if (areaCode.match(/^0?(800|810|300)$/)) {
+      return 'gratuito';
+    }
+
+    // Buenos Aires (11) - lógica especial
+    if (areaCode === '11' || areaCode === '011') {
+      // Si el número empieza con 15, es celular histórico
+      if (number.startsWith('15')) {
+        return 'celular';
+      }
+      // Si es de 8 dígitos, es celular
+      if (number.length === 8) {
+        return 'celular';
+      }
+      // Si es de 7 dígitos o menos, es fijo
+      return 'fijo';
+    }
+
+    // Para otros códigos de área
+    // Si el número empieza con 15, es celular histórico
+    if (number.startsWith('15')) {
+      return 'celular';
+    }
+
+    // Si el número es de 8 dígitos, probablemente es celular
+    if (number.length === 8) {
+      return 'celular';
+    }
+
+    // Default: fijo
+    return 'fijo';
+  }
+
+  /**
+   * Detecta código de área en un número completo con manejo mejorado de casos argentinos
+   * REGLA 1: Líneas gratuitas (0800/0810/0300) tienen PRIORIDAD sobre regla de "0 = fijo"
+   * REGLA 2: Si el número comienza con "0" y NO es gratuito = TELÉFONO FIJO
+   * @param {string} number - Número limpio
+   * @param {string} provincia - Provincia para validación (opcional)
+   * @param {string} localidad - Localidad para validación (opcional)
+   * @returns {Object|null} - {areaCode, number, tipo} o null
+   */
+  detectAreaCodeInNumber(number, provincia = null, localidad = null) {
+    const clean = this.cleanPhone(number);
+
+    // Casos especiales: números muy cortos (incompletos)
+    if (clean.length < 6) {
+      return {
+        areaCode: '',
+        number: clean,
+        tipo: 'fijo',
+        isIncomplete: true
+      };
+    }
+
+    // PRIORIDAD 1: Casos especiales: líneas gratuitas (ANTES de la regla del 0)
+    if (clean.match(/^0?(800|810|300)/)) {
+      const areaCode = clean.match(/^0?(800|810|300)/)[1];
+      const remainingNumber = clean.replace(/^0?(800|810|300)/, '');
+      return {
+        areaCode: '0' + areaCode,
+        number: remainingNumber,
+        tipo: 'gratuito' // LÍNEA GRATUITA tiene prioridad
+      };
+    }
+
+    // CASO ESPECIAL: Números que empiezan con 15 seguido de código (15XXXXXXXXX)
+    if (clean.startsWith('15') && clean.length >= 10) {
+      const withoutPrefix = clean.substring(2);
+
+      // Intentar detectar código de área en el resto
+      const allCodes = this.getAllAreaCodes();
+      for (const code of allCodes) {
+        if (withoutPrefix.startsWith(code)) {
+          const remainingNumber = withoutPrefix.substring(code.length);
+          if (remainingNumber.length >= 6 && remainingNumber.length <= 8) {
+            return {
+              areaCode: code,
+              number: remainingNumber,
+              tipo: 'celular'
+            };
+          }
+        }
+      }
+
+      // Fallback: asumir Buenos Aires
+      return {
+        areaCode: '11',
+        number: withoutPrefix,
+        tipo: 'celular'
+      };
+    }
+
+    // CASO ESPECIAL 1: Números largos con "15" embebido (ej: 111544496593)
+    if (clean.length >= 11 && clean.length <= 13) {
+      const longNumberResult = this.processLongNumberWith15(clean, provincia, localidad);
+      if (longNumberResult) {
+        return longNumberResult;
+      }
+    }
+
+    // CASO ESPECIAL: Números con formato 011 + 15 + número (01115XXXXXXXX)
+    if (clean.startsWith('011') && clean.length >= 12) {
+      const afterCode = clean.substring(3);
+      if (afterCode.startsWith('15')) {
+        const actualNumber = afterCode.substring(2);
+        return {
+          areaCode: '11',
+          number: actualNumber,
+          tipo: 'celular'
+        };
+      }
+    }
+
+    // REGLA 2: Para números que empiezan con 0 (formato completo con código)
+    // IMPORTANTE: Solo aplicar "fijo" si NO es línea gratuita (ya verificada arriba)
+    if (clean.startsWith('0')) {
+      const allCodes = this.getAllAreaCodes();
+
+      // Probar códigos ordenados por longitud (más largos primero)
+      for (const code of allCodes) {
+        const fullCode = '0' + code;
+        if (clean.startsWith(fullCode)) {
+          const remainingNumber = clean.substring(fullCode.length);
+          if (remainingNumber.length >= 6 && remainingNumber.length <= 10) {
+            return {
+              areaCode: code, // Devolver sin el 0
+              number: remainingNumber,
+              tipo: 'fijo' // FIJO porque empieza con 0 y no es gratuito
+            };
+          }
+        }
+      }
+
+      // Si no se encontró coincidencia exacta, usar heurística por longitud
+      if (clean.length >= 10) {
+        let areaCodeLength = 3; // Por defecto 3 dígitos después del 0
+        if (clean.length === 11) areaCodeLength = 3; // 0XXX XXXXXXX
+        if (clean.length === 12) areaCodeLength = 4; // 0XXXX XXXXXXX
+
+        const detectedCode = clean.substring(1, areaCodeLength + 1); // Sin el 0 inicial
+        const remainingNumber = clean.substring(areaCodeLength + 1);
+
+        return {
+          areaCode: detectedCode,
+          number: remainingNumber,
+          tipo: 'fijo' // FIJO porque empieza con 0 y no es gratuito
+        };
+      }
+    }
+
+    // CASO ESPECIAL: Números de 8 dígitos sin código - asumir Buenos Aires
+    if (clean.length === 8) {
+      return {
+        areaCode: '11',
+        number: clean,
+        tipo: clean.startsWith('4') ? 'fijo' : 'celular'
+      };
+    }
+
+    // CASO ESPECIAL: Números de 7 dígitos sin código - asumir Buenos Aires fijo
+    if (clean.length === 7) {
+      return {
+        areaCode: '11',
+        number: clean,
+        tipo: 'fijo'
+      };
+    }
+
+    // LÓGICA PRINCIPAL: Para números sin 0 inicial - usar base de datos de códigos
+    const allCodes = this.getAllAreaCodes();
+    for (const code of allCodes) {
+      if (clean.startsWith(code)) {
+        const remainingNumber = clean.substring(code.length);
+        if (remainingNumber.length >= 6 && remainingNumber.length <= 8) {
+          return {
+            areaCode: code,
+            number: remainingNumber,
+            tipo: this.detectPhoneType(code, remainingNumber)
+          };
+        }
+      }
+    }
+
+    // Si no se pudo detectar y es un número corto, marcarlo como incompleto
+    if (clean.length < 8) {
+      return {
+        areaCode: '',
+        number: clean,
+        tipo: 'fijo',
+        isIncomplete: true
+      };
+    }
+
+    return null;
+  }
+
+  // ============================================================================
+  // MANEJO DE CASOS ESPECIALES ARGENTINOS
+  // ============================================================================
+
+  /**
+   * Procesa números largos que pueden tener "15" embebido (ej: 111544496593)
+   * @param {string} clean - Número limpio
+   * @param {string} provincia - Provincia para contexto
+   * @param {string} localidad - Localidad para contexto
+   * @returns {Object|null} - Resultado procesado o null
+   */
+  processLongNumberWith15(clean, provincia = null, localidad = null) {
+    // Caso: 111544496593 (12 dígitos)
+    // Interpretación: 11 + 15 + 44496593 -> 11 + 44496593
+    if (clean.length === 12 && clean.startsWith('11') && clean.substring(2, 4) === '15') {
+      const actualNumber = clean.substring(4); // Remover "11" + "15"
+      return {
+        areaCode: '11',
+        number: actualNumber,
+        tipo: 'celular'
+      };
+    }
+
+    // Caso general: buscar "15" en posiciones 2-4
+    const allCodes = this.getAllAreaCodes();
+
+    for (const code of allCodes) {
+      if (clean.startsWith(code + '15')) {
+        const finalNumber = clean.substring(code.length + 2); // +2 para remover "15"
+
+        // Verificar que el número restante tenga sentido (6-8 dígitos)
+        if (finalNumber.length >= 6 && finalNumber.length <= 8) {
+          return {
+            areaCode: code,
+            number: finalNumber,
+            tipo: 'celular'
+          };
+        }
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Procesa el patrón especial "código + 15 + número" (ej: 0266 15 44329679)
+   * @param {string} phoneText - Texto completo del teléfono
+   * @returns {Object|null} - Resultado procesado o null
+   */
+  processHistoricalCellularPattern(phoneText) {
+    const clean = phoneText.trim();
+    const parts = clean.split(/\s+/).filter(p => p && /\d/.test(p));
+
+    // Patrón: código + "15" + número
+    if (parts.length === 3) {
+      const [codePart, prefix, numberPart] = parts.map(p => this.cleanPhone(p));
+
+      if (prefix === '15') {
+        const areaCode = codePart.startsWith('0') && codePart.length > 1
+          ? codePart.substring(1)
+          : codePart;
+
+        return {
+          areaCode,
+          number: numberPart,
+          tipo: 'celular',
+          isHistoricalCellular: true
+        };
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Procesa números con formato especial que incluyen puntos, comas Y números separados por espacios
+   * ACTUALIZADO: Respeta la prioridad de líneas gratuitas
+   * @param {string} phoneText - Texto con números especiales
+   * @returns {Array} - Array de objetos de teléfono
+   */
+  processComplexNumberPattern(phoneText) {
+    const results = [];
+    const clean = phoneText.trim();
+
+    // NUEVO: Patrón para números separados por espacios que empiezan con 0
+    // Ejemplo: "03466494314 03404483210" O "08005556722 08108883226"
+    const spacePattern = /0\d{9,11}/g;
+    const spaceMatches = clean.match(spacePattern);
+
+    if (spaceMatches && spaceMatches.length > 1) {
+      // Encontramos múltiples números que empiezan con 0
+      spaceMatches.forEach(numberStr => {
+        const detection = this.detectAreaCodeInNumber(numberStr);
+        if (detection) {
+          results.push({
+            areaCode: detection.areaCode,
+            number: detection.number,
+            tipo: detection.tipo // Usar el tipo detectado (puede ser 'gratuito' o 'fijo')
+          });
+        }
+      });
+
+      if (results.length > 0) {
+        return results;
+      }
+    }
+
+    // Patrón original para números con puntos y comas como "0114951.5842,7318"
+    const complexPattern = /0?(\d{2,4})(\d{4})\.(\d{4}),(\d{4})/g;
+    let match;
+
+    while ((match = complexPattern.exec(phoneText)) !== null) {
+      const [fullMatch, areaCode, baseNumber, firstExtension, secondExtension] = match;
+
+      // Verificar si es línea gratuita antes de asumir fijo
+      const isGratuito = fullMatch.match(/^0?(800|810|300)/);
+      const startsWith0 = fullMatch.startsWith('0');
+
+      // Normalizar código de área
+      const normalizedAreaCode = areaCode;
+
+      // Crear números completos
+      const firstNumber = baseNumber + firstExtension;
+      const secondNumber = baseNumber + secondExtension;
+
+      // Determinar tipo correctamente
+      let tipoDetectado;
+      if (isGratuito) {
+        tipoDetectado = 'gratuito';
+      } else if (startsWith0) {
+        tipoDetectado = 'fijo';
+      } else {
+        tipoDetectado = this.detectPhoneType(normalizedAreaCode, firstNumber);
+      }
+
+      results.push({
+        areaCode: normalizedAreaCode,
+        number: firstNumber,
+        tipo: tipoDetectado
+      });
+
+      results.push({
+        areaCode: normalizedAreaCode,
+        number: secondNumber,
+        tipo: tipoDetectado
+      });
+    }
+
+    // Si encontró el patrón de puntos/comas, devolver esos resultados
+    if (results.length > 0) {
+      return results;
+    }
+
+    // Patrón para múltiples elementos separados por espacios
+    const parts = clean.split(/\s+/).filter(p => p && /\d/.test(p));
+
+    // CASO ESPECIAL: Si hay múltiples partes y cada una empieza con 0
+    if (parts.length >= 2) {
+      const allStartWithZero = parts.every(part => part.startsWith('0') && part.length >= 10);
+
+      if (allStartWithZero) {
+        // Cada parte es un número completo con código de área
+        parts.forEach(part => {
+          const detection = this.detectAreaCodeInNumber(part);
+          if (detection) {
+            results.push({
+              areaCode: detection.areaCode,
+              number: detection.number,
+              tipo: detection.tipo // Usar el tipo detectado (gratuito, fijo, etc.)
+            });
+          }
+        });
+
+        if (results.length > 0) {
+          return results;
+        }
+      }
+    }
+
+    // Patrón: código + número1 + número2 + número3... (para espacios múltiples)
+    if (parts.length >= 3) {
+      const [code, ...numbers] = parts.map(p => this.cleanPhone(p));
+
+      if (code.length <= 5) {
+        // Determinar tipo basado en detección, no solo en si tiene 0
+        const firstPart = parts[0];
+        const sampleDetection = this.detectAreaCodeInNumber(firstPart + (numbers[0] || ''));
+        const detectedType = sampleDetection ? sampleDetection.tipo : 'fijo';
+
+        const areaCode = code.startsWith('0') ? code.substring(1) : code;
+
+        // Primer número completo
+        if (numbers[0] && numbers[0].length >= 6) {
+          results.push({
+            areaCode,
+            number: numbers[0],
+            tipo: detectedType
+          });
+
+          // Números adicionales (pueden ser abreviaciones)
+          for (let i = 1; i < numbers.length; i++) {
+            const num = numbers[i];
+            let fullNumber = num;
+
+            // Si es corto, podría ser abreviación del primero
+            if (num.length <= 4 && numbers[0].length >= 6) {
+              const baseLength = numbers[0].length - num.length;
+              fullNumber = numbers[0].substring(0, baseLength) + num;
+            }
+
+            results.push({
+              areaCode,
+              number: fullNumber,
+              tipo: detectedType
+            });
+          }
+        }
+      }
+    }
+
+    return results.length > 0 ? results : null;
+  }
+
+  /**
+   * Procesa múltiples números que pueden no estar relacionados o ser números locales
+   * @param {Array} parts - Partes del teléfono
+   * @param {string} provincia - Provincia para contexto
+   * @param {string} localidad - Localidad para contexto
+   * @returns {Array} - Array de resultados procesados
+   */
+  processIndependentNumbers(parts, provincia = null, localidad = null) {
+    const results = [];
+    let detectedAreaCode = null;
+
+    parts.forEach((part, index) => {
+      const cleanPart = this.cleanPhone(part);
+
+      // CASO ESPECIAL: detectar si es un número con espacio que incluye código de área
+      // Ejemplo: "0221 4219296" -> código "0221" + número "4219296"
+      if (part.includes(' ') && index === 0) {
+        const spaceParts = part.trim().split(/\s+/);
+        if (spaceParts.length === 2) {
+          const [codePart, numberPart] = spaceParts.map(p => this.cleanPhone(p));
+
+          // Si el primer parte parece un código de área (3-4 dígitos) y el segundo un número (6-8 dígitos)
+          if (codePart.length >= 3 && codePart.length <= 5 && numberPart.length >= 6 && numberPart.length <= 8) {
+            const areaCode = codePart.startsWith('0') && codePart.length > 1
+              ? codePart.substring(1)
+              : codePart;
+
+            results.push({
+              areaCode,
+              number: numberPart,
+              tipo: this.detectPhoneType(areaCode, numberPart)
+            });
+
+            detectedAreaCode = areaCode;
+            return;
+          }
+        }
+      }
+
+      // Intentar detección normal
+      const detection = this.detectAreaCodeInNumber(cleanPart, provincia, localidad);
+
+      if (detection) {
+        results.push(detection);
+
+        // Guardar el primer código de área detectado para números posteriores
+        if (index === 0 && !detection.isIncomplete) {
+          detectedAreaCode = detection.areaCode;
+        }
+      } else {
+        // CASO ESPECIAL: números locales sin código
+        // Ej: "0221 4219296, 4259296, 4257404" -> el segundo y tercero usan el código del primero
+        if (detectedAreaCode && cleanPart.length >= 6 && cleanPart.length <= 8) {
+          results.push({
+            areaCode: detectedAreaCode,
+            number: cleanPart,
+            tipo: this.detectPhoneType(detectedAreaCode, cleanPart),
+            isLocal: true
+          });
+        }
+        // CASO ESPECIAL: números sin código aparente - asumir Buenos Aires
+        else if (cleanPart.length === 8) {
+          results.push({
+            areaCode: '11',
+            number: cleanPart,
+            tipo: cleanPart.startsWith('4') ? 'fijo' : 'celular',
+            assumedBA: true
+          });
+        }
+        // Si es un número de 7 dígitos, también podría ser Buenos Aires fijo
+        else if (cleanPart.length === 7) {
+          results.push({
+            areaCode: '11',
+            number: cleanPart,
+            tipo: 'fijo',
+            assumedBA: true
+          });
+        }
+        // Números muy cortos - marcar como incompletos
+        else if (cleanPart.length < 6) {
+          results.push({
+            areaCode: '',
+            number: cleanPart,
+            tipo: 'fijo',
+            isIncomplete: true
+          });
+        }
+      }
+    });
+
+    return results;
+  }
+
+  /**
+   * Valida y ajusta números que pueden tener errores comunes
+   * @param {Object} phoneResult - Resultado del procesamiento inicial
+   * @returns {Object} - Resultado ajustado
+   */
+  validateAndAdjustPhone(phoneResult) {
+    if (!phoneResult) return null;
+
+    const { areaCode, number, tipo } = phoneResult;
+
+    // No ajustar números incompletos
+    if (phoneResult.isIncomplete) {
+      return phoneResult;
+    }
+
+    // Ajuste para números muy largos del interior
+    if (tipo === 'celular' && areaCode !== '11' && number.length > 8) {
+      // Si el número es muy largo, podría haber un error
+      // Mantener los primeros 7-8 dígitos
+      const adjustedNumber = number.substring(0, 8);
+
+      return {
+        ...phoneResult,
+        number: adjustedNumber,
+        adjusted: true
+      };
+    }
+
+    // Ajuste para códigos de área que deberían tener 0
+    if (tipo === 'fijo' && areaCode !== '11' && !areaCode.startsWith('0')) {
+      // Para teléfonos fijos del interior, el código suele mostrarse con 0
+      return {
+        ...phoneResult,
+        displayAreaCode: '0' + areaCode,
+        normalized: true
+      };
+    }
+
+    return phoneResult;
+  }
+
+  // ============================================================================
+  // PROCESAMIENTO DE PATRONES ESPECIALES
+  // ============================================================================
+
+  /**
+   * Procesa números con formato especial argentino
+   * @param {string} phoneText - Texto como "011 44609032 9036"
+   * @returns {Array} - Array de objetos de teléfono
+   */
+  processComplexArgentinePattern(phoneText) {
+    const clean = phoneText.trim();
+
+    // Primero verificar patrón complejo con puntos y comas
+    const complexNumbers = this.processComplexNumberPattern(clean);
+    if (complexNumbers && complexNumbers.length > 0) {
+      return complexNumbers;
+    }
+
+    const parts = clean.split(/\s+/).filter(p => p && /\d/.test(p));
+
+    // Patrón: código + número1 + número2 + número3... (para espacios múltiples)
+    if (parts.length >= 3) {
+      const [code, ...numbers] = parts.map(p => this.cleanPhone(p));
+
+      if (code.length <= 5) {
+        const areaCode = code.startsWith('0') && code.length > 1 ? code.substring(1) : code;
+        const results = [];
+
+        // Primer número completo
+        if (numbers[0] && numbers[0].length >= 6) {
+          results.push({
+            areaCode,
+            number: numbers[0],
+            tipo: this.detectPhoneType(areaCode, numbers[0])
+          });
+
+          // Números adicionales (pueden ser abreviaciones)
+          for (let i = 1; i < numbers.length; i++) {
+            const num = numbers[i];
+            let fullNumber = num;
+
+            // Si es corto, podría ser abreviación del primero
+            if (num.length <= 4 && numbers[0].length >= 6) {
+              const baseLength = numbers[0].length - num.length;
+              fullNumber = numbers[0].substring(0, baseLength) + num;
+            }
+
+            results.push({
+              areaCode,
+              number: fullNumber,
+              tipo: this.detectPhoneType(areaCode, fullNumber)
+            });
+          }
+        }
+
+        return results.length > 0 ? results : null;
+      }
+    }
+
+    if (parts.length === 2) {
+      const [firstPart, secondPart] = parts.map(p => this.cleanPhone(p));
+
+      // Patrón: código + 15 + número (0266 15 44329679)
+      if (secondPart.startsWith('15')) {
+        const areaCode = firstPart.startsWith('0') && firstPart.length > 1
+          ? firstPart.substring(1)
+          : firstPart;
+        const actualNumber = secondPart.substring(2);
+
+        return [{
+          areaCode,
+          number: actualNumber,
+          tipo: 'celular'
+        }];
+      }
+
+      // Patrón normal: código + número
+      if (firstPart.length <= 5 && secondPart.length >= 6) {
+        const areaCode = firstPart.startsWith('0') && firstPart.length > 1
+          ? firstPart.substring(1)
+          : firstPart;
+
+        return [{
+          areaCode,
+          number: secondPart,
+          tipo: this.detectPhoneType(areaCode, secondPart)
+        }];
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Procesa números abreviados (2346434583,84)
+   * @param {string} fullNumber - Número completo
+   * @param {string} shortDigits - Dígitos cortos
+   * @returns {Array} - Array con objetos de teléfono
+   */
+  processAbbreviatedNumbers(fullNumber, shortDigits) {
+    const fullClean = this.cleanPhone(fullNumber);
+    const shortClean = this.cleanPhone(shortDigits);
+
+    const detection = this.detectAreaCodeInNumber(fullClean);
+
+    if (detection) {
+      const { areaCode, number: baseNumber, tipo } = detection;
+
+      const shortLength = shortClean.length;
+      const newNumber = baseNumber.substring(0, baseNumber.length - shortLength) + shortClean;
+
+      return [
+        { areaCode, number: baseNumber, tipo },
+        { areaCode, number: newNumber, tipo }
+      ];
+    }
+
+    return [{ raw: fullNumber }];
+  }
+
+  // ============================================================================
+  // NORMALIZACIÓN PRINCIPAL
+  // ============================================================================
+
+  /**
+   * Detecta y procesa patrones especiales en el texto de teléfono
+   * ACTUALIZADO: Mejor manejo de números separados por espacios
+   * @param {string} phoneText - Texto del teléfono
+   * @param {string} provincia - Provincia para contexto (opcional)
+   * @param {string} localidad - Localidad para contexto (opcional)
+   * @returns {Array} - Array de objetos de teléfono
+   */
+  detectSpecialPatterns(phoneText, provincia = null, localidad = null) {
+    const clean = phoneText.trim()
+      .replace(/\s*\([^)]*\)\s*/g, ' ') // Remover contenido entre paréntesis pero mantener números
+      .replace(/^\((\d+)\)/, '$1 ') // Convertir (011) al inicio a "011 "
+      .replace(/\s+/g, ' '); // Normalizar espacios
+
+    // Detectar WhatsApp y etiquetas especiales
+    const whatsappMatch = clean.match(/(WhatsApp|WSP)[\s:]+([0-9\s,]+)/i);
+    let whatsappPart = null;
+    let mainPart = clean;
+
+    if (whatsappMatch) {
+      whatsappPart = whatsappMatch[2].trim();
+      mainPart = clean.replace(whatsappMatch[0], '').trim();
+    }
+
+    const results = [];
+
+    // Procesar parte principal
+    if (mainPart) {
+      // CASO ESPECIAL 1: Patrón histórico con "15" (0266 15 44329679)
+      const historicalPattern = this.processHistoricalCellularPattern(mainPart);
+      if (historicalPattern) {
+        const validated = this.validateAndAdjustPhone(historicalPattern);
+        if (validated) {
+          results.push(validated);
+        }
+      } else {
+        // CASO ESPECIAL 2: Líneas gratuitas con espacios (0810 122 2424)
+        const gratuitousPattern = mainPart.match(/^(0?800|0?810|0?300)\s+(.+)/);
+        if (gratuitousPattern) {
+          const [, code, numberPart] = gratuitousPattern;
+          const cleanCode = '0' + code.replace(/^0/, '');
+          const cleanNumber = this.cleanPhone(numberPart);
+
+          results.push(this.validateAndAdjustPhone({
+            areaCode: cleanCode,
+            number: cleanNumber,
+            tipo: 'gratuito'
+          }));
+        } else {
+          // CASE ESPECIAL 3: Patrón complejo ACTUALIZADO
+          const complexPattern = this.processComplexArgentinePattern(mainPart);
+          if (complexPattern) {
+            complexPattern.forEach(pattern => {
+              const validated = this.validateAndAdjustPhone(pattern);
+              if (validated) results.push(validated);
+            });
+          } else {
+            // Patrón de múltiples números separados por comas
+            const parts = mainPart.split(/[,;]+/).map(p => p.trim()).filter(p => p);
+
+            // CASO ESPECIAL 4: Verificar si son números independientes o locales
+            const processedNumbers = this.processIndependentNumbers(parts, provincia, localidad);
+
+            if (processedNumbers.length > 0) {
+              processedNumbers.forEach(num => {
+                const validated = this.validateAndAdjustPhone(num);
+                if (validated) results.push(validated);
+              });
+            } else {
+              // Procesamiento normal para otros casos
+              let mainAreaCode = null;
+              const firstPart = parts[0];
+              if (firstPart) {
+                const firstDetection = this.detectAreaCodeInNumber(this.cleanPhone(firstPart), provincia, localidad);
+                if (firstDetection && !firstDetection.isIncomplete) {
+                  mainAreaCode = firstDetection.areaCode;
+                }
+              }
+
+              // Procesar cada parte
+              parts.forEach(part => {
+                // CASO ESPECIAL: Patrón abreviado (número,dígitos cortos)
+                const abbreviatedMatch = part.match(/^(\d{8,11}),(\d{1,4})$/);
+                if (abbreviatedMatch) {
+                  const [, full, short] = abbreviatedMatch;
+                  const abbreviated = this.processAbbreviatedNumbers(full, short);
+                  abbreviated.forEach(a => {
+                    if (a.areaCode) {
+                      const validated = this.validateAndAdjustPhone(a);
+                      if (validated) results.push(validated);
+                    }
+                  });
+                  return;
+                }
+
+                // Detección normal
+                const detection = this.detectAreaCodeInNumber(this.cleanPhone(part), provincia, localidad);
+                if (detection) {
+                  const validated = this.validateAndAdjustPhone(detection);
+                  if (validated) results.push(validated);
+                } else if (mainAreaCode) {
+                  // Si no se detecta código pero hay uno principal, usarlo
+                  const cleanPart = this.cleanPhone(part);
+                  if (cleanPart.length >= 6 && cleanPart.length <= 8) {
+                    const phoneObj = {
+                      areaCode: mainAreaCode,
+                      number: cleanPart,
+                      tipo: this.detectPhoneType(mainAreaCode, cleanPart),
+                      isLocal: true
+                    };
+                    const validated = this.validateAndAdjustPhone(phoneObj);
+                    if (validated) results.push(validated);
+                  }
+                }
+              });
+            }
+          }
+        }
+      }
+    }
+
+    // Procesar WhatsApp si existe
+    if (whatsappPart) {
+      const whatsappNumbers = whatsappPart.split(/[,;]+/).map(p => p.trim()).filter(p => p);
+      whatsappNumbers.forEach(num => {
+        const detection = this.detectAreaCodeInNumber(this.cleanPhone(num), provincia, localidad);
+        if (detection) {
+          const validated = this.validateAndAdjustPhone(detection);
+          if (validated) {
+            results.push({
+              ...validated,
+              isWhatsApp: true
+            });
+          }
+        }
+      });
+    }
+
+    return results;
+  }
+
+  /**
+   * Función principal de normalización mejorada
+   * @param {string} phoneText - Texto con teléfonos
+   * @param {string} provincia - Provincia para contexto (opcional)
+   * @param {string} localidad - Localidad para contexto (opcional)
+   * @returns {string} - JSON con array de teléfonos normalizados
+   */
+  normalizePhoneWithPrefixes(phoneText, provincia = null, localidad = null) {
+    if (!phoneText) return JSON.stringify([]);
+
+    try {
+      const detectedPatterns = this.detectSpecialPatterns(phoneText, provincia, localidad);
+
+      const phones = detectedPatterns.map((pattern, index) => ({
+        tipo: pattern.tipo || 'fijo',
+        codigoArea: pattern.areaCode || '',
+        numero: pattern.number || '',
+        extension: this.extractExtension(phoneText),
+        descripcion: pattern.isWhatsApp ? 'WhatsApp' :
+          pattern.isIncomplete ? 'Incompleto' :
+            index === 0 ? 'Principal' : `Teléfono ${index + 1}`
+      })).filter(phone => phone.numero);
+
+      return JSON.stringify(phones);
+    } catch (error) {
+      console.warn('Error en normalizePhoneWithPrefixes:', error);
+      // Fallback al método original si hay error
+      return this.normalizeOldPhoneFormat(phoneText);
+    }
+  }
+
+  /**
+   * Normaliza un formato antiguo de teléfono al formato JSON (fallback mejorado)
+   */
+  normalizeOldPhoneFormat(phone, index = 0) {
+    const cleanNumber = this.cleanPhone(phone);
+
+    if (!cleanNumber || cleanNumber.length < 6) {
+      return JSON.stringify([{
+        tipo: "fijo",
+        codigoArea: "",
+        numero: cleanNumber,
+        extension: this.extractExtension(phone),
+        descripcion: "Incompleto"
+      }]);
+    }
+
+    let tipo = "fijo";
+    let codigoArea = "";
+    let numero = cleanNumber;
+
+    // Detectar 0800/0810/0300
+    if (cleanNumber.startsWith("0800") || cleanNumber.startsWith("0810") || cleanNumber.startsWith("0300")) {
+      tipo = "gratuito";
+      codigoArea = cleanNumber.substring(0, 4);
+      numero = cleanNumber.substring(4);
+    }
+    // Detectar celular con 15 al principio
+    else if (cleanNumber.startsWith("15") && cleanNumber.length >= 10) {
+      tipo = "celular";
+      codigoArea = "11"; // Asumimos Buenos Aires
+      numero = cleanNumber.substring(2);
+    }
+    // Número que empieza con 0 (posible código de área con 0)
+    else if (cleanNumber.startsWith("0") && cleanNumber.length >= 10) {
+      const allCodes = this.getAllAreaCodes();
+
+      // Intentar identificar el código de área usando la base de datos
+      for (const code of allCodes) {
+        const fullCode = '0' + code;
+        if (cleanNumber.startsWith(fullCode)) {
+          const remainingNumber = cleanNumber.substring(fullCode.length);
+          if (remainingNumber.length >= 6 && remainingNumber.length <= 8) {
+            codigoArea = fullCode;
+            numero = remainingNumber;
+            tipo = this.detectPhoneType(code, remainingNumber);
+            break;
+          }
+        }
+      }
+
+      // Si no se encontró, usar heurística
+      if (!codigoArea) {
+        if (cleanNumber.length === 11) {
+          // Probablemente 0XX XXXX-XXXX
+          codigoArea = cleanNumber.substring(0, 3);
+          numero = cleanNumber.substring(3);
+        } else if (cleanNumber.length === 12) {
+          // Probablemente 0XXX XXXX-XXXX
+          codigoArea = cleanNumber.substring(0, 4);
+          numero = cleanNumber.substring(4);
+        }
+      }
+    }
+    // Número de 10 dígitos (posible celular)
+    else if (cleanNumber.length === 10) {
+      const allCodes = this.getAllAreaCodes();
+
+      // Buscar código que coincida
+      for (const code of allCodes) {
+        if (cleanNumber.startsWith(code)) {
+          const remainingNumber = cleanNumber.substring(code.length);
+          if (remainingNumber.length >= 6 && remainingNumber.length <= 8) {
+            codigoArea = code;
+            numero = remainingNumber;
+            tipo = this.detectPhoneType(code, remainingNumber);
+            break;
+          }
+        }
+      }
+
+      // Si no se encontró, usar heurística por longitud
+      if (!codigoArea) {
+        if (cleanNumber.startsWith('11')) {
+          codigoArea = '11';
+          numero = cleanNumber.substring(2);
+          tipo = numero.length === 8 ? "celular" : "fijo";
+        } else {
+          // Por defecto, asumir código de 2 dígitos
+          codigoArea = cleanNumber.substring(0, 2);
+          numero = cleanNumber.substring(2);
+        }
+      }
+    }
+    // Números más cortos
+    else if (cleanNumber.length >= 6) {
+      const allCodes = this.getAllAreaCodes();
+
+      // Intentar detectar código de área
+      for (const code of allCodes) {
+        if (cleanNumber.startsWith(code)) {
+          const remainingNumber = cleanNumber.substring(code.length);
+          if (remainingNumber.length >= 4 && remainingNumber.length <= 8) {
+            codigoArea = code;
+            numero = remainingNumber;
+            tipo = this.detectPhoneType(code, remainingNumber);
+            break;
+          }
+        }
+      }
+
+      // Si no se encontró, usar heurística
+      if (!codigoArea) {
+        if (cleanNumber.length === 8) {
+          // Número local sin código de área - asumir Buenos Aires
+          codigoArea = '11';
+          numero = cleanNumber;
+          tipo = cleanNumber.startsWith('4') ? 'fijo' : 'celular';
+        } else {
+          // Asumir código de 2-3 dígitos basado en la longitud
+          const codeLength = cleanNumber.length === 9 ? 2 : 3;
+          codigoArea = cleanNumber.substring(0, codeLength);
+          numero = cleanNumber.substring(codeLength);
+        }
+      }
+    }
+
+    const phoneObj = {
+      tipo,
+      codigoArea,
+      numero,
+      extension: this.extractExtension(phone),
+      descripcion: index === 0 ? "Principal" : `Teléfono ${index + 1}`
+    };
+
+    return JSON.stringify([phoneObj]);
+  }
+
+  // ============================================================================
+  // FORMATEO PARA VISUALIZACIÓN
+  // ============================================================================
+
+  /**
+   * Formatea un teléfono individual para mostrar con manejo de casos especiales
+   * @param {Object} phone - Objeto de teléfono
+   * @returns {string} - Teléfono formateado
+   */
+  formatPhoneForDisplay(phone) {
+    if (!phone) return '';
+
+    const { tipo, codigoArea, numero, extension, descripcion, displayAreaCode, assumedBA, adjusted, isLocal, isIncomplete } = phone;
+
+    // Si está incompleto, mostrar tal como está
+    if (isIncomplete) {
+      return numero || '';
+    }
+
+    let formatted = '';
+
+    // Usar displayAreaCode si está disponible, sino usar codigoArea
+    const effectiveAreaCode = displayAreaCode || codigoArea;
+
+    // Normalizar código para comparación
+    const normalizedCode = codigoArea?.replace(/^0+/, '') || '';
+
+    switch (tipo) {
+      case 'gratuito':
+        // Formato: 0800-123-4567
+        const code = effectiveAreaCode.startsWith('0') ? effectiveAreaCode : '0' + effectiveAreaCode;
+        if (numero.length === 7) {
+          formatted = `${code}-${numero.substring(0, 3)}-${numero.substring(3)}`;
+        } else if (numero.length === 6) {
+          formatted = `${code}-${numero.substring(0, 3)}-${numero.substring(3)}`;
+        } else {
+          formatted = `${code}-${numero}`;
+        }
+        break;
+
+      case 'celular':
+        if (normalizedCode === '11') {
+          // Buenos Aires celular: 11 1234-5678
+          if (numero.length === 8) {
+            formatted = `11 ${numero.substring(0, 4)}-${numero.substring(4)}`;
+          } else if (numero.length === 7) {
+            formatted = `11 ${numero.substring(0, 3)}-${numero.substring(3)}`;
+          } else {
+            formatted = `11 ${numero}`;
+          }
+        } else {
+          // Otros códigos celular: (123) 456-7890
+          const displayCode = effectiveAreaCode;
+          if (numero.length >= 6) {
+            // Formateo inteligente según longitud del número
+            let splitAt;
+            if (numero.length === 8) {
+              splitAt = 4; // 1234-5678
+            } else if (numero.length === 7) {
+              splitAt = 3; // 123-4567
+            } else {
+              splitAt = Math.max(3, numero.length - 3);
+            }
+            formatted = `(${displayCode}) ${numero.substring(0, splitAt)}-${numero.substring(splitAt)}`;
+          } else {
+            formatted = `(${displayCode}) ${numero}`;
+          }
+        }
+        break;
+
+      default: // 'fijo'
+        if (normalizedCode === '11') {
+          // Buenos Aires fijo: formato especial dependiendo si se asumió BA o no
+          const displayCode = assumedBA ? '11' : (effectiveAreaCode.startsWith('0') ? effectiveAreaCode : '011');
+          if (numero.length >= 7) {
+            const splitAt = numero.length === 8 ? 4 : 3;
+
+            // Si se asumió Buenos Aires, usar formato celular
+            if (assumedBA) {
+              formatted = `${displayCode} ${numero.substring(0, splitAt)}-${numero.substring(splitAt)}`;
+            } else {
+              formatted = `(${displayCode}) ${numero.substring(0, splitAt)}-${numero.substring(splitAt)}`;
+            }
+          } else {
+            formatted = assumedBA ? `${displayCode} ${numero}` : `(${displayCode}) ${numero}`;
+          }
+        } else {
+          // Otros códigos fijo: (0123) 456-789
+          // Para números locales, mostrar el código con 0 inicial
+          const displayCode = isLocal ?
+            (effectiveAreaCode.startsWith('0') ? effectiveAreaCode : '0' + effectiveAreaCode) :
+            (effectiveAreaCode.startsWith('0') ? effectiveAreaCode :
+              (effectiveAreaCode.length <= 3 ? '0' + effectiveAreaCode : effectiveAreaCode));
+
+          if (numero.length >= 6) {
+            // Formateo más inteligente para números locales y códigos específicos
+            let splitAt;
+            if (isLocal && numero.length === 7) {
+              // Para números locales de 7 dígitos: 421-9296
+              splitAt = 3;
+            } else if (numero.length === 8) {
+              splitAt = 4; // 1234-5678
+            } else if (numero.length === 7) {
+              splitAt = 3; // 123-4567
+            } else {
+              splitAt = Math.max(3, numero.length - 3);
+            }
+            formatted = `(${displayCode}) ${numero.substring(0, splitAt)}-${numero.substring(splitAt)}`;
+          } else {
+            formatted = `(${displayCode}) ${numero}`;
+          }
+        }
+    }
+
+    // Agregar extensión si existe
+    if (extension) {
+      formatted += ` int. ${extension}`;
+    }
+
+    // Agregar prefijo de descripción si es WhatsApp (por descripción, no por tipo)
+    if (descripcion && descripcion.toLowerCase().includes('whatsapp')) {
+      formatted = `WhatsApp: ${formatted}`;
+    }
+
+    return formatted;
+  }
+
+  /**
+   * Formatea múltiples teléfonos para mostrar
+   * @param {string|Array} phones - JSON string o array de teléfonos
+   * @returns {string} - Teléfonos formateados separados por coma
+   */
+  formatPhonesForDisplay(phones) {
+    if (!phones) return 'No disponible';
+
+    try {
+      const parsed = typeof phones === 'string' ? JSON.parse(phones) : phones;
+
+      if (Array.isArray(parsed)) {
+        return parsed.map(phone => this.formatPhoneForDisplay(phone)).join(' | ');
+      }
+
+      return phones.toString();
+    } catch (e) {
+      return phones.toString();
+    }
+  }
+
+  /**
+   * Versión simplificada para mostrar solo el primer teléfono (útil para tablas compactas)
+   * @param {string} phones - JSON de teléfonos o string con formato antiguo
+   * @returns {string} - Primer teléfono formateado
+   */
+  formatFirstPhoneForDisplay(phones) {
+    if (!phones) return 'No disponible';
+
+    try {
+      const parsed = typeof phones === 'string' ? JSON.parse(phones) : phones;
+
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        const firstPhone = this.formatPhoneForDisplay(parsed[0]);
+        const additionalCount = parsed.length - 1;
+
+        if (additionalCount > 0) {
+          return `${firstPhone} (+${additionalCount} más)`;
+        }
+        return firstPhone;
+      }
+
+      return phones || 'No disponible';
+    } catch (e) {
+      // Formato antiguo - tomar solo el primer número
+      if (typeof phones === 'string' && phones.trim()) {
+        const firstPhone = phones.split(/[,;\/]+/)[0].trim();
+        return firstPhone || 'No disponible';
+      }
+      return 'No disponible';
+    }
+  }
+
+  /**
+   * Formatea teléfonos para visualización en PDF
+   * @param {string} phoneValue - Valor de teléfono (puede ser JSON o formato antiguo)
+   * @returns {string} - Teléfono formateado para PDF
+   */
+  formatPhoneForPDF(phoneValue) {
+    if (!phoneValue) return '';
+
+    try {
+      // Si parece ser JSON, procesar como tal
+      if (phoneValue.startsWith('[') ||
+        (phoneValue.startsWith('"') && phoneValue.indexOf('[') === 1)) {
+        // Si está envuelto en comillas adicionales, extraer el JSON interno
+        let jsonStr = phoneValue;
+        if (phoneValue.startsWith('"')) {
+          jsonStr = JSON.parse(phoneValue);
+        }
+
+        // Parsear el JSON
+        const phones = JSON.parse(jsonStr);
+
+        if (!Array.isArray(phones) || phones.length === 0) return '';
+
+        // Formatear cada teléfono
+        return phones.map(phone => {
+          // Si está incompleto, solo mostrar el número
+          if (phone.descripcion === 'Incompleto') {
+            return phone.numero || '';
+          }
+
+          // Determinar el prefijo según el tipo
+          let tipo = '';
+          if (phone.tipo === 'celular') {
+            tipo = 'Cel:';
+          } else if (phone.tipo === 'whatsapp') {
+            tipo = 'WhatsApp:';
+          } else if (phone.tipo === 'gratuito') {
+            tipo = ''; // Las líneas gratuitas no llevan prefijo
+          } else {
+            tipo = 'Tel:'; // Fijo y otros tipos
+          }
+
+          // Formatear según tipo
+          let numero = '';
+          if (phone.tipo === 'gratuito' && phone.codigoArea && phone.codigoArea.startsWith('0')) {
+            // Líneas gratuitas: 0800-123-4567
+            const n = phone.numero || '';
+            if (n.length >= 6) {
+              numero = `${phone.codigoArea}-${n.slice(0,3)}-${n.slice(3)}`;
+            } else {
+              numero = `${phone.codigoArea}-${n}`;
+            }
+          } else {
+            // Otros tipos: código área número
+            const n = phone.numero || '';
+            const area = phone.codigoArea || '';
+
+            if (n && n.length > 4) {
+              // Formatear como: 11 1234-5678
+              numero = `${area} ${n.slice(0, n.length-4)}-${n.slice(-4)}`;
+            } else if (n && n.length > 0) {
+              // Para números más cortos
+              numero = `${area} ${n}`;
+            } else {
+              numero = area;
+            }
+          }
+
+          // Añadir extensión si existe
+          if (phone.extension) {
+            numero += ` int:${phone.extension}`;
+          }
+
+          // No agregar descripción adicional si ya está incluida en el prefijo
+          let desc = '';
+          if (phone.descripcion && !phone.descripcion.toLowerCase().includes('whatsapp') && phone.descripcion !== 'Principal' && phone.descripcion !== 'Incompleto') {
+            desc = ` (${phone.descripcion})`;
+          }
+
+          return `${tipo} ${numero}${desc}`.trim();
+        }).join(' | ');
+      } else {
+        // Si no es JSON, formatear texto plano básico
+        // Dividir por separadores comunes
+        const parts = phoneValue.split(/[,;\/]+/).map(p => p.trim()).filter(p => p);
+        return parts.join(' | ');
+      }
+    } catch (e) {
+      console.warn(`Error al formatear teléfono para PDF: ${e.message}`);
+      // Si hay error, devolver el valor original
+      return phoneValue;
+    }
+  }
+
+  // ============================================================================
+  // FUNCIONES DE COMPATIBILIDAD Y CONVERSIÓN
+  // ============================================================================
+
+  /**
+   * Convierte un JSON de teléfonos al formato estructurado para CSV
+   * @param {string} phoneJson - JSON de teléfonos o string con formato antiguo
+   * @returns {string} - Formato estructurado para CSV
+   */
+  phoneJsonToCSVFormat(phoneJson) {
+    if (!phoneJson) return '';
+
+    try {
+      const phones = typeof phoneJson === 'string' ? JSON.parse(phoneJson) : phoneJson;
+      if (!Array.isArray(phones)) return phoneJson; // Si no es array, devolver como está
+
+      return phones.map(phone => {
+        return `type:${phone.tipo || 'fijo'}|area:${phone.codigoArea || ''}|num:${phone.numero || ''}|ext:${phone.extension || ''}|desc:${phone.descripcion || ''}`;
+      }).join(';');
+    } catch (e) {
+      // Si hay error en el parsing, devolver el valor original
+      return phoneJson;
+    }
+  }
+
+  /**
+   * Convierte un formato CSV estructurado a JSON de teléfonos (MEJORADA)
+   * @param {string} csvValue - Valor del CSV (puede ser formato estructurado o antiguo)
+   * @returns {string} - JSON de teléfonos
+   */
+  csvFormatToPhoneJson(csvValue) {
+    if (!csvValue || csvValue.trim() === '') return JSON.stringify([]);
+
+    // Primero verificar si ya es JSON válido
+    try {
+      const parsed = JSON.parse(csvValue);
+      if (Array.isArray(parsed)) {
+        // Ya está en formato JSON correcto, devolverlo tal cual
+        return csvValue;
+      }
+    } catch (e) {
+      // No es JSON, continuar con el procesamiento
+    }
+
+    // Verificar si tiene el formato estructurado (mejorado)
+    if (csvValue.includes('type:') && csvValue.includes('|')) {
+      try {
+        // Dividir por punto y coma para múltiples teléfonos
+        const phoneStrings = csvValue.split(';').filter(str => str.trim());
+        const phones = [];
+
+        phoneStrings.forEach(phoneStr => {
+          const parts = phoneStr.split('|');
+          const phone = {};
+
+          parts.forEach(part => {
+            if (part.includes(':')) {
+              const [key, value] = part.split(':', 2); // Limitar a 2 partes por si hay : en el valor
+              const cleanValue = value?.trim();
+
+              switch (key.trim()) {
+                case 'type':
+                  phone.tipo = cleanValue || 'fijo';
+                  break;
+                case 'area':
+                  phone.codigoArea = cleanValue || '';
+                  break;
+                case 'num':
+                  phone.numero = cleanValue || '';
+                  break;
+                case 'ext':
+                  phone.extension = cleanValue || null;
+                  break;
+                case 'desc':
+                  phone.descripcion = cleanValue || null;
+                  break;
+                default:
+                  console.warn(`Campo desconocido en formato CSV: ${key}`);
+              }
+            }
+          });
+
+          // Solo agregar si tiene al menos número
+          if (phone.numero) {
+            phones.push(phone);
+          }
+        });
+
+        if (phones.length > 0) {
+          const result = JSON.stringify(phones);
+          console.log(`✅ Conversión CSV estructurado exitosa: ${phones.length} teléfono(s)`);
+          return result;
+        }
+      } catch (e) {
+        console.warn('Error procesando formato CSV estructurado:', e);
+      }
+    }
+
+    // Si no es formato estructurado, usar la función de normalización avanzada
+    // console.log('📞 Formato no estructurado, aplicando normalización avanzada...');
+    return this.normalizePhoneWithPrefixes(csvValue);
+  }
+
+  /**
+   * Comprueba si un valor de teléfono está en formato JSON
+   * @param {string} value - Valor a comprobar
+   * @returns {boolean} - true si es formato JSON, false si es formato antiguo
+   */
+  isPhoneJsonFormat(value) {
+    if (!value) return false;
+
+    try {
+      const parsed = JSON.parse(value);
+      return Array.isArray(parsed);
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /**
+   * Valida un número de teléfono según su tipo
+   * @param {Object} phone - Objeto con datos del teléfono
+   * @returns {Object} - Resultado de la validación {isValid, errors}
+   */
+  validatePhone(phone) {
+    const errors = [];
+
+    if (!phone.tipo) {
+      errors.push("El tipo de teléfono es requerido");
+    }
+
+    // Si está marcado como incompleto, es válido pero con advertencia
+    if (phone.descripcion === 'Incompleto') {
+      return {
+        isValid: true,
+        errors: ['Número incompleto - requiere código de área'],
+        isIncomplete: true
+      };
+    }
+
+    if (!phone.numero) {
+      errors.push("El número de teléfono es requerido");
+    }
+
+    // Validación específica según tipo
+    switch (phone.tipo) {
+      case 'gratuito':
+        if (!phone.codigoArea || !['0800', '0810', '0300'].includes(phone.codigoArea)) {
+          errors.push("El código de área debe ser 0800, 0810 o 0300 para teléfonos gratuitos");
+        }
+        if (!/^\d{6,8}$/.test(phone.numero)) {
+          errors.push("El número debe tener entre 6 y 8 dígitos");
+        }
+        break;
+
+      case 'celular':
+        if (!phone.codigoArea || !/^\d{2,3}$/.test(phone.codigoArea)) {
+          errors.push("El código de área debe tener 2 o 3 dígitos para celulares");
+        }
+        if (!/^\d{7,8}$/.test(phone.numero)) {
+          errors.push("El número debe tener entre 7 y 8 dígitos para celulares");
+        }
+        break;
+
+      case 'fijo':
+      default:
+        if (!phone.codigoArea || !/^\d{2,4}$/.test(phone.codigoArea)) {
+          errors.push("El código de área debe tener entre 2 y 4 dígitos");
+        }
+        if (!/^\d{6,8}$/.test(phone.numero)) {
+          errors.push("El número debe tener entre 6 y 8 dígitos");
+        }
+        break;
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors
+    };
+  }
+
+  /**
+   * Tipos de teléfono disponibles
+   */
+  getPhoneTypes() {
+    return [
+      { value: 'fijo', label: 'Teléfono Fijo' },
+      { value: 'celular', label: 'Celular' },
+      { value: 'gratuito', label: 'Línea Gratuita (0800/0810/0300)' },
+      { value: 'fax', label: 'Fax' },
+      { value: 'otro', label: 'Otro' }
+    ];
+  }
+
+  // ============================================================================
+  // FUNCIONES DE COMPATIBILIDAD LEGACY
+  // ============================================================================
+
+  /**
+   * Normaliza un formato antiguo de teléfono al formato JSON
+   * @param {string} oldFormat - Formato antiguo (puede tener múltiples teléfonos separados por comas)
+   * @returns {string} - JSON de teléfonos
+   */
+  normalizeOldPhoneFormat(oldFormat) {
+    // Usar la función avanzada por defecto
+    return this.normalizePhoneWithPrefixes(oldFormat);
+  }
+
+  // ============================================================================
+  // FUNCIONES DE EXPORTACIÓN COMPATIBLES
+  // ============================================================================
+
+  /**
+   * Exporta teléfonos a formato CSV
+   */
+  exportPhonesToCSV(phoneJson) {
+    return this.phoneJsonToCSVFormat(phoneJson);
+  }
+
+  /**
+   * Importa teléfonos desde formato CSV
+   */
+  importPhonesFromCSV(csvText) {
+    return this.csvFormatToPhoneJson(csvText);
+  }
+}
+
+// ============================================================================
+// FUNCIONES ESTÁTICAS PARA COMPATIBILIDAD
+// ============================================================================
+
+// Funciones principales de normalización
+const normalizePhoneWithPrefixes = (phoneText, provincia = null, localidad = null) => {
+  const formatter = new PhoneFormatter();
+  return formatter.normalizePhoneWithPrefixes(phoneText, provincia, localidad);
+};
+
+const normalizeOldPhoneFormat = (oldFormat) => {
+  const formatter = new PhoneFormatter();
+  return formatter.normalizeOldPhoneFormat(oldFormat);
+};
+
+// Funciones de conversión entre formatos
+const phoneJsonToCSVFormat = (phoneJson) => {
+  const formatter = new PhoneFormatter();
+  return formatter.phoneJsonToCSVFormat(phoneJson);
+};
+
+const csvFormatToPhoneJson = (csvFormat) => {
+  const formatter = new PhoneFormatter();
+  return formatter.csvFormatToPhoneJson(csvFormat);
+};
+
+// Funciones de formateo para visualización
+const formatPhoneForDisplay = (phone) => {
+  const formatter = new PhoneFormatter();
+  return formatter.formatPhoneForDisplay(phone);
+};
+
+const formatPhonesForDisplay = (phones) => {
+  const formatter = new PhoneFormatter();
+  return formatter.formatPhonesForDisplay(phones);
+};
+
+const formatFirstPhoneForDisplay = (phones) => {
+  const formatter = new PhoneFormatter();
+  return formatter.formatFirstPhoneForDisplay(phones);
+};
+
+const formatPhoneForPDF = (phoneValue) => {
+  const formatter = new PhoneFormatter();
+  return formatter.formatPhoneForPDF(phoneValue);
+};
+
+// Funciones de validación y utilidades
+const isPhoneJsonFormat = (value) => {
+  const formatter = new PhoneFormatter();
+  return formatter.isPhoneJsonFormat(value);
+};
+
+const validatePhone = (phone) => {
+  const formatter = new PhoneFormatter();
+  return formatter.validatePhone(phone);
+};
+
+const PHONE_TYPES = [
+  { value: 'fijo', label: 'Teléfono Fijo' },
+  { value: 'celular', label: 'Celular' },
+  { value: 'gratuito', label: 'Línea Gratuita (0800/0810/0300)' },
+  { value: 'fax', label: 'Fax' },
+  { value: 'otro', label: 'Otro' }
+];
+
+// Funciones auxiliares expuestas para casos avanzados
+const findAreaCodeByLocation = (provincia, localidad) => {
+  const formatter = new PhoneFormatter();
+  return formatter.findAreaCodeByLocation(provincia, localidad);
+};
+
+const detectPhoneType = (areaCode, number) => {
+  const formatter = new PhoneFormatter();
+  return formatter.detectPhoneType(areaCode, number);
+};
+
+const extractExtension = (text) => {
+  const formatter = new PhoneFormatter();
+  return formatter.extractExtension(text);
+};
+
+const extractLabel = (text) => {
+  const formatter = new PhoneFormatter();
+  return formatter.extractLabel(text);
+};
+
+const detectAreaCodeInNumber = (number, provincia = null, localidad = null) => {
+  const formatter = new PhoneFormatter();
+  return formatter.detectAreaCodeInNumber(number, provincia, localidad);
+};
+
+const processLongNumberWith15 = (clean, provincia = null, localidad = null) => {
+  const formatter = new PhoneFormatter();
+  return formatter.processLongNumberWith15(clean, provincia, localidad);
+};
+
+const processHistoricalCellularPattern = (phoneText) => {
+  const formatter = new PhoneFormatter();
+  return formatter.processHistoricalCellularPattern(phoneText);
+};
+
+const processIndependentNumbers = (parts, provincia = null, localidad = null) => {
+  const formatter = new PhoneFormatter();
+  return formatter.processIndependentNumbers(parts, provincia, localidad);
+};
+
+const validateAndAdjustPhone = (phoneResult) => {
+  const formatter = new PhoneFormatter();
+  return formatter.validateAndAdjustPhone(phoneResult);
+};
+
+const processComplexArgentinePattern = (phoneText) => {
+  const formatter = new PhoneFormatter();
+  return formatter.processComplexArgentinePattern(phoneText);
+};
+
+const processAbbreviatedNumbers = (fullNumber, shortDigits) => {
+  const formatter = new PhoneFormatter();
+  return formatter.processAbbreviatedNumbers(fullNumber, shortDigits);
+};
+
+const detectSpecialPatterns = (phoneText, provincia = null, localidad = null) => {
+  const formatter = new PhoneFormatter();
+  return formatter.detectSpecialPatterns(phoneText, provincia, localidad);
+};
+
+const isValidAreaCode = (code) => {
+  const formatter = new PhoneFormatter();
+  return formatter.isValidAreaCode(code);
+};
+
+const cleanPhone = (phone) => {
+  const formatter = new PhoneFormatter();
+  return formatter.cleanPhone(phone);
+};
+
+const getAllAreaCodes = () => {
+  const formatter = new PhoneFormatter();
+  return formatter.getAllAreaCodes();
+};
+
+module.exports = {
+  // Clase principal
+  PhoneFormatter,
+
+  // Funciones principales de normalización
+  normalizePhoneWithPrefixes,
+  normalizeOldPhoneFormat,
+
+  // Funciones de conversión entre formatos
+  phoneJsonToCSVFormat,
+  csvFormatToPhoneJson,
+
+  // Funciones de formateo para visualización
+  formatPhoneForDisplay,
+  formatPhonesForDisplay,
+  formatFirstPhoneForDisplay,
+  formatPhoneForPDF,
+
+  // Funciones de validación y utilidades
+  isPhoneJsonFormat,
+  validatePhone,
+  PHONE_TYPES,
+
+  // Funciones auxiliares expuestas para casos avanzados
+  findAreaCodeByLocation,
+  detectPhoneType,
+  extractExtension,
+  extractLabel,
+  detectAreaCodeInNumber,
+  processLongNumberWith15,
+  processHistoricalCellularPattern,
+  processIndependentNumbers,
+  validateAndAdjustPhone,
+  processComplexArgentinePattern,
+  processAbbreviatedNumbers,
+  detectSpecialPatterns,
+  isValidAreaCode,
+  cleanPhone,
+  getAllAreaCodes
+};

@@ -1,1 +1,517 @@
-const _0x445225=_0xe80d;function _0xe80d(_0x3bb297,_0x134d49){const _0x1ddf11=_0x1ddf();return _0xe80d=function(_0xe80dcb,_0x13db01){_0xe80dcb=_0xe80dcb-0x85;let _0x194b62=_0x1ddf11[_0xe80dcb];return _0x194b62;},_0xe80d(_0x3bb297,_0x134d49);}(function(_0x2646df,_0x33daa5){const _0x195e4f=_0xe80d,_0x2f8197=_0x2646df();while(!![]){try{const _0x2e35e2=-parseInt(_0x195e4f(0x93))/0x1+parseInt(_0x195e4f(0xa7))/0x2+parseInt(_0x195e4f(0xd3))/0x3+parseInt(_0x195e4f(0xc4))/0x4+parseInt(_0x195e4f(0xc9))/0x5*(parseInt(_0x195e4f(0xaa))/0x6)+-parseInt(_0x195e4f(0xe0))/0x7*(-parseInt(_0x195e4f(0xd8))/0x8)+parseInt(_0x195e4f(0x8d))/0x9*(-parseInt(_0x195e4f(0x8e))/0xa);if(_0x2e35e2===_0x33daa5)break;else _0x2f8197['push'](_0x2f8197['shift']());}catch(_0x475838){_0x2f8197['push'](_0x2f8197['shift']());}}}(_0x1ddf,0x6e55d));function _0x1ddf(){const _0x37073f=['woTGB','XRHRe','replace','NODE_ENV','toLocaleString','push',':\x20Plan\x20inválido','rbaoT','enRMC','\x20registros:\x20','split','\x0a\x20\x20\x20⏰\x20Tiempo\x20total:\x20','ksAut','YES','2068116NfslBv','trim','toFixed','WfcMr','createReadStream','6625PIGTCb','\x0a\x20\x20\x20📞\x20Teléfonos\x20omitidos:\x20','pirbt','length','exports','\x0a\x20\x20\x20⏱️\x20\x20Velocidad:\x20','direccion','includes','alloc','OSZtA','2256438qGkYeL','PXVCU','📊\x20Archivo\x20CSV:\x20','development','\x20teléfonos\x20mantenidos\x20en\x20formato\x20original).','1352tgIMPn','\x20\x20\x20Procesado:\x20\x22','pipe','Error\x20en\x20transformación\x20CSV:','abmRepository','informacion_adicional','\x20registros...','Procesando\x20lote\x20','23093XYEyOr','csvFormatToPhoneJson','CALL\x20LimpiarTablasCartilla()','vnuBI','fVYjQ','\x20registros\x0a\x20\x20\x20✅\x20Exitosos:\x20','\x20MB\x20(~','PrNxp','Error\x20al\x20procesar\x20CSV:\x20','utf8','floor','\x0a🚀\x20PROGRESO\x20CSV:\x0a\x20\x20\x20📈\x20Porcentaje:\x20','Error\x20procesando\x20lote\x20','Phone\x20normalization\x20timeout','estado','pool','DESHABILITADO','telefonos','close','8766wJwRJI','18310pjJYnm','OJtCt','\x20\x20\x20Original:\x20\x22','toString','vGVGF','522202rABDSG','query','warn','error','localidad','\x20fallaron.\x20Parseo\x20automático\x20omitido\x20(','plan','eswDk','Fila\x20','\x20fallaron.\x20Parseo\x20automático\x20aplicado.','atencion_virtual','stringify','Pipeline\x20CSV\x20completado\x20exitosamente','Activo','especialidad','finish','env','nombre_prestador','now','log','1803346zQYKMB','\x0a\x20\x20\x20⚠️\x20\x20Advertencias:\x20','id_provincia','132oFnEsi',':\x20Error\x20en\x20método\x20simple,\x20mantenido\x20original','\x20filas\x20estimadas)','email','getConnection','fijo','min','function','qysTI','message','type:','ypJoA'];_0x1ddf=function(){return _0x37073f;};return _0x1ddf();}const fs=require('fs'),csv=require('csv-parser'),{Transform}=require('stream');class CSVProcessor{constructor(_0x2eb61f,_0x26db74,_0x39b9f0){const _0x5810c3=_0xe80d;this['pool']=_0x2eb61f,this[_0x5810c3(0xdc)]=_0x26db74,this['phoneFormatter']=_0x39b9f0;}async['processMassiveCSVStream'](_0x2e7fd8,_0x23718b={}){const _0x568b1e=_0xe80d,_0x221de1={'WfcMr':function(_0x2ff7eb,_0x1ed6e1){return _0x2ff7eb>_0x1ed6e1;},'TFSOI':function(_0x1b7e11,_0xccfe95){return _0x1b7e11*_0xccfe95;},'qysTI':function(_0x235fa1,_0x151cd3){return _0x235fa1/_0x151cd3;},'pirbt':function(_0x1882ef,_0x4b55fb){return _0x1882ef-_0x4b55fb;},'enRMC':function(_0x51a7d4,_0x771a8e){return _0x51a7d4>_0x771a8e;},'PrNxp':function(_0x150d96,_0x5d73ff){return _0x150d96/_0x5d73ff;},'rbaoT':'calculando...','jxXBU':'|area:','NrmQy':function(_0x31d245,_0x38eb78){return _0x31d245>_0x38eb78;},'eswDk':function(_0x453e99){return _0x453e99();},'ksAut':function(_0x469e3a,_0x3890e2){return _0x469e3a/_0x3890e2;},'vnuBI':function(_0x4f1cd5,_0x4652fc){return _0x4f1cd5+_0x4652fc;},'hcnxE':function(_0x4c04dd){return _0x4c04dd();},'XRHRe':function(_0x2a00d6){return _0x2a00d6();},'cVdRx':function(_0x54f7f5,_0x3090c5){return _0x54f7f5+_0x3090c5;},'dCzUI':function(_0xb7e1c0,_0x22b5ae){return _0xb7e1c0>_0x22b5ae;},'fVYjQ':function(_0x1e837e){return _0x1e837e();},'nOggL':_0x568b1e(0x9f),'uFcyg':'error','EoOyS':_0x568b1e(0xa2),'NlcMu':'HABILITADO','QdDWa':_0x568b1e(0xe9),'GbauT':function(_0x135ea2,_0x1baf66){return _0x135ea2-_0x1baf66;},'QhORQ':function(_0x28579c,_0x310be2){return _0x28579c/_0x310be2;},'OSZtA':function(_0x512993,_0xfff675){return _0x512993(_0xfff675);}},{delimiter:delimiter=',',batchSize:batchSize=0x3e8,progressCallback:_0x450ee9,enablePhoneParsing:enablePhoneParsing=!![]}=_0x23718b;let processedCount=0x0,_0x102876=0x0,_0x3e26b8=0x0,_0x22adfa=[],_0x4f1964=0x0,_0xc6a4dc,_0x3c96c4=0x0,_0x4661f9=0x0;const _0x5e22db=Date['now']();console['log']('🔧\x20Parseo\x20automático\x20de\x20teléfonos:\x20'+(enablePhoneParsing?_0x221de1['NlcMu']:_0x568b1e(0x8a)));try{const _0x4fab1d=await fs['promises']['stat'](_0x2e7fd8);_0x3c96c4=_0x4fab1d['size'];const _0x2135e6=Math['min'](0x400*0x64,_0x3c96c4),sampleBuffer=Buffer[_0x568b1e(0xd1)](_0x2135e6),_0x1603c4=await fs['promises']['open'](_0x2e7fd8,'r');await _0x1603c4['read'](sampleBuffer,0x0,_0x2135e6,0x0),await _0x1603c4[_0x568b1e(0x8c)]();const _0x5c2fc2=sampleBuffer[_0x568b1e(0x91)](_0x221de1['QdDWa']),_0x35e401=_0x221de1['GbauT'](_0x5c2fc2['split']('\x0a')['length'],0x1),_0x3fa661=_0x221de1['QhORQ'](_0x2135e6,_0x35e401);_0x4661f9=Math[_0x568b1e(0xea)](_0x3c96c4/_0x3fa661)-0x1,console['log'](_0x568b1e(0xd5)+(_0x3c96c4/(0x400*0x400))[_0x568b1e(0xc6)](0x2)+_0x568b1e(0xe6)+_0x4661f9[_0x568b1e(0xba)]()+_0x568b1e(0xac)),_0xc6a4dc=await this[_0x568b1e(0x89)][_0x568b1e(0xae)](),await _0xc6a4dc['beginTransaction'](),await _0xc6a4dc[_0x568b1e(0x94)]('CALL\x20LimpiarCartilla()');let _0x524897=[],_0x2e67ef=0x0;const _0x163f2b=this['phoneFormatter'],_0x3bdaac=()=>{const _0x506fae=_0x568b1e,_0x1d5409=_0x221de1[_0x506fae(0xc7)](_0x4661f9,0x0)?_0x221de1['TFSOI'](_0x221de1[_0x506fae(0xb2)](processedCount,_0x4661f9),0x64):0x0,_0x15763c=_0x221de1[_0x506fae(0xcb)](Date[_0x506fae(0xa5)](),_0x5e22db),_0x1f37d8=processedCount>0x0?processedCount/_0x15763c*0x3e8:0x0,_0x34ecfc=_0x221de1[_0x506fae(0xbe)](_0x1f37d8,0x0)&&_0x221de1['WfcMr'](_0x4661f9,processedCount)?(_0x4661f9-processedCount)/_0x1f37d8:0x0;console[_0x506fae(0xa6)](_0x506fae(0x85)+Math[_0x506fae(0xb0)](_0x1d5409,0x64)['toFixed'](0x1)+'%\x20('+processedCount[_0x506fae(0xba)]()+'/'+_0x4661f9['toLocaleString']()+'\x20filas)\x0a\x20\x20\x20✅\x20Exitosos:\x20'+_0x102876['toLocaleString']()+'\x0a\x20\x20\x20❌\x20Fallidos:\x20'+_0x3e26b8['toLocaleString']()+_0x506fae(0xa8)+_0x22adfa['length']+_0x506fae(0xca)+_0x4f1964+_0x506fae(0xce)+_0x1f37d8['toFixed'](0x0)+'\x20reg/seg\x0a\x20\x20\x20⏰\x20Tiempo\x20transcurrido:\x20'+(_0x15763c/0x3e8)['toFixed'](0x1)+'s\x0a\x20\x20\x20🕐\x20Tiempo\x20estimado\x20restante:\x20'+(_0x221de1[_0x506fae(0xc7)](_0x34ecfc,0x0)?_0x221de1[_0x506fae(0xe7)](_0x34ecfc,0x3e8)['toFixed'](0x1)+'s':_0x221de1[_0x506fae(0xbd)])+'\x0a\x20\x20\x20💾\x20Archivo:\x20'+(_0x3c96c4/(0x400*0x400))['toFixed'](0x2)+'\x20MB\x0a\x20\x20\x20\x20\x20\x20\x20\x20');},_0x42a9f9=(_0x35fc68,_0x4cd082=0x1388)=>{const _0x3d5dbc={'uLxNS':_0x221de1['jxXBU'],'vGVGF':function(_0x2fa601,_0x34dd8c){return _0x2fa601(_0x34dd8c);}};return new Promise((_0x10c701,_0x386fcb)=>{const _0x3e248a=_0xe80d,_0x6daadf=setTimeout(()=>{const _0x18a033=_0xe80d;_0x386fcb(new Error(_0x18a033(0x87)));},_0x4cd082);try{let _0x2757ca;enablePhoneParsing?_0x163f2b[_0x3e248a(0xe1)]&&typeof _0x163f2b['csvFormatToPhoneJson']===_0x3e248a(0xb1)?_0x2757ca=_0x163f2b['csvFormatToPhoneJson'](_0x35fc68):_0x2757ca=JSON['stringify']([]):_0x35fc68&&_0x35fc68['includes'](_0x3e248a(0xb4))&&_0x35fc68[_0x3e248a(0xd0)](_0x3d5dbc['uLxNS'])?_0x2757ca=_0x163f2b['csvFormatToPhoneJson'](_0x35fc68):_0x2757ca=_0x35fc68,_0x3d5dbc[_0x3e248a(0x92)](clearTimeout,_0x6daadf),_0x10c701(_0x2757ca);}catch(_0x16a107){clearTimeout(_0x6daadf),_0x386fcb(_0x16a107);}});},_0xaa287d=new Transform({'objectMode':!![],'transform'(_0x339ab3,_0x1346aa,_0x373258){const _0x38903e=_0x568b1e,_0x3a4a25={'seRvJ':function(_0x32b307,_0x5406e4){return _0x32b307===_0x5406e4;},'woTGB':'Convertido\x20por\x20método\x20simple','huLRW':function(_0x15b4fc,_0x3a50cf){return _0x221de1['NrmQy'](_0x15b4fc,_0x3a50cf);},'uSyia':'Procesado\x20automáticamente','ypJoA':function(_0x326d0d){const _0x4dd273=_0xe80d;return _0x221de1[_0x4dd273(0x9a)](_0x326d0d);},'DwyKf':function(_0x2569e8,_0x13d2aa){return _0x2569e8<_0x13d2aa;},'OJtCt':function(_0x5b6fbc,_0x43cabb){return _0x5b6fbc+_0x43cabb;},'TDkJp':function(_0x443eac,_0x3eaf2b){return _0x443eac%_0x3eaf2b;},'euhvE':function(_0x2bdd9d,_0x3cca64){const _0x45c1a0=_0xe80d;return _0x221de1[_0x45c1a0(0xc2)](_0x2bdd9d,_0x3cca64);}};try{if(!_0x339ab3[_0x38903e(0xa4)]||!_0x339ab3[_0x38903e(0x99)]||!_0x339ab3['especialidad']){_0x3e26b8++,_0x22adfa['push']('Fila\x20'+_0x221de1[_0x38903e(0xe3)](processedCount,0x1)+':\x20Faltan\x20campos\x20requeridos\x20(nombre_prestador,\x20plan,\x20especialidad)'),_0x221de1['hcnxE'](_0x373258);return;}const processPhones=async()=>{const _0x2c73f0=_0x38903e;if(_0x339ab3['telefonos']){const _0x597a6f=_0x339ab3[_0x2c73f0(0x8b)];let _0x552afa=![];try{_0x339ab3[_0x2c73f0(0x8b)]=await _0x42a9f9(_0x597a6f),_0x552afa=!![],_0x3a4a25['seRvJ'](process['env'][_0x2c73f0(0xb9)],'development')&&console['log']('✅\x20Teléfono\x20procesado\x20en\x20fila\x20'+(processedCount+0x1));}catch(_0x2a0b5e){console[_0x2c73f0(0x95)]('⚠️\x20Error\x20normalizando\x20teléfono\x20en\x20fila\x20'+(processedCount+0x1)+':\x20'+_0x2a0b5e['message']);if(_0x2a0b5e['message']['includes']('timeout')){_0x22adfa[_0x2c73f0(0xbb)](_0x2c73f0(0x9b)+(processedCount+0x1)+':\x20Timeout\x20en\x20normalización,\x20usando\x20método\x20simple');try{if(_0x597a6f[_0x2c73f0(0xd0)]('type:')&&_0x597a6f['includes']('|'))_0x339ab3['telefonos']=JSON['stringify']([{'tipo':_0x2c73f0(0xaf),'codigoArea':'','numero':_0x597a6f['replace'](/\D/g,''),'extension':null,'descripcion':_0x3a4a25[_0x2c73f0(0xb6)]}]);else{const _0x4a2358=_0x597a6f[_0x2c73f0(0xb8)](/\D/g,'');_0x3a4a25['huLRW'](_0x4a2358[_0x2c73f0(0xcc)],0x6)?_0x339ab3['telefonos']=JSON[_0x2c73f0(0x9e)]([{'tipo':'fijo','codigoArea':'','numero':_0x4a2358,'extension':null,'descripcion':_0x3a4a25['uSyia']}]):_0x339ab3['telefonos']=JSON[_0x2c73f0(0x9e)]([]);}_0x552afa=!![];}catch(_0x13dfd1){_0x22adfa[_0x2c73f0(0xbb)]('Fila\x20'+(processedCount+0x1)+_0x2c73f0(0xab));}}else _0x22adfa['push']('Fila\x20'+(processedCount+0x1)+':\x20Error\x20de\x20normalización,\x20mantenido\x20original');}!enablePhoneParsing&&!_0x552afa&&_0x4f1964++,_0x552afa&&process[_0x2c73f0(0xa3)]['NODE_ENV']===_0x2c73f0(0xd6)&&(console['log']('📞\x20Teléfono\x20fila\x20'+(processedCount+0x1)+':'),console['log'](_0x2c73f0(0x90)+_0x597a6f+'\x22'),console['log'](_0x2c73f0(0xd9)+_0x339ab3[_0x2c73f0(0x8b)]+'\x22'));}else _0x339ab3['telefonos']=enablePhoneParsing?JSON[_0x2c73f0(0x9e)]([]):'';const processedRow={'plan':(_0x339ab3['plan']||'')[_0x2c73f0(0xc5)](),'categoria_prestador':(_0x339ab3['categoria_prestador']||'')['trim'](),'especialidad':(_0x339ab3[_0x2c73f0(0xa1)]||'')['trim'](),'provincia':(_0x339ab3['provincia']||'')['trim'](),'localidad':(_0x339ab3['localidad']||'')[_0x2c73f0(0xc5)](),'nombre_prestador':(_0x339ab3[_0x2c73f0(0xa4)]||'')[_0x2c73f0(0xc5)](),'direccion':(_0x339ab3['direccion']||'')['trim'](),'telefonos':_0x339ab3[_0x2c73f0(0x8b)],'email':(_0x339ab3[_0x2c73f0(0xad)]||'')['trim'](),'atencion_virtual':_0x339ab3['atencion_virtual']||'No','informacion_adicional':(_0x339ab3[_0x2c73f0(0xdd)]||'')['trim'](),'estado':(_0x339ab3[_0x2c73f0(0x88)]||_0x2c73f0(0xa0))['trim']()};if(processedRow[_0x2c73f0(0xa4)][_0x2c73f0(0xcc)]<0x2){_0x3e26b8++,_0x22adfa[_0x2c73f0(0xbb)](_0x2c73f0(0x9b)+(processedCount+0x1)+':\x20Nombre\x20del\x20prestador\x20demasiado\x20corto'),_0x3a4a25[_0x2c73f0(0xb5)](_0x373258);return;}if(_0x3a4a25['DwyKf'](processedRow['plan'][_0x2c73f0(0xcc)],0x2)){_0x3e26b8++,_0x22adfa[_0x2c73f0(0xbb)]('Fila\x20'+_0x3a4a25[_0x2c73f0(0x8f)](processedCount,0x1)+_0x2c73f0(0xbc)),_0x373258();return;}const _0x212d72=[processedRow[_0x2c73f0(0x99)],processedRow['categoria_prestador'],processedRow[_0x2c73f0(0xa1)],processedRow['provincia'],processedRow[_0x2c73f0(0x97)],processedRow[_0x2c73f0(0xa4)],processedRow[_0x2c73f0(0xcf)],processedRow['telefonos'],processedRow[_0x2c73f0(0xad)],processedRow['atencion_virtual'],processedRow['informacion_adicional'],processedRow['estado']];_0x524897['push'](_0x212d72),processedCount++,_0x102876++;_0x3a4a25['TDkJp'](processedCount,0x1f4)===0x0&&_0x3bdaac();if(_0x450ee9&&processedCount%0x3e8===0x0){const _0x15c784=_0x4661f9>0x0?_0x3a4a25['euhvE'](processedCount,_0x4661f9)*0x64:0x0,_0x11dded=Date[_0x2c73f0(0xa5)]()-_0x5e22db;_0x450ee9({'totalProcessed':processedCount,'successful':_0x102876,'failed':_0x3e26b8,'warnings':_0x22adfa[_0x2c73f0(0xcc)],'phoneParsingSkipped':_0x4f1964,'enablePhoneParsing':enablePhoneParsing,'batchNumber':Math['floor'](processedCount/batchSize),'status':'processing','percentage':Math[_0x2c73f0(0xb0)](_0x15c784,0x64),'estimatedTotalRows':_0x4661f9,'fileSize':_0x3c96c4,'rate':processedCount>0x0?processedCount/_0x11dded*0x3e8:0x0,'elapsedTime':_0x11dded});}_0x524897['length']>=batchSize&&(this['push'](_0x524897),_0x524897=[],_0x2e67ef++),_0x3a4a25['ypJoA'](_0x373258);};_0x221de1[_0x38903e(0xb7)](processPhones)['catch'](_0x1f1732=>{const _0x21e565=_0x38903e;_0x3e26b8++,_0x22adfa['push'](_0x21e565(0x9b)+_0x3a4a25['OJtCt'](processedCount,0x1)+':\x20Error\x20de\x20procesamiento\x20-\x20'+_0x1f1732['message']),console['error']('Error\x20procesando\x20fila\x20'+(processedCount+0x1)+':',_0x1f1732),_0x373258();});}catch(_0x44de7e){_0x3e26b8++,_0x22adfa['push']('Fila\x20'+(processedCount+0x1)+':\x20Error\x20de\x20procesamiento\x20-\x20'+_0x44de7e[_0x38903e(0xb3)]),console[_0x38903e(0x96)]('Error\x20procesando\x20fila\x20'+_0x221de1['cVdRx'](processedCount,0x1)+':',_0x44de7e),_0x221de1['XRHRe'](_0x373258);}},'flush'(_0x126002){const _0x540385=_0x568b1e;_0x221de1['dCzUI'](_0x524897[_0x540385(0xcc)],0x0)&&this[_0x540385(0xbb)](_0x524897),_0x126002();}}),_0xd50ad0=new Transform({'objectMode':!![],async 'transform'(_0x2d077d,_0x2cbf49,_0x43f826){const _0x5cf54c=_0x568b1e;try{await _0xc6a4dc['query']('INSERT\x20INTO\x20cartilla\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20(plan,\x20categoria_prestador,\x20especialidad,\x20provincia,\x20localidad,\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20nombre_prestador,\x20direccion,\x20telefonos,\x20email,\x20atencion_virtual,\x20informacion_adicional,\x20estado)\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20VALUES\x20?',[_0x2d077d]),_0x221de1[_0x5cf54c(0xe4)](_0x43f826);}catch(_0x4bc467){const _0x5c0a8e='2|1|0|3|4'[_0x5cf54c(0xc0)]('|');let _0xfd2d47=0x0;while(!![]){switch(_0x5c0a8e[_0xfd2d47++]){case'0':_0x102876-=_0x2d077d[_0x5cf54c(0xcc)];continue;case'1':_0x3e26b8+=_0x2d077d[_0x5cf54c(0xcc)];continue;case'2':console['error']('Error\x20insertando\x20batch\x20en\x20base\x20de\x20datos:',_0x4bc467);continue;case'3':_0x22adfa['push']('Error\x20insertando\x20lote\x20de\x20'+_0x2d077d[_0x5cf54c(0xcc)]+_0x5cf54c(0xbf)+_0x4bc467['message']);continue;case'4':_0x43f826(_0x4bc467);continue;}break;}}}});await new Promise((_0x25af12,_0x36bd94)=>{const _0x3536b1=_0x568b1e,_0x126876={'PXVCU':function(_0x1297d9,_0x395c57){return _0x1297d9(_0x395c57);},'DSEco':'Error\x20en\x20inserción\x20a\x20DB:','yFQkN':function(_0x5166e1,_0x1670d1){return _0x5166e1(_0x1670d1);}};fs[_0x3536b1(0xc8)](_0x2e7fd8)['pipe'](csv({'separator':delimiter,'mapValues':({value:_0x596989})=>_0x596989?_0x596989['toString']()['trim']():'','skipEmptyLines':!![],'skipLinesWithError':!![]}))['on'](_0x3536b1(0x96),_0x9a57b4=>{const _0xe139a0=_0x3536b1;console[_0xe139a0(0x96)]('Error en stream de lectura CSV:',_0x9a57b4),_0x126876[_0xe139a0(0xd4)](_0x36bd94,_0x9a57b4);})['pipe'](_0xaa287d)['on'](_0x3536b1(0x96),_0x3ea8fb=>{const _0x29035f=_0x3536b1;console['error'](_0x29035f(0xdb),_0x3ea8fb),_0x36bd94(_0x3ea8fb);})[_0x3536b1(0xda)](_0xd50ad0)['on'](_0x221de1['uFcyg'],_0x3b28a0=>{console['error'](_0x126876['DSEco'],_0x3b28a0),_0x126876['yFQkN'](_0x36bd94,_0x3b28a0);})['on'](_0x221de1['EoOyS'],()=>{const _0x51f4d9=_0x3536b1;console[_0x51f4d9(0xa6)](_0x221de1['nOggL']),_0x3bdaac(),_0x25af12();});}),await _0xc6a4dc[_0x568b1e(0x94)](_0x568b1e(0xe2)),await _0xc6a4dc[_0x568b1e(0x94)]('CALL\x20ProcesarCartilla()'),await _0xc6a4dc['commit']();const _0x22ffc6=Date[_0x568b1e(0xa5)]()-_0x5e22db;console[_0x568b1e(0xa6)]('\x0a🎉\x20PROCESAMIENTO\x20COMPLETADO:\x0a\x20\x20\x20✅\x20Total\x20procesados:\x20'+processedCount[_0x568b1e(0xba)]()+_0x568b1e(0xe5)+_0x102876['toLocaleString']()+'\x0a\x20\x20\x20❌\x20Fallidos:\x20'+_0x3e26b8[_0x568b1e(0xba)]()+'\x0a\x20\x20\x20⚠️\x20\x20Advertencias:\x20'+_0x22adfa['length']+_0x568b1e(0xca)+_0x4f1964+_0x568b1e(0xc1)+(_0x22ffc6/0x3e8)[_0x568b1e(0xc6)](0x1)+'s\x0a\x20\x20\x20📊\x20Velocidad\x20promedio:\x20'+(processedCount/_0x22ffc6*0x3e8)[_0x568b1e(0xc6)](0x0)+'\x20reg/seg\x0a\x20\x20\x20💾\x20Archivo\x20procesado:\x20'+(_0x3c96c4/(0x400*0x400))['toFixed'](0x2)+'\x20MB\x0a\x20\x20\x20\x20\x20\x20');_0x450ee9&&_0x221de1[_0x568b1e(0xd2)](_0x450ee9,{'totalProcessed':processedCount,'successful':_0x102876,'failed':_0x3e26b8,'warnings':_0x22adfa['length'],'phoneParsingSkipped':_0x4f1964,'enablePhoneParsing':enablePhoneParsing,'status':'completed','percentage':0x64,'estimatedTotalRows':_0x4661f9,'fileSize':_0x3c96c4,'elapsedTime':_0x22ffc6});const _0x492e43=enablePhoneParsing?'CSV\x20procesado\x20exitosamente.\x20'+_0x102876+'\x20registros\x20cargados\x20exitosamente,\x20'+_0x3e26b8+_0x568b1e(0x9c):'CSV\x20procesado\x20exitosamente.\x20'+_0x102876+'\x20registros\x20cargados\x20exitosamente,\x20'+_0x3e26b8+_0x568b1e(0x98)+_0x4f1964+_0x568b1e(0xd7);return{'success':!![],'totalProcessed':processedCount,'successful':_0x102876,'failed':_0x3e26b8,'warnings':_0x22adfa,'phoneParsingSkipped':_0x4f1964,'enablePhoneParsing':enablePhoneParsing,'message':_0x492e43,'processingTime':_0x22ffc6,'fileSize':_0x3c96c4};}catch(_0x49e395){if(_0xc6a4dc)await _0xc6a4dc['rollback']();_0x450ee9&&_0x450ee9({'error':_0x49e395[_0x568b1e(0xb3)],'status':'failed','totalProcessed':processedCount||0x0,'successful':_0x102876||0x0,'failed':_0x3e26b8||0x0,'warnings':_0x22adfa['length']||0x0,'phoneParsingSkipped':_0x4f1964||0x0,'enablePhoneParsing':enablePhoneParsing});console['error']('Error\x20al\x20procesar\x20CSV:',_0x49e395);throw new Error(_0x568b1e(0xe8)+_0x49e395[_0x568b1e(0xb3)]);}finally{if(_0xc6a4dc)_0xc6a4dc['release']();}}async['_processBatch'](_0xb6576a,_0x45ce31,_0xd4b97){const _0x40ec0c=_0xe80d;if(_0x45ce31[_0x40ec0c(0xcc)]===0x0)return;try{console[_0x40ec0c(0xa6)](_0x40ec0c(0xdf)+(_0xd4b97+0x1)+'\x20con\x20'+_0x45ce31[_0x40ec0c(0xcc)]+_0x40ec0c(0xde));const _0x32e1d5=_0x45ce31['map'](_0x176664=>[_0x176664['nombre_prestador'],_0x176664['direccion'],_0x176664['telefonos'],_0x176664[_0x40ec0c(0xad)]||null,_0x176664['informacion_adicional']||null,_0x176664['estado'],_0x176664['id_plan'],_0x176664['id_especialidad'],_0x176664['id_categoria'],_0x176664[_0x40ec0c(0xa9)],_0x176664['id_localidad'],_0x176664[_0x40ec0c(0x9d)]==='Sí'||_0x176664[_0x40ec0c(0x9d)]==='Si'||_0x176664['atencion_virtual']===_0x40ec0c(0xc3)||_0x176664['atencion_virtual']==='Yes'?0x1:0x0]);await _0xb6576a['query']('\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20INSERT\x20INTO\x20cartilla\x20(\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20nombre_prestador,\x20direccion,\x20telefonos,\x20email,\x20informacion_adicional,\x20estado,\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20id_plan,\x20id_especialidad,\x20id_categoria,\x20id_provincia,\x20id_localidad,\x20atencion_virtual\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20)\x20VALUES\x20?\x0a\x20\x20\x20\x20\x20\x20',[_0x32e1d5]),console[_0x40ec0c(0xa6)]('Lote\x20'+(_0xd4b97+0x1)+'\x20procesado\x20exitosamente');}catch(_0x7f9695){console[_0x40ec0c(0x96)](_0x40ec0c(0x86)+(_0xd4b97+0x1)+':',_0x7f9695);throw _0x7f9695;}}}module[_0x445225(0xcd)]=CSVProcessor;
+// libs/csv-processor/index.js
+/**
+ * CSV Processor Library
+ * Maneja el procesamiento masivo de archivos CSV de prestadores
+ */
+
+const fs = require('fs');
+const csv = require('csv-parser');
+const { Transform } = require('stream');
+
+class CSVProcessor {
+  constructor(pool, abmRepository, phoneFormatter) {
+    this.pool = pool;
+    this.abmRepository = abmRepository;
+    this.phoneFormatter = phoneFormatter;
+
+    // console.log('phoneFormatter methods:', Object.getOwnPropertyNames(Object.getPrototypeOf(this.phoneFormatter)));
+  }
+
+  /**
+   * Procesa un archivo CSV masivo de prestadores médicos con streams
+   * @async
+   * @param {string} filePath - Ruta del archivo CSV
+   * @param {Object} [options] - Opciones de configuración
+   * @param {string} [options.delimiter=','] - Delimitador de campos
+   * @param {number} [options.batchSize=1000] - Tamaño del lote para inserción
+   * @param {Function} [options.progressCallback] - Callback para notificar progreso
+   * @returns {Promise<Object>} - Resultados del proceso
+   */
+  async processMassiveCSVStream(filePath, options = {}) {
+    const {
+      delimiter = ",",
+      batchSize = 1000,
+      progressCallback,
+      enablePhoneParsing = true
+    } = options;
+
+    let processedCount = 0;
+    let successfulCount = 0;
+    let failedCount = 0;
+    let warnings = [];
+    let phoneParsingSkipped = 0;
+    let connection;
+
+    // Variables para calcular porcentaje
+    let fileSize = 0;
+    let estimatedTotalRows = 0;
+    const startTime = Date.now();
+
+    console.log(`🔧 Parseo automático de teléfonos: ${enablePhoneParsing ? 'HABILITADO' : 'DESHABILITADO'}`);
+
+    try {
+      // Obtener el tamaño del archivo y estimar total de filas
+      const stats = await fs.promises.stat(filePath);
+      fileSize = stats.size;
+
+      // Estimar número total de filas leyendo una muestra
+      const sampleSize = Math.min(1024 * 100, fileSize); // 100KB muestra
+      const sampleBuffer = Buffer.alloc(sampleSize);
+      const fd = await fs.promises.open(filePath, 'r');
+      await fd.read(sampleBuffer, 0, sampleSize, 0);
+      await fd.close();
+
+      const sampleText = sampleBuffer.toString('utf8');
+      const sampleLines = sampleText.split('\n').length - 1; // -1 por header
+      const avgBytesPerLine = sampleSize / sampleLines;
+      estimatedTotalRows = Math.floor(fileSize / avgBytesPerLine) - 1; // -1 por header
+
+      console.log(`📊 Archivo CSV: ${(fileSize / (1024 * 1024)).toFixed(2)} MB (~${estimatedTotalRows.toLocaleString()} filas estimadas)`);
+
+      connection = await this.pool.getConnection();
+      await connection.beginTransaction();
+
+      // 1. Limpiar cartilla inicialmente
+      await connection.query("CALL LimpiarCartilla()");
+
+      let batchValues = [];
+      let batchNumber = 0;
+
+      // Store reference to phoneFormatter for use in transform function
+      const phoneFormatter = this.phoneFormatter;
+
+      // Función auxiliar para mostrar progreso con porcentaje
+      const showProgress = () => {
+        const percentageByRows = estimatedTotalRows > 0 ? (processedCount / estimatedTotalRows * 100) : 0;
+        const elapsed = Date.now() - startTime;
+        const rate = processedCount > 0 ? (processedCount / elapsed * 1000) : 0;
+        const eta = rate > 0 && estimatedTotalRows > processedCount
+          ? ((estimatedTotalRows - processedCount) / rate)
+          : 0;
+
+        console.log(`
+🚀 PROGRESO CSV:
+   📈 Porcentaje: ${Math.min(percentageByRows, 100).toFixed(1)}% (${processedCount.toLocaleString()}/${estimatedTotalRows.toLocaleString()} filas)
+   ✅ Exitosos: ${successfulCount.toLocaleString()}
+   ❌ Fallidos: ${failedCount.toLocaleString()}
+   ⚠️  Advertencias: ${warnings.length}
+   📞 Teléfonos omitidos: ${phoneParsingSkipped}
+   ⏱️  Velocidad: ${rate.toFixed(0)} reg/seg
+   ⏰ Tiempo transcurrido: ${(elapsed / 1000).toFixed(1)}s
+   🕐 Tiempo estimado restante: ${eta > 0 ? (eta / 1000).toFixed(1) + 's' : 'calculando...'}
+   💾 Archivo: ${(fileSize / (1024 * 1024)).toFixed(2)} MB
+        `);
+      };
+
+      // Función auxiliar para normalización segura con timeout
+      const safePhoneNormalization = (phoneText, timeout = 5000) => {
+        return new Promise((resolve, reject) => {
+          const timer = setTimeout(() => {
+            reject(new Error('Phone normalization timeout'));
+          }, timeout);
+
+          try {
+            // Usar método más simple si está obfuscado
+            let result;
+            if (enablePhoneParsing) {
+              // Intentar método simple primero
+              if (phoneFormatter.csvFormatToPhoneJson && typeof phoneFormatter.csvFormatToPhoneJson === 'function') {
+                result = phoneFormatter.csvFormatToPhoneJson(phoneText);
+              } else {
+                // Fallback a JSON vacío
+                result = JSON.stringify([]);
+              }
+            } else {
+              // Solo convertir si es formato estructurado
+              if (phoneText && phoneText.includes('type:') && phoneText.includes('|area:')) {
+                result = phoneFormatter.csvFormatToPhoneJson(phoneText);
+              } else {
+                result = phoneText; // Mantener original
+              }
+            }
+
+            clearTimeout(timer);
+            resolve(result);
+          } catch (error) {
+            clearTimeout(timer);
+            reject(error);
+          }
+        });
+      };
+
+      // Transform stream para procesar cada línea
+      const csvTransformer = new Transform({
+        objectMode: true,
+        transform(row, encoding, callback) {
+          try {
+            // Validación básica de campos requeridos
+            if (!row.nombre_prestador || !row.plan || !row.especialidad) {
+              failedCount++;
+              warnings.push(`Fila ${processedCount + 1}: Faltan campos requeridos (nombre_prestador, plan, especialidad)`);
+              callback();
+              return;
+            }
+
+            // LÓGICA MODIFICADA: Normalizar teléfonos de forma segura
+            const processPhones = async () => {
+              if (row.telefonos) {
+                const originalPhones = row.telefonos;
+                let phoneProcessed = false;
+
+                try {
+                  // Usar normalización segura con timeout
+                  row.telefonos = await safePhoneNormalization(originalPhones);
+                  phoneProcessed = true;
+
+                  if (process.env.NODE_ENV === 'development') {
+                    console.log(`✅ Teléfono procesado en fila ${processedCount + 1}`);
+                  }
+                } catch (phoneError) {
+                  console.warn(`⚠️ Error normalizando teléfono en fila ${processedCount + 1}: ${phoneError.message}`);
+
+                  if (phoneError.message.includes('timeout')) {
+                    // Si hay timeout, usar método más simple
+                    warnings.push(`Fila ${processedCount + 1}: Timeout en normalización, usando método simple`);
+
+                    try {
+                      // Método super simple para casos problemáticos
+                      if (originalPhones.includes('type:') && originalPhones.includes('|')) {
+                        // Es formato estructurado, convertir a JSON básico
+                        row.telefonos = JSON.stringify([{
+                          tipo: 'fijo',
+                          codigoArea: '',
+                          numero: originalPhones.replace(/\D/g, ''),
+                          extension: null,
+                          descripcion: 'Convertido por método simple'
+                        }]);
+                      } else {
+                        // Para otros casos, crear estructura mínima
+                        const cleanedNumber = originalPhones.replace(/\D/g, '');
+                        if (cleanedNumber.length > 6) {
+                          row.telefonos = JSON.stringify([{
+                            tipo: 'fijo',
+                            codigoArea: '',
+                            numero: cleanedNumber,
+                            extension: null,
+                            descripcion: 'Procesado automáticamente'
+                          }]);
+                        } else {
+                          row.telefonos = JSON.stringify([]);
+                        }
+                      }
+                      phoneProcessed = true;
+                    } catch (simpleError) {
+                      warnings.push(`Fila ${processedCount + 1}: Error en método simple, mantenido original`);
+                      // Mantener valor original como último recurso
+                    }
+                  } else {
+                    warnings.push(`Fila ${processedCount + 1}: Error de normalización, mantenido original`);
+                    // Mantener el valor original
+                  }
+                }
+
+                if (!enablePhoneParsing && !phoneProcessed) {
+                  phoneParsingSkipped++;
+                }
+
+                // Log detallado para debugging
+                if (phoneProcessed && process.env.NODE_ENV === 'development') {
+                  console.log(`📞 Teléfono fila ${processedCount + 1}:`);
+                  console.log(`   Original: "${originalPhones}"`);
+                  console.log(`   Procesado: "${row.telefonos}"`);
+                }
+              } else {
+                // Si no hay teléfonos, establecer valor por defecto según configuración
+                row.telefonos = enablePhoneParsing ? JSON.stringify([]) : '';
+              }
+
+              // Validar y normalizar otros campos
+              const processedRow = {
+                plan: (row.plan || "").trim(),
+                categoria_prestador: (row.categoria_prestador || "").trim(),
+                especialidad: (row.especialidad || "").trim(),
+                provincia: (row.provincia || "").trim(),
+                localidad: (row.localidad || "").trim(),
+                nombre_prestador: (row.nombre_prestador || "").trim(),
+                direccion: (row.direccion || "").trim(),
+                telefonos: row.telefonos,
+                email: (row.email || "").trim(),
+                atencion_virtual: row.atencion_virtual || "No",
+                informacion_adicional: (row.informacion_adicional || "").trim(),
+                estado: (row.estado || "Activo").trim()
+              };
+
+              // Validaciones adicionales
+              if (processedRow.nombre_prestador.length < 2) {
+                failedCount++;
+                warnings.push(`Fila ${processedCount + 1}: Nombre del prestador demasiado corto`);
+                callback();
+                return;
+              }
+
+              if (processedRow.plan.length < 2) {
+                failedCount++;
+                warnings.push(`Fila ${processedCount + 1}: Plan inválido`);
+                callback();
+                return;
+              }
+
+              // Preparar valores para la inserción
+              const values = [
+                processedRow.plan,
+                processedRow.categoria_prestador,
+                processedRow.especialidad,
+                processedRow.provincia,
+                processedRow.localidad,
+                processedRow.nombre_prestador,
+                processedRow.direccion,
+                processedRow.telefonos,
+                processedRow.email,
+                processedRow.atencion_virtual,
+                processedRow.informacion_adicional,
+                processedRow.estado,
+              ];
+
+              batchValues.push(values);
+              processedCount++;
+              successfulCount++;
+
+              // Mostrar progreso con porcentaje cada 500 registros
+              if (processedCount % 500 === 0) {
+                showProgress();
+              }
+
+              // Notificar progreso cada 1000 registros
+              if (progressCallback && processedCount % 1000 === 0) {
+                const percentageByRows = estimatedTotalRows > 0 ? (processedCount / estimatedTotalRows * 100) : 0;
+                const elapsed = Date.now() - startTime;
+
+                progressCallback({
+                  totalProcessed: processedCount,
+                  successful: successfulCount,
+                  failed: failedCount,
+                  warnings: warnings.length,
+                  phoneParsingSkipped: phoneParsingSkipped,
+                  enablePhoneParsing: enablePhoneParsing,
+                  batchNumber: Math.floor(processedCount / batchSize),
+                  status: "processing",
+                  percentage: Math.min(percentageByRows, 100),
+                  estimatedTotalRows: estimatedTotalRows,
+                  fileSize: fileSize,
+                  rate: processedCount > 0 ? (processedCount / elapsed * 1000) : 0,
+                  elapsedTime: elapsed
+                });
+              }
+
+              // Si el batch está lleno, insertar
+              if (batchValues.length >= batchSize) {
+                this.push(batchValues);
+                batchValues = [];
+                batchNumber++;
+              }
+
+              callback();
+            };
+
+            // Ejecutar procesamiento de teléfonos de forma asíncrona
+            processPhones().catch(error => {
+              failedCount++;
+              warnings.push(`Fila ${processedCount + 1}: Error de procesamiento - ${error.message}`);
+              console.error(`Error procesando fila ${processedCount + 1}:`, error);
+              callback();
+            });
+
+          } catch (error) {
+            failedCount++;
+            warnings.push(`Fila ${processedCount + 1}: Error de procesamiento - ${error.message}`);
+            console.error(`Error procesando fila ${processedCount + 1}:`, error);
+            callback();
+          }
+        },
+        flush(callback) {
+          // Insertar los registros restantes en el último batch
+          if (batchValues.length > 0) {
+            this.push(batchValues);
+          }
+          callback();
+        },
+      });
+
+      // Stream para insertar los batches en la base de datos
+      const dbInserter = new Transform({
+        objectMode: true,
+        async transform(batch, encoding, callback) {
+          try {
+            await connection.query(
+              `INSERT INTO cartilla
+               (plan, categoria_prestador, especialidad, provincia, localidad,
+                nombre_prestador, direccion, telefonos, email, atencion_virtual, informacion_adicional, estado)
+               VALUES ?`,
+              [batch]
+            );
+            callback();
+          } catch (error) {
+            console.error('Error insertando batch en base de datos:', error);
+            // Contar los registros fallidos de este batch
+            failedCount += batch.length;
+            successfulCount -= batch.length;
+            warnings.push(`Error insertando lote de ${batch.length} registros: ${error.message}`);
+            callback(error);
+          }
+        },
+      });
+
+      // Pipeline completo
+      await new Promise((resolve, reject) => {
+        fs.createReadStream(filePath)
+          .pipe(
+            csv({
+              separator: delimiter,
+              mapValues: ({ value }) => value ? value.toString().trim() : '',
+              skipEmptyLines: true,
+              skipLinesWithError: true,
+            })
+          )
+          .on("error", (error) => {
+            console.error('Error en stream de lectura CSV:', error);
+            reject(error);
+          })
+          .pipe(csvTransformer)
+          .on("error", (error) => {
+            console.error('Error en transformación CSV:', error);
+            reject(error);
+          })
+          .pipe(dbInserter)
+          .on("error", (error) => {
+            console.error('Error en inserción a DB:', error);
+            reject(error);
+          })
+          .on("finish", () => {
+            console.log('Pipeline CSV completado exitosamente');
+            // Mostrar progreso final
+            showProgress();
+            resolve();
+          });
+      });
+
+      // 3. Limpiar tablas de cartilla
+      await connection.query("CALL LimpiarTablasCartilla()");
+
+      // 4. Procesar la cartilla para poblar las tablas relacionadas
+      await connection.query("CALL ProcesarCartilla()");
+
+      await connection.commit();
+
+      // Mostrar resumen final con tiempo total
+      const totalTime = Date.now() - startTime;
+      console.log(`
+🎉 PROCESAMIENTO COMPLETADO:
+   ✅ Total procesados: ${processedCount.toLocaleString()} registros
+   ✅ Exitosos: ${successfulCount.toLocaleString()}
+   ❌ Fallidos: ${failedCount.toLocaleString()}
+   ⚠️  Advertencias: ${warnings.length}
+   📞 Teléfonos omitidos: ${phoneParsingSkipped}
+   ⏰ Tiempo total: ${(totalTime / 1000).toFixed(1)}s
+   📊 Velocidad promedio: ${((processedCount / totalTime) * 1000).toFixed(0)} reg/seg
+   💾 Archivo procesado: ${(fileSize / (1024 * 1024)).toFixed(2)} MB
+      `);
+
+      // Notificación final de progreso
+      if (progressCallback) {
+        progressCallback({
+          totalProcessed: processedCount,
+          successful: successfulCount,
+          failed: failedCount,
+          warnings: warnings.length,
+          phoneParsingSkipped: phoneParsingSkipped,
+          enablePhoneParsing: enablePhoneParsing,
+          status: "completed",
+          percentage: 100,
+          estimatedTotalRows: estimatedTotalRows,
+          fileSize: fileSize,
+          elapsedTime: totalTime
+        });
+      }
+
+      // Resultado detallado
+      const finalMessage = enablePhoneParsing
+        ? `CSV procesado exitosamente. ${successfulCount} registros cargados exitosamente, ${failedCount} fallaron. Parseo automático aplicado.`
+        : `CSV procesado exitosamente. ${successfulCount} registros cargados exitosamente, ${failedCount} fallaron. Parseo automático omitido (${phoneParsingSkipped} teléfonos mantenidos en formato original).`;
+
+      return {
+        success: true,
+        totalProcessed: processedCount,
+        successful: successfulCount,
+        failed: failedCount,
+        warnings: warnings,
+        phoneParsingSkipped: phoneParsingSkipped,
+        enablePhoneParsing: enablePhoneParsing,
+        message: finalMessage,
+        processingTime: totalTime,
+        fileSize: fileSize
+      };
+    } catch (error) {
+      if (connection) await connection.rollback();
+
+      if (progressCallback) {
+        progressCallback({
+          error: error.message,
+          status: "failed",
+          totalProcessed: processedCount || 0,
+          successful: successfulCount || 0,
+          failed: failedCount || 0,
+          warnings: warnings.length || 0,
+          phoneParsingSkipped: phoneParsingSkipped || 0,
+          enablePhoneParsing: enablePhoneParsing,
+        });
+      }
+
+      console.error("Error al procesar CSV:", error);
+      throw new Error(`Error al procesar CSV: ${error.message}`);
+    } finally {
+      if (connection) connection.release();
+    }
+  }
+
+  /**
+   * Procesa un lote de registros
+   * @private
+   */
+  async _processBatch(connection, batch, batchNumber) {
+    if (batch.length === 0) return;
+
+    try {
+      console.log(`Procesando lote ${batchNumber + 1} con ${batch.length} registros...`);
+
+      const insertValues = batch.map(row => [
+        row.nombre_prestador,
+        row.direccion,
+        row.telefonos,
+        row.email || null,
+        row.informacion_adicional || null,
+        row.estado,
+        row.id_plan,
+        row.id_especialidad,
+        row.id_categoria,
+        row.id_provincia,
+        row.id_localidad,
+        row.atencion_virtual === 'Sí' || row.atencion_virtual === 'Si' || row.atencion_virtual === 'YES' || row.atencion_virtual === 'Yes' ? 1 : 0
+      ]);
+
+      await connection.query(`
+          INSERT INTO cartilla (
+              nombre_prestador, direccion, telefonos, email, informacion_adicional, estado,
+              id_plan, id_especialidad, id_categoria, id_provincia, id_localidad, atencion_virtual
+          ) VALUES ?
+      `, [insertValues]);
+
+      console.log(`Lote ${batchNumber + 1} procesado exitosamente`);
+
+    } catch (error) {
+      console.error(`Error procesando lote ${batchNumber + 1}:`, error);
+      throw error;
+    }
+  }
+}
+
+module.exports = CSVProcessor;

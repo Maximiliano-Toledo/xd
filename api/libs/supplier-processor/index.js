@@ -1,1 +1,529 @@
-const _0x143237=_0x1b5e;(function(_0x5a40ae,_0x1ef460){const _0x48ce30=_0x1b5e,_0xdcdaae=_0x5a40ae();while(!![]){try{const _0x113a09=parseInt(_0x48ce30(0x199))/0x1+-parseInt(_0x48ce30(0x1a0))/0x2+-parseInt(_0x48ce30(0x176))/0x3*(-parseInt(_0x48ce30(0x185))/0x4)+-parseInt(_0x48ce30(0x1a7))/0x5*(parseInt(_0x48ce30(0x16c))/0x6)+parseInt(_0x48ce30(0x1b2))/0x7+parseInt(_0x48ce30(0x187))/0x8*(-parseInt(_0x48ce30(0x17c))/0x9)+parseInt(_0x48ce30(0x162))/0xa;if(_0x113a09===_0x1ef460)break;else _0xdcdaae['push'](_0xdcdaae['shift']());}catch(_0x57d33f){_0xdcdaae['push'](_0xdcdaae['shift']());}}}(_0x52fe,0x260b7));function _0x1b5e(_0x15dfc1,_0x1c9774){const _0x52fe3f=_0x52fe();return _0x1b5e=function(_0x1b5ea8,_0x8daa97){_0x1b5ea8=_0x1b5ea8-0x157;let _0x9faef8=_0x52fe3f[_0x1b5ea8];return _0x9faef8;},_0x1b5e(_0x15dfc1,_0x1c9774);}class SupplierProcessor{constructor(_0x21b907,_0x5a0678){this['pool']=_0x21b907,this['abmRepository']=_0x5a0678;}async[_0x143237(0x196)](_0x450cf4){const _0x178d26=_0x143237,_0x4adadf={'KthqH':function(_0x55b1a3,_0x117ec1){return _0x55b1a3===_0x117ec1;},'uDQNE':_0x178d26(0x16f),'kjbRu':'Debe\x20especificar\x20al\x20menos\x20un\x20plan','iUXeA':_0x178d26(0x166),'huxZp':'Activo','vlKno':_0x178d26(0x19d),'TPkou':function(_0x3dc8bf,_0x249f84,_0xe5ec80,_0x2e00e5){return _0x3dc8bf(_0x249f84,_0xe5ec80,_0x2e00e5);},'IPnNe':_0x178d26(0x15e),'LWdTV':_0x178d26(0x1a9),'dQauE':function(_0x4cc9b6,_0x1bbe21,_0x212159,_0x179231){return _0x4cc9b6(_0x1bbe21,_0x212159,_0x179231);},'ssIAv':'prestador_plan','eITCk':'id_plan','BceJa':'Error\x20creating\x20complete\x20entity'};let _0x32bc27;try{_0x32bc27=await this['pool'][_0x178d26(0x175)](),await _0x32bc27['beginTransaction'](),console['log'](_0x178d26(0x192),_0x450cf4);if(!_0x450cf4[_0x178d26(0x15d)])throw new Error(_0x4adadf['uDQNE']);if(!_0x450cf4[_0x178d26(0x15c)]||!Array[_0x178d26(0x16d)](_0x450cf4['planes'])||_0x450cf4[_0x178d26(0x15c)][_0x178d26(0x1ab)]===0x0)throw new Error(_0x4adadf['kjbRu']);if(!_0x450cf4[_0x178d26(0x18d)]||!Array['isArray'](_0x450cf4[_0x178d26(0x18d)])||_0x450cf4['especialidades'][_0x178d26(0x1ab)]===0x0)throw new Error(_0x178d26(0x1b0));console['log']('📋\x20Validaciones\x20superadas\x20para:\x20'+_0x450cf4['nombre']);const [_0x1e47f1]=await _0x32bc27['query']('SELECT\x20nombre,\x20id_provincia\x20FROM\x20localidades\x20WHERE\x20id_localidad\x20=\x20?',[_0x450cf4['id_localidad']]),[_0x4272d8]=await _0x32bc27['query']('SELECT\x20nombre\x20FROM\x20provincias\x20WHERE\x20id_provincia\x20=\x20?',[_0x1e47f1[0x0][_0x178d26(0x178)]]),[_0x54b499]=await _0x32bc27['query']('SELECT\x20nombre\x20FROM\x20categorias_prestador\x20WHERE\x20id_categoria\x20IN\x20(?)',[_0x450cf4['categorias']]),[_0x1e7ffb]=await _0x32bc27[_0x178d26(0x197)]('SELECT\x20id_especialidad,\x20nombre\x20FROM\x20especialidades\x20WHERE\x20id_especialidad\x20IN\x20(?)',[_0x450cf4[_0x178d26(0x18d)]]),[_0x1066d6]=await _0x32bc27['query'](_0x178d26(0x1ad),[_0x450cf4[_0x178d26(0x15c)]]);console[_0x178d26(0x15a)](_0x178d26(0x1b5)+_0x1e7ffb['length']+_0x178d26(0x198)+_0x1066d6['length']+'\x20planes');const _0x3e01e0=_0x54b499['map'](_0x6b31a2=>_0x6b31a2['nombre'])[_0x178d26(0x16a)](',\x20'),_0x264710=[];for(const _0x566a2c of _0x1066d6){for(const _0x3060dd of _0x1e7ffb){console['log'](_0x178d26(0x17e)+_0x566a2c['nombre']+'\x20x\x20'+_0x3060dd[_0x178d26(0x15d)]);const _0x43ae31=await this[_0x178d26(0x16b)][_0x178d26(0x158)](_0x4adadf['iUXeA'],{'nombre':_0x450cf4['nombre'],'direccion':_0x450cf4['direccion'],'telefonos':_0x450cf4[_0x178d26(0x193)],'email':_0x450cf4['email'],'atencion_virtual':_0x450cf4['atencion_virtual'],'informacion_adicional':_0x450cf4['informacion_adicional'],'id_localidad':_0x450cf4[_0x178d26(0x18f)],'estado':_0x450cf4[_0x178d26(0x19b)]||'Activo'}),_0x4f5a61=_0x43ae31['insertId'];console[_0x178d26(0x15a)]('\x20\x20\x20\x20\x20\x20✅\x20Entidad\x20creada\x20con\x20ID:\x20'+_0x4f5a61),await this[_0x178d26(0x16b)]['create']('cartilla',{'id_prestador':_0x4f5a61,'nombre_prestador':_0x450cf4[_0x178d26(0x15d)],'direccion':_0x450cf4['direccion'],'telefonos':_0x450cf4['telefonos'],'email':_0x450cf4[_0x178d26(0x169)],'atencion_virtual':_0x450cf4['atencion_virtual'],'informacion_adicional':_0x450cf4[_0x178d26(0x15b)],'localidad':_0x1e47f1[0x0][_0x178d26(0x15d)],'provincia':_0x4272d8[0x0]['nombre'],'categoria_prestador':_0x3e01e0,'especialidad':_0x3060dd[_0x178d26(0x15d)],'plan':_0x566a2c['nombre'],'estado':_0x450cf4['estado']||_0x4adadf['huxZp']});const _0x3cd8c4=async(_0x4e6f4f,_0x302262,_0xc1a96e)=>{const _0x243d64=_0x178d26;if(!Array['isArray'](_0xc1a96e)||_0x4adadf[_0x243d64(0x19c)](_0xc1a96e['length'],0x0))return;const _0x55f3af=_0xc1a96e['map'](_0x588689=>[_0x4f5a61,_0x588689]);await _0x32bc27['query']('INSERT\x20INTO\x20'+_0x4e6f4f+_0x243d64(0x173)+_0x302262+_0x243d64(0x1a8),[_0x55f3af]);};await _0x3cd8c4(_0x178d26(0x1b3),_0x4adadf[_0x178d26(0x174)],_0x450cf4[_0x178d26(0x17f)]),await _0x4adadf[_0x178d26(0x157)](_0x3cd8c4,_0x4adadf[_0x178d26(0x184)],_0x4adadf['LWdTV'],[_0x3060dd['id_especialidad']]),await _0x4adadf[_0x178d26(0x188)](_0x3cd8c4,_0x4adadf['ssIAv'],_0x4adadf['eITCk'],[_0x566a2c[_0x178d26(0x1a2)]]),_0x264710[_0x178d26(0x186)]({'id_prestador':_0x4f5a61,'plan':_0x566a2c['nombre'],'especialidad':_0x3060dd['nombre']});}}return await _0x32bc27['commit'](),console[_0x178d26(0x15a)](_0x178d26(0x1ac)+_0x264710['length']+_0x178d26(0x18b)),{'success':!![],'registros_creados':_0x264710,'total':_0x264710['length']};}catch(_0x42a233){if(_0x32bc27)await _0x32bc27[_0x178d26(0x1a1)]();console['error'](_0x178d26(0x1b4),_0x42a233);throw new Error(_0x4adadf['BceJa']);}finally{if(_0x32bc27)_0x32bc27['release']();}}async[_0x143237(0x18c)](_0xd40aac,_0x24c45c){const _0x1981eb=_0x143237,_0x4609a5={'GAGaP':function(_0xb54a10,_0xc1dcad){return _0xb54a10!==_0xc1dcad;},'NmiUg':function(_0x467b61,_0x50a7e2){return _0x467b61===_0x50a7e2;},'RmqzL':'categorias','EfeIz':function(_0x36d99b,_0x2f3606){return _0x36d99b===_0x2f3606;},'rMTIR':function(_0x383d82,_0x5f15d6){return _0x383d82===_0x5f15d6;},'LsyXS':function(_0x5a8540,_0x3abd75){return _0x5a8540>_0x3abd75;},'NTztJ':'email','QNiKS':_0x1981eb(0x15b)};let _0x2a4d48;try{_0x2a4d48=await this['pool'][_0x1981eb(0x175)](),await _0x2a4d48[_0x1981eb(0x161)](),console[_0x1981eb(0x15a)]('🔄\x20Ejecutando\x20actualización\x20completa\x20para\x20entidad\x20ID:\x20'+_0xd40aac);const _0x59326f={},_0x29c4a7={'categorias':_0x24c45c['categorias'],'especialidades':_0x24c45c['especialidades'],'planes':_0x24c45c[_0x1981eb(0x15c)]};Object['entries'](_0x24c45c)['forEach'](([_0x2546e4,_0x443e60])=>{const _0xfa29cb=_0x1981eb;if(_0x443e60!==null&&_0x4609a5['GAGaP'](_0x443e60,undefined)&&_0x443e60!==''){if(_0x4609a5[_0xfa29cb(0x183)](_0x2546e4,_0x4609a5[_0xfa29cb(0x19e)])||_0x4609a5[_0xfa29cb(0x168)](_0x2546e4,'especialidades')||_0x4609a5['rMTIR'](_0x2546e4,_0xfa29cb(0x15c)))return;_0x59326f[_0x2546e4]=_0x443e60;}}),console[_0x1981eb(0x15a)]('📝\x20Campos\x20a\x20actualizar:\x20'+Object['keys'](_0x59326f)[_0x1981eb(0x16a)](',\x20'));_0x4609a5['LsyXS'](Object['keys'](_0x59326f)['length'],0x0)&&(await this['abmRepository']['update']('prestadores',_0x1981eb(0x1a4),_0xd40aac,_0x59326f),console['log'](_0x1981eb(0x190)));if(Object['keys'](_0x59326f)['length']>0x0){const _0x5dd5cb={},_0x3532b2={'nombre':_0x1981eb(0x1a5),'direccion':_0x1981eb(0x189),'telefonos':'telefonos','email':_0x4609a5['NTztJ'],'atencion_virtual':'atencion_virtual','informacion_adicional':_0x4609a5['QNiKS'],'estado':'estado'};Object['entries'](_0x59326f)['forEach'](([_0x1c9c3a,_0x45739b])=>{_0x3532b2[_0x1c9c3a]&&(_0x5dd5cb[_0x3532b2[_0x1c9c3a]]=_0x45739b);}),Object['keys'](_0x5dd5cb)['length']>0x0&&(await this[_0x1981eb(0x16b)]['update'](_0x1981eb(0x163),'id_prestador',_0xd40aac,_0x5dd5cb),console[_0x1981eb(0x15a)]('\x20\x20\x20✅\x20Cartilla\x20actualizada'));}await this[_0x1981eb(0x1b1)](_0x2a4d48,_0xd40aac,_0x29c4a7);const _0x46a9f4=await this['_getCompleteEntityData'](_0x2a4d48,_0xd40aac);return await _0x2a4d48['commit'](),console[_0x1981eb(0x15a)](_0x1981eb(0x182)+_0xd40aac),{'id':_0xd40aac,'success':!![],'prestador':_0x46a9f4};}catch(_0x289c5e){if(_0x2a4d48)await _0x2a4d48['rollback']();console['error']('❌\x20Error\x20en\x20executeCompleteEntityUpdate:',_0x289c5e);throw new Error('Error\x20al\x20actualizar\x20entidad\x20completa');}finally{if(_0x2a4d48)_0x2a4d48['release']();}}async['_updateEntityRelations'](_0x5870bc,_0x1859ff,_0x28e16c){const _0x280ace=_0x143237,_0xc5178={'zLnwJ':function(_0x87261a,_0x28f568){return _0x87261a>_0x28f568;},'kukTo':function(_0x3a419c,_0x3092ee){return _0x3a419c>_0x3092ee;}};if(_0x28e16c[_0x280ace(0x17f)]!==undefined){console[_0x280ace(0x15a)](_0x280ace(0x17a)+(_0x28e16c['categorias']?.[_0x280ace(0x1ab)]||0x0)+'\x20elementos'),await _0x5870bc['query'](_0x280ace(0x19f),[_0x1859ff]);if(_0x28e16c['categorias']&&_0xc5178['zLnwJ'](_0x28e16c['categorias'][_0x280ace(0x1ab)],0x0)){const _0x4bb0c1=_0x28e16c[_0x280ace(0x17f)]['map'](_0x5ec9c7=>[_0x1859ff,_0x5ec9c7]);await _0x5870bc['query'](_0x280ace(0x194),[_0x4bb0c1]);}}if(_0x28e16c['especialidades']!==undefined){console['log'](_0x280ace(0x159)+(_0x28e16c[_0x280ace(0x18d)]?.[_0x280ace(0x1ab)]||0x0)+'\x20elementos'),await _0x5870bc['query']('DELETE\x20FROM\x20prestador_especialidad\x20WHERE\x20id_prestador\x20=\x20?',[_0x1859ff]);if(_0x28e16c['especialidades']&&_0x28e16c[_0x280ace(0x18d)][_0x280ace(0x1ab)]>0x0){const _0x35e575=_0x28e16c['especialidades'][_0x280ace(0x18e)](_0x20a394=>[_0x1859ff,_0x20a394]);await _0x5870bc['query'](_0x280ace(0x17d),[_0x35e575]);}}if(_0x28e16c['planes']!==undefined){console['log']('\x20\x20\x20🔗\x20Actualizando\x20planes:\x20'+(_0x28e16c[_0x280ace(0x15c)]?.['length']||0x0)+'\x20elementos'),await _0x5870bc['query']('DELETE\x20FROM\x20prestador_plan\x20WHERE\x20id_prestador\x20=\x20?',[_0x1859ff]);if(_0x28e16c['planes']&&_0xc5178['kukTo'](_0x28e16c['planes'][_0x280ace(0x1ab)],0x0)){const _0x33c796=_0x28e16c['planes']['map'](_0x4df9e1=>[_0x1859ff,_0x4df9e1]);await _0x5870bc[_0x280ace(0x197)]('INSERT\x20INTO\x20prestador_plan\x20(id_prestador,\x20id_plan)\x20VALUES\x20?',[_0x33c796]);}}await this[_0x280ace(0x195)](_0x5870bc,_0x1859ff,_0x28e16c);}async[_0x143237(0x195)](_0x19c783,_0x1c7ea5,_0x5e87e5){const _0x3af6a5=_0x143237,_0x4db784={'qLvNM':function(_0x7d2bc2,_0x109795){return _0x7d2bc2!==_0x109795;},'kUFVw':function(_0x3ed98e,_0x4f258c){return _0x3ed98e>_0x4f258c;}};if(_0x4db784['qLvNM'](_0x5e87e5['categorias'],undefined)||_0x5e87e5[_0x3af6a5(0x18d)]!==undefined||_0x5e87e5[_0x3af6a5(0x15c)]!==undefined){console['log'](_0x3af6a5(0x1aa));let _0x317b90=[],_0x7775fd=[],_0x5f06f4=[];if(_0x5e87e5['categorias']!==undefined&&_0x5e87e5[_0x3af6a5(0x17f)]['length']>0x0){const [_0x9f5b73]=await _0x19c783['query']('SELECT\x20nombre\x20FROM\x20categorias_prestador\x20WHERE\x20id_categoria\x20IN\x20(?)',[_0x5e87e5['categorias']]);_0x317b90=_0x9f5b73['map'](_0x2c68da=>_0x2c68da[_0x3af6a5(0x15d)]);}if(_0x5e87e5[_0x3af6a5(0x18d)]!==undefined&&_0x5e87e5['especialidades']['length']>0x0){const [_0x17b726]=await _0x19c783['query']('SELECT\x20nombre\x20FROM\x20especialidades\x20WHERE\x20id_especialidad\x20IN\x20(?)',[_0x5e87e5[_0x3af6a5(0x18d)]]);_0x7775fd=_0x17b726[_0x3af6a5(0x18e)](_0x26c31c=>_0x26c31c['nombre']);}if(_0x4db784['qLvNM'](_0x5e87e5['planes'],undefined)&&_0x5e87e5['planes']['length']>0x0){const [_0x34ee8c]=await _0x19c783[_0x3af6a5(0x197)](_0x3af6a5(0x171),[_0x5e87e5[_0x3af6a5(0x15c)]]);_0x5f06f4=_0x34ee8c['map'](_0x48c384=>_0x48c384[_0x3af6a5(0x15d)]);}const _0x5c2d34={};_0x4db784['qLvNM'](_0x5e87e5[_0x3af6a5(0x17f)],undefined)&&(_0x5c2d34[_0x3af6a5(0x191)]=_0x317b90[_0x3af6a5(0x16a)](',\x20')),_0x5e87e5[_0x3af6a5(0x18d)]!==undefined&&(_0x5c2d34['especialidad']=_0x7775fd['join'](',\x20')),_0x4db784[_0x3af6a5(0x164)](_0x5e87e5['planes'],undefined)&&(_0x5c2d34['plan']=_0x5f06f4['join'](',\x20')),_0x4db784[_0x3af6a5(0x180)](Object['keys'](_0x5c2d34)['length'],0x0)&&(await _0x19c783['query'](_0x3af6a5(0x19a),[_0x5c2d34,_0x1c7ea5]),console['log']('\x20\x20\x20\x20\x20\x20✅\x20Cartilla\x20actualizada\x20con\x20nuevas\x20relaciones'));}}async['_getCompleteEntityData'](_0x495b1e,_0x57dd90){const _0x1347b7=_0x143237;console[_0x1347b7(0x15a)]('\x20\x20\x20📊\x20Obteniendo\x20datos\x20completos\x20de\x20entidad\x20ID:\x20'+_0x57dd90);const [_0x27d5df]=await _0x495b1e['query']('SELECT\x20*\x20FROM\x20prestadores\x20WHERE\x20id_prestador\x20=\x20?',[_0x57dd90]),[_0x2fdaf2]=await _0x495b1e[_0x1347b7(0x197)]('SELECT\x20c.id_categoria,\x20c.nombre\x20\x0a\x20\x20\x20\x20\x20\x20\x20FROM\x20categorias_prestador\x20c\x0a\x20\x20\x20\x20\x20\x20\x20INNER\x20JOIN\x20prestador_categoria\x20pc\x20ON\x20c.id_categoria\x20=\x20pc.id_categoria\x0a\x20\x20\x20\x20\x20\x20\x20WHERE\x20pc.id_prestador\x20=\x20?',[_0x57dd90]),[_0x2f2599]=await _0x495b1e['query']('SELECT\x20e.id_especialidad,\x20e.nombre\x20\x0a\x20\x20\x20\x20\x20\x20\x20FROM\x20especialidades\x20e\x0a\x20\x20\x20\x20\x20\x20\x20INNER\x20JOIN\x20prestador_especialidad\x20pe\x20ON\x20e.id_especialidad\x20=\x20pe.id_especialidad\x0a\x20\x20\x20\x20\x20\x20\x20WHERE\x20pe.id_prestador\x20=\x20?',[_0x57dd90]),[_0x1ff872]=await _0x495b1e['query'](_0x1347b7(0x172),[_0x57dd90]);return{..._0x27d5df[0x0],'categorias':_0x2fdaf2,'especialidades':_0x2f2599,'planes':_0x1ff872};}async[_0x143237(0x165)](_0x266b7d,_0x431cf9){const _0x4fe85a=_0x143237,_0x1a37ce={'mBQUN':'3|8|7|6|2|0|1|5|4','mjvWF':'El\x20estado\x20debe\x20ser\x20\x22Activo\x22\x20o\x20\x22Inactivo\x22'};let _0x5a0926;try{const _0x5a6c50=_0x1a37ce[_0x4fe85a(0x181)]['split']('|');let _0x43f205=0x0;while(!![]){switch(_0x5a6c50[_0x43f205++]){case'0':await this['abmRepository']['updateByName'](_0x4fe85a(0x163),'nombre_prestador',_0x266b7d,{'estado':_0x431cf9});continue;case'1':await _0x5a0926[_0x4fe85a(0x1a6)]();continue;case'2':await this['abmRepository']['updateByName'](_0x4fe85a(0x166),'nombre',_0x266b7d,{'estado':_0x431cf9});continue;case'3':_0x5a0926=await this['pool']['getConnection']();continue;case'4':return{'success':!![],'nombre':_0x266b7d,'estado':_0x431cf9};case'5':console[_0x4fe85a(0x15a)](_0x4fe85a(0x17b)+_0x266b7d+_0x4fe85a(0x167)+_0x431cf9);continue;case'6':if(![_0x4fe85a(0x18a),'Inactivo'][_0x4fe85a(0x160)](_0x431cf9))throw new Error(_0x1a37ce['mjvWF']);continue;case'7':console[_0x4fe85a(0x15a)]('🔄\x20Modificando\x20estado\x20de\x20entidad:\x20'+_0x266b7d+'\x20→\x20'+_0x431cf9);continue;case'8':await _0x5a0926['beginTransaction']();continue;}break;}}catch(_0x133345){if(_0x5a0926)await _0x5a0926[_0x4fe85a(0x1a1)]();console[_0x4fe85a(0x15f)]('❌\x20Error\x20al\x20cambiar\x20estado\x20de\x20la\x20entidad:',_0x133345);throw _0x133345;}finally{if(_0x5a0926)_0x5a0926['release']();}}async[_0x143237(0x177)](_0xcfe576){const _0x235f0c=_0x143237,_0x3fe5f9={'KaeIl':'cartilla','GQAKi':'id_prestador','TmuXc':'Inactivo','mFlWT':'prestadores'};try{const _0x103492=_0x235f0c(0x1a3)[_0x235f0c(0x1ae)]('|');let _0x349db4=0x0;while(!![]){switch(_0x103492[_0x349db4++]){case'0':return{'id':_0xcfe576,'success':!![]};case'1':await this[_0x235f0c(0x16b)]['update'](_0x3fe5f9[_0x235f0c(0x170)],_0x3fe5f9['GQAKi'],_0xcfe576,{'estado':_0x3fe5f9['TmuXc']});continue;case'2':console[_0x235f0c(0x15a)](_0x235f0c(0x16e)+_0xcfe576);continue;case'3':console[_0x235f0c(0x15a)]('✅\x20Entidad\x20desactivada\x20exitosamente:\x20ID\x20'+_0xcfe576);continue;case'4':await this['abmRepository']['update'](_0x3fe5f9['mFlWT'],'id_prestador',_0xcfe576,{'estado':_0x235f0c(0x179)});continue;}break;}}catch(_0x369e6f){console['error']('❌\x20Error\x20en\x20desactivación\x20de\x20entidad:',_0x369e6f);throw new Error('Error\x20en\x20desactivación\x20de\x20entidad');}}}function _0x52fe(){const _0x4ca315=['El\x20nombre\x20de\x20la\x20entidad\x20es\x20requerido','KaeIl','SELECT\x20nombre\x20FROM\x20planes\x20WHERE\x20id_plan\x20IN\x20(?)','SELECT\x20p.id_plan,\x20p.nombre\x20\x0a\x20\x20\x20\x20\x20\x20\x20FROM\x20planes\x20p\x0a\x20\x20\x20\x20\x20\x20\x20INNER\x20JOIN\x20prestador_plan\x20pp\x20ON\x20p.id_plan\x20=\x20pp.id_plan\x0a\x20\x20\x20\x20\x20\x20\x20WHERE\x20pp.id_prestador\x20=\x20?','\x20(id_prestador,\x20','vlKno','getConnection','6rpCzVS','deactivateEntityById','id_provincia','Inactivo','\x20\x20\x20🔗\x20Actualizando\x20categorías:\x20','✅\x20Estado\x20modificado\x20exitosamente:\x20','9AqoCkb','INSERT\x20INTO\x20prestador_especialidad\x20(id_prestador,\x20id_especialidad)\x20VALUES\x20?','\x20\x20\x20📝\x20Procesando:\x20','categorias','kUFVw','mBQUN','🎉\x20Actualización\x20completa\x20finalizada\x20para\x20entidad\x20ID:\x20','NmiUg','IPnNe','182384MTHxPB','push','855272njBLhu','dQauE','direccion','Activo','\x20registros\x20creados','executeCompleteEntityUpdate','especialidades','map','id_localidad','\x20\x20\x20✅\x20Entidad\x20principal\x20actualizada','categoria_prestador','🔄\x20Procesando\x20creación\x20completa\x20de\x20entidad:','telefonos','INSERT\x20INTO\x20prestador_categoria\x20(id_prestador,\x20id_categoria)\x20VALUES\x20?','_updateCartillaRelations','processCompleteEntityCreation','query','\x20especialidades,\x20','43015ZEOjDf','UPDATE\x20cartilla\x20SET\x20?\x20WHERE\x20id_prestador\x20=\x20?','estado','KthqH','id_categoria','RmqzL','DELETE\x20FROM\x20prestador_categoria\x20WHERE\x20id_prestador\x20=\x20?','33870ZqThQf','rollback','id_plan','2|4|1|3|0','id_prestador','nombre_prestador','commit','1840mIsCnb',')\x20VALUES\x20?','id_especialidad','\x20\x20\x20📋\x20Actualizando\x20información\x20de\x20cartilla','length','🎉\x20Proceso\x20completado:\x20','SELECT\x20id_plan,\x20nombre\x20FROM\x20planes\x20WHERE\x20id_plan\x20IN\x20(?)','split','exports','Debe\x20especificar\x20al\x20menos\x20una\x20especialidad','_updateEntityRelations','20181xjWCQL','prestador_categoria','❌\x20Error\x20en\x20processCompleteEntityCreation:','🏥\x20Datos\x20obtenidos:\x20','TPkou','create','\x20\x20\x20🔗\x20Actualizando\x20especialidades:\x20','log','informacion_adicional','planes','nombre','prestador_especialidad','error','includes','beginTransaction','1720250tyIcDy','cartilla','qLvNM','modifyEntityStatusByName','prestadores','\x20→\x20','EfeIz','email','join','abmRepository','480irEmzv','isArray','🔄\x20Desactivando\x20entidad\x20ID:\x20'];_0x52fe=function(){return _0x4ca315;};return _0x52fe();}module[_0x143237(0x1af)]=SupplierProcessor;
+// libs/prestador-manager/index.js
+/**
+ * Prestador Manager Library
+ * Maneja operaciones complejas de entidades médicas
+ */
+
+class SupplierProcessor {
+  constructor(pool, abmRepository) {
+    this.pool = pool;
+    this.abmRepository = abmRepository;
+  }
+
+  /**
+   * Crea una entidad completa con todas sus relaciones (createPrestadorCompleto)
+   * @async
+   * @param {Object} entityData - Datos de la entidad
+   * @returns {Promise<Object>} - Resultado de la creación
+   */
+  async processCompleteEntityCreation(entityData) {
+    let connection;
+    try {
+      connection = await this.pool.getConnection();
+      await connection.beginTransaction();
+
+      console.log("🔄 Procesando creación completa de entidad:", entityData);
+
+      // Validaciones iniciales
+      if (!entityData.nombre) {
+        throw new Error("El nombre de la entidad es requerido");
+      }
+
+      if (!entityData.planes || !Array.isArray(entityData.planes) || entityData.planes.length === 0) {
+        throw new Error("Debe especificar al menos un plan");
+      }
+
+      if (!entityData.especialidades || !Array.isArray(entityData.especialidades) || entityData.especialidades.length === 0) {
+        throw new Error("Debe especificar al menos una especialidad");
+      }
+
+      console.log(`📋 Validaciones superadas para: ${entityData.nombre}`);
+
+      // 1. Obtener datos comunes (localidad, provincia, categorías, etc.)
+      const [localidad] = await connection.query(
+        `SELECT nombre, id_provincia FROM localidades WHERE id_localidad = ?`,
+        [entityData.id_localidad]
+      );
+
+      const [provincia] = await connection.query(
+        `SELECT nombre FROM provincias WHERE id_provincia = ?`,
+        [localidad[0].id_provincia]
+      );
+
+      const [categorias] = await connection.query(
+        `SELECT nombre FROM categorias_prestador WHERE id_categoria IN (?)`,
+        [entityData.categorias]
+      );
+
+      const [especialidades] = await connection.query(
+        `SELECT id_especialidad, nombre FROM especialidades WHERE id_especialidad IN (?)`,
+        [entityData.especialidades]
+      );
+
+      const [planes] = await connection.query(
+        `SELECT id_plan, nombre FROM planes WHERE id_plan IN (?)`,
+        [entityData.planes]
+      );
+
+      console.log(`🏥 Datos obtenidos: ${especialidades.length} especialidades, ${planes.length} planes`);
+
+      const categoriasStr = categorias.map((c) => c.nombre).join(", ");
+      const resultados = [];
+
+      // 2. Procesar cada combinación plan × especialidad
+      for (const plan of planes) {
+        for (const especialidad of especialidades) {
+          console.log(`   📝 Procesando: ${plan.nombre} x ${especialidad.nombre}`);
+
+          // Crear nueva entidad PARA CADA COMBINACIÓN
+          const newEntity = await this.abmRepository.create("prestadores", {
+            nombre: entityData.nombre,
+            direccion: entityData.direccion,
+            telefonos: entityData.telefonos,
+            email: entityData.email,
+            atencion_virtual: entityData.atencion_virtual,
+            informacion_adicional: entityData.informacion_adicional,
+            id_localidad: entityData.id_localidad,
+            estado: entityData.estado || "Activo",
+          });
+
+          const idEntity = newEntity.insertId;
+          console.log(`      ✅ Entidad creada con ID: ${idEntity}`);
+
+          // Crear registro en cartilla
+          await this.abmRepository.create("cartilla", {
+            id_prestador: idEntity,
+            nombre_prestador: entityData.nombre,
+            direccion: entityData.direccion,
+            telefonos: entityData.telefonos,
+            email: entityData.email,
+            atencion_virtual: entityData.atencion_virtual,
+            informacion_adicional: entityData.informacion_adicional,
+            localidad: localidad[0].nombre,
+            provincia: provincia[0].nombre,
+            categoria_prestador: categoriasStr,
+            especialidad: especialidad.nombre,
+            plan: plan.nombre,
+            estado: entityData.estado || "Activo",
+          });
+
+          // Insertar relaciones (categorías, especialidades, planes)
+          const insertRelations = async (table, field, values) => {
+            if (!Array.isArray(values) || values.length === 0) return;
+
+            const relations = values.map((id) => [idEntity, id]);
+            await connection.query(
+              `INSERT INTO ${table} (id_prestador, ${field}) VALUES ?`,
+              [relations]
+            );
+          };
+
+          // Para esta entidad específica:
+          await insertRelations(
+            "prestador_categoria",
+            "id_categoria",
+            entityData.categorias
+          );
+          await insertRelations("prestador_especialidad", "id_especialidad", [
+            especialidad.id_especialidad,
+          ]); // Solo la especialidad actual
+          await insertRelations("prestador_plan", "id_plan", [plan.id_plan]); // Solo el plan actual
+
+          resultados.push({
+            id_prestador: idEntity,
+            plan: plan.nombre,
+            especialidad: especialidad.nombre,
+          });
+        }
+      }
+
+      await connection.commit();
+
+      console.log(`🎉 Proceso completado: ${resultados.length} registros creados`);
+
+      return {
+        success: true,
+        registros_creados: resultados,
+        total: resultados.length,
+      };
+    } catch (error) {
+      if (connection) await connection.rollback();
+      console.error("❌ Error en processCompleteEntityCreation:", error);
+      throw new Error("Error creating complete entity");
+    } finally {
+      if (connection) connection.release();
+    }
+  }
+
+  /**
+   * Actualiza una entidad existente con datos completos (updatePrestador)
+   * @async
+   * @param {number} id - ID de la entidad a actualizar
+   * @param {Object} entityData - Nuevos datos de la entidad
+   * @returns {Promise<Object>} - Promesa que resuelve a un objeto con los datos completos actualizados
+   */
+  async executeCompleteEntityUpdate(id, entityData) {
+    let connection;
+    try {
+      connection = await this.pool.getConnection();
+      await connection.beginTransaction();
+
+      console.log(`🔄 Ejecutando actualización completa para entidad ID: ${id}`);
+
+      // Filtrar datos de la entidad
+      const entityDataFiltered = {};
+      const relationsToUpdate = {
+        categorias: entityData.categorias,
+        especialidades: entityData.especialidades,
+        planes: entityData.planes,
+      };
+
+      Object.entries(entityData).forEach(([key, value]) => {
+        if (value !== null && value !== undefined && value !== "") {
+          if (
+            key === "categorias" ||
+            key === "especialidades" ||
+            key === "planes"
+          )
+            return;
+          entityDataFiltered[key] = value;
+        }
+      });
+
+      console.log(`📝 Campos a actualizar: ${Object.keys(entityDataFiltered).join(', ')}`);
+
+      // 1. Actualizar la entidad principal
+      if (Object.keys(entityDataFiltered).length > 0) {
+        await this.abmRepository.update(
+          "prestadores",
+          "id_prestador",
+          id,
+          entityDataFiltered
+        );
+        console.log(`   ✅ Entidad principal actualizada`);
+      }
+
+      // 2. Actualizar la cartilla - Mapear los campos correctamente
+      if (Object.keys(entityDataFiltered).length > 0) {
+        // Crear un objeto con los campos mapeados para la tabla cartilla
+        const cartillaDataFiltered = {};
+
+        // Mapeo de campos entre prestadores y cartilla
+        const fieldMapping = {
+          nombre: "nombre_prestador",
+          direccion: "direccion",
+          telefonos: "telefonos",
+          email: "email",
+          atencion_virtual: "atencion_virtual",
+          informacion_adicional: "informacion_adicional",
+          estado: "estado",
+        };
+
+        // Crear objeto con campos mapeados correctamente
+        Object.entries(entityDataFiltered).forEach(([key, value]) => {
+          if (fieldMapping[key]) {
+            cartillaDataFiltered[fieldMapping[key]] = value;
+          }
+        });
+
+        // Solo actualizar si hay campos para actualizar
+        if (Object.keys(cartillaDataFiltered).length > 0) {
+          await this.abmRepository.update(
+            "cartilla",
+            "id_prestador",
+            id,
+            cartillaDataFiltered
+          );
+          console.log(`   ✅ Cartilla actualizada`);
+        }
+      }
+
+      // 3. Actualizar relaciones
+      await this._updateEntityRelations(connection, id, relationsToUpdate);
+
+      // 4. Obtener datos completos de la entidad actualizada para la respuesta
+      const updatedEntity = await this._getCompleteEntityData(connection, id);
+
+      await connection.commit();
+
+      console.log(`🎉 Actualización completa finalizada para entidad ID: ${id}`);
+
+      return {
+        id,
+        success: true,
+        prestador: updatedEntity,
+      };
+    } catch (error) {
+      if (connection) await connection.rollback();
+      console.error("❌ Error en executeCompleteEntityUpdate:", error);
+      throw new Error("Error al actualizar entidad completa");
+    } finally {
+      if (connection) connection.release();
+    }
+  }
+
+  /**
+   * Actualiza las relaciones de una entidad
+   * @private
+   */
+  async _updateEntityRelations(connection, id, relationsToUpdate) {
+    // Para cada tipo de relación, verificar si se proporcionaron datos nuevos
+    if (relationsToUpdate.categorias !== undefined) {
+      console.log(`   🔗 Actualizando categorías: ${relationsToUpdate.categorias?.length || 0} elementos`);
+      await connection.query(
+        `DELETE FROM prestador_categoria WHERE id_prestador = ?`,
+        [id]
+      );
+
+      if (
+        relationsToUpdate.categorias &&
+        relationsToUpdate.categorias.length > 0
+      ) {
+        const categoriasValues = relationsToUpdate.categorias.map((catId) => [
+          id,
+          catId,
+        ]);
+        await connection.query(
+          `INSERT INTO prestador_categoria (id_prestador, id_categoria) VALUES ?`,
+          [categoriasValues]
+        );
+      }
+    }
+
+    if (relationsToUpdate.especialidades !== undefined) {
+      console.log(`   🔗 Actualizando especialidades: ${relationsToUpdate.especialidades?.length || 0} elementos`);
+      await connection.query(
+        `DELETE FROM prestador_especialidad WHERE id_prestador = ?`,
+        [id]
+      );
+
+      if (
+        relationsToUpdate.especialidades &&
+        relationsToUpdate.especialidades.length > 0
+      ) {
+        const especialidadesValues = relationsToUpdate.especialidades.map(
+          (espId) => [id, espId]
+        );
+        await connection.query(
+          `INSERT INTO prestador_especialidad (id_prestador, id_especialidad) VALUES ?`,
+          [especialidadesValues]
+        );
+      }
+    }
+
+    if (relationsToUpdate.planes !== undefined) {
+      console.log(`   🔗 Actualizando planes: ${relationsToUpdate.planes?.length || 0} elementos`);
+      await connection.query(
+        `DELETE FROM prestador_plan WHERE id_prestador = ?`,
+        [id]
+      );
+
+      if (relationsToUpdate.planes && relationsToUpdate.planes.length > 0) {
+        const planesValues = relationsToUpdate.planes.map((planId) => [
+          id,
+          planId,
+        ]);
+        await connection.query(
+          `INSERT INTO prestador_plan (id_prestador, id_plan) VALUES ?`,
+          [planesValues]
+        );
+      }
+    }
+
+    // 4. Actualizar la información en cartilla para las relaciones
+    await this._updateCartillaRelations(connection, id, relationsToUpdate);
+  }
+
+  /**
+   * Actualiza las relaciones en la tabla cartilla
+   * @private
+   */
+  async _updateCartillaRelations(connection, id, relationsToUpdate) {
+    if (
+      relationsToUpdate.categorias !== undefined ||
+      relationsToUpdate.especialidades !== undefined ||
+      relationsToUpdate.planes !== undefined
+    ) {
+      console.log(`   📋 Actualizando información de cartilla`);
+
+      // Obtener los nombres actualizados para cartilla
+      let categoriaNames = [],
+        especialidadNames = [],
+        planNames = [];
+
+      if (
+        relationsToUpdate.categorias !== undefined &&
+        relationsToUpdate.categorias.length > 0
+      ) {
+        const [categoriasResult] = await connection.query(
+          `SELECT nombre FROM categorias_prestador WHERE id_categoria IN (?)`,
+          [relationsToUpdate.categorias]
+        );
+        categoriaNames = categoriasResult.map((c) => c.nombre);
+      }
+
+      if (
+        relationsToUpdate.especialidades !== undefined &&
+        relationsToUpdate.especialidades.length > 0
+      ) {
+        const [especialidadesResult] = await connection.query(
+          `SELECT nombre FROM especialidades WHERE id_especialidad IN (?)`,
+          [relationsToUpdate.especialidades]
+        );
+        especialidadNames = especialidadesResult.map((e) => e.nombre);
+      }
+
+      if (
+        relationsToUpdate.planes !== undefined &&
+        relationsToUpdate.planes.length > 0
+      ) {
+        const [planesResult] = await connection.query(
+          `SELECT nombre FROM planes WHERE id_plan IN (?)`,
+          [relationsToUpdate.planes]
+        );
+        planNames = planesResult.map((p) => p.nombre);
+      }
+
+      // Actualizar cartilla con los nombres concatenados
+      const cartillaRelationsUpdate = {};
+
+      if (relationsToUpdate.categorias !== undefined) {
+        cartillaRelationsUpdate.categoria_prestador =
+          categoriaNames.join(", ");
+      }
+
+      if (relationsToUpdate.especialidades !== undefined) {
+        cartillaRelationsUpdate.especialidad = especialidadNames.join(", ");
+      }
+
+      if (relationsToUpdate.planes !== undefined) {
+        cartillaRelationsUpdate.plan = planNames.join(", ");
+      }
+
+      if (Object.keys(cartillaRelationsUpdate).length > 0) {
+        await connection.query(
+          `UPDATE cartilla SET ? WHERE id_prestador = ?`,
+          [cartillaRelationsUpdate, id]
+        );
+        console.log(`      ✅ Cartilla actualizada con nuevas relaciones`);
+      }
+    }
+  }
+
+  /**
+   * Obtiene datos completos de una entidad para la respuesta
+   * @private
+   */
+  async _getCompleteEntityData(connection, id) {
+    console.log(`   📊 Obteniendo datos completos de entidad ID: ${id}`);
+
+    const [entityResult] = await connection.query(
+      `SELECT * FROM prestadores WHERE id_prestador = ?`,
+      [id]
+    );
+
+    const [categoriasResult] = await connection.query(
+      `SELECT c.id_categoria, c.nombre 
+       FROM categorias_prestador c
+       INNER JOIN prestador_categoria pc ON c.id_categoria = pc.id_categoria
+       WHERE pc.id_prestador = ?`,
+      [id]
+    );
+
+    const [especialidadesResult] = await connection.query(
+      `SELECT e.id_especialidad, e.nombre 
+       FROM especialidades e
+       INNER JOIN prestador_especialidad pe ON e.id_especialidad = pe.id_especialidad
+       WHERE pe.id_prestador = ?`,
+      [id]
+    );
+
+    const [planesResult] = await connection.query(
+      `SELECT p.id_plan, p.nombre 
+       FROM planes p
+       INNER JOIN prestador_plan pp ON p.id_plan = pp.id_plan
+       WHERE pp.id_prestador = ?`,
+      [id]
+    );
+
+    return {
+      ...entityResult[0],
+      categorias: categoriasResult,
+      especialidades: especialidadesResult,
+      planes: planesResult,
+    };
+  }
+
+  /**
+   * Cambia el estado de una entidad por nombre
+   * @async
+   * @param {string} nombre - Nombre de la entidad
+   * @param {string} estado - Nuevo estado
+   * @returns {Promise<Object>} - Resultado de la operación
+   */
+  async modifyEntityStatusByName(nombre, estado) {
+    let connection;
+    try {
+      connection = await this.pool.getConnection();
+      await connection.beginTransaction();
+
+      console.log(`🔄 Modificando estado de entidad: ${nombre} → ${estado}`);
+
+      // Validar estado
+      if (!["Activo", "Inactivo"].includes(estado)) {
+        throw new Error('El estado debe ser "Activo" o "Inactivo"');
+      }
+
+      // Actualizar en prestadores
+      await this.abmRepository.updateByName("prestadores", "nombre", nombre, {
+        estado,
+      });
+
+      // Actualizar en cartilla (ajusta el campo nombre según tu esquema)
+      await this.abmRepository.updateByName("cartilla", "nombre_prestador", nombre, {
+        estado,
+      });
+
+      await connection.commit();
+
+      console.log(`✅ Estado modificado exitosamente: ${nombre} → ${estado}`);
+
+      return { success: true, nombre, estado };
+    } catch (error) {
+      if (connection) await connection.rollback();
+      console.error("❌ Error al cambiar estado de la entidad:", error);
+      throw error;
+    } finally {
+      if (connection) connection.release();
+    }
+  }
+
+  /**
+   * Da de baja una entidad cambiando su estado a 'Inactivo'
+   * @async
+   * @param {number} id - ID de la entidad
+   * @returns {Promise<Object>} - Promesa que resuelve a un objeto con el resultado de la operación
+   */
+  async deactivateEntityById(id) {
+    try {
+      console.log(`🔄 Desactivando entidad ID: ${id}`);
+
+      await this.abmRepository.update("prestadores", "id_prestador", id, {
+        estado: "Inactivo",
+      });
+
+      await this.abmRepository.update("cartilla", "id_prestador", id, {
+        estado: "Inactivo",
+      });
+
+      console.log(`✅ Entidad desactivada exitosamente: ID ${id}`);
+
+      return { id, success: true };
+    } catch (error) {
+      console.error("❌ Error en desactivación de entidad:", error);
+      throw new Error("Error en desactivación de entidad");
+    }
+  }
+}
+
+module.exports = SupplierProcessor;
